@@ -24,6 +24,7 @@ async def test_scraper():
             # 4. Gọi hàm crawl
             jobs = await scraper.crawl_all_pages(today=True) # Nếu bạn chỉ muốn crawl hôm nay thì truyền today=True)
             print(f"✅ Crawled {len(jobs)} jobs from TopDev.vn")
+            scraper.print_jobs(jobs) # In ra console để kiểm tra
             # 5. In kết quả ra màn hình để kiểm tra
             for job in jobs:
                 scraper.send_to_discord(job)

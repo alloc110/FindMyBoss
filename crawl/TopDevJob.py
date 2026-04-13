@@ -81,7 +81,7 @@ class TopDevJobScraper(JobScraper):
             if await next_button.count() > 0 and await next_button.is_visible() and await next_button.is_enabled():
                 # Lấy class để kiểm tra xem có bị ẩn (trang cuối) không
                 class_attr = await next_button.get_attribute("class")
-                
+             
                 # Nếu KHÔNG chứa 'opacity-0' thì mới là nút bấm được
                 if "opacity-0" not in class_attr:
                     print("➡️ Next button is visible and enabled. Clicking to go to the next page...")
