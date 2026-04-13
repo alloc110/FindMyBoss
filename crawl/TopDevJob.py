@@ -68,7 +68,7 @@ class TopDevJobScraper(JobScraper):
         roles = ["Software Developer", "Data Engineer / Scientist / Analyst", "Machine Learning / AI Engineer", "DevOps Engineer"]
         for role in roles:
             await self.page.locator('div[style*="width:600px"] button').filter(has_text=role).click()
-        all_jobs = set()
+        all_jobs = []
         await self.page.get_by_role("button", name="Apply", exact=True).click() 
         while True:
             print(f"🚅 Crawling page {current_page}...")
