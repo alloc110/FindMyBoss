@@ -8,8 +8,8 @@ class Job:
     link: str
     address: str
     exp: str
-    salary: str = "Thỏa thuận"
-    posted_date: str = ""
+    salary: str 
+    posted_date: str
     image: str 
 
     def to_discord_embed(self):
@@ -19,5 +19,6 @@ class Job:
             "LOGO": self.link, # Sử dụng link làm logo tạm thời
             "url": self.link,
             "color": 5814783, # Màu xanh dương
-            "footer": {"text": f"Nguồn: {self.source} | {self.posted_date}"}
+            "footer": {"text": f"Nguồn: {self.posted_date}"},
+            "image": {"url": self.image}
         }
