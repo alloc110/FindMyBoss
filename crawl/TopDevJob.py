@@ -85,7 +85,7 @@ class TopDevJobScraper(JobScraper):
                 # Nếu KHÔNG chứa 'opacity-0' thì mới là nút bấm được
                 if "opacity-0" not in class_attr:
                     print("➡️ Nút Next đang sẵn sàng, bấm để sang trang tiếp...")
-                    await next_button.click()
+                    await next_button.click(force=True)  # Dùng force để đảm bảo click dù có phần tử nào đó chồng lên
                     current_page += 1
                     # Đợi dữ liệu mới nạp xong
                     await self.page.wait_for_load_state("networkidle")
