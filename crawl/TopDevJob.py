@@ -18,7 +18,7 @@ class TopDevJobScraper(JobScraper):
             # print(f"📄 Processing card {i+1}/{len(cards)}...")
             card = cards[i]
             job_data = await self.parse_card_detail(card) # Hàm bóc tách chi tiết đã viết
-            if(job_data.exp in self.find_level and job_data.address.find("Hà Nội") != -1): # Hồ Chí Minh Hà Nội
+            if(job_data.exp in self.find_level and job_data.address.find("Hồ Chí Minh") != -1): # Hồ Chí Minh Hà Nội
                 jobs.append(job_data)
         return jobs
     
@@ -104,7 +104,7 @@ class TopDevJobScraper(JobScraper):
             # print(f"📄 Processing card {i+1}/{len(cards)}...")
             card = cards[i]
             job_data = await self.parse_card_detail(card) # Hàm bóc tách chi tiết đã viết 
-            if(job_data.exp in self.find_level and job_data.address.find("Hà Nội") != -1 and job_data.posted_date.find("hours") != -1): # Hồ Chí Minh  Hà Nội
+            if(job_data.exp in self.find_level and job_data.address.find("Hồ Chí Minh") != -1 and job_data.posted_date.find("hours") != -1): # Hồ Chí Minh  Hà Nội
                 jobs.append(job_data)
         return jobs
     
