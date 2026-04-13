@@ -26,6 +26,7 @@ async def test_scraper():
             print(f"✅ Crawled {len(jobs)} jobs from TopDev.vn")
             scraper.print_jobs(jobs) # In ra console để kiểm tra
             # 5. In kết quả ra màn hình để kiểm tra
+            jobs = list(set(jobs)) # Loại bỏ trùng lặp nếu có
             for job in jobs:
                 scraper.send_to_discord(job)
         except Exception as e:

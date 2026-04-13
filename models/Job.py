@@ -22,11 +22,4 @@ class Job:
             "footer": {"text": f"Nguồn: {self.posted_date}"},
             "image": {"url": self.image}
         }
-    def __eq__(self, other):
-        if not isinstance(other, Job):
-            return False
-        return self.link == other.link
-
-    # Hàm tạo mã hash dựa trên link
-    def __hash__(self):
-        return hash(self.link)
+   

@@ -9,8 +9,9 @@ class TopDevJobScraper(JobScraper):
         super().__init__(page = page, webhook_url = webhook_url)
         self.url = "https://topdev.vn/jobs/search"
         self.find_level = ["Intern", "Fresher", "Junior"]
+        self.scraped_links = set() # Dùng để lưu các link đã cào được, tránh trùng lặp khi crawl nhiều trang
     async def crawl(self):
-        jobs = set()
+        jobs = []
         container = self.page.locator("div.flex-col.gap-2").first
         cards = await container.locator(".text-card-foreground").all()        
         print(f"🔍 Found {len(cards)} job cards")
@@ -18,8 +19,10 @@ class TopDevJobScraper(JobScraper):
             # print(f"📄 Processing card {i+1}/{len(cards)}...")
             card = cards[i]
             job_data = await self.parse_card_detail(card) # Hàm bóc tách chi tiết đã viết
-            if(job_data.exp in self.find_level and job_data.address.find("Hồ Chí Minh") != -1): # Hồ Chí Minh Hà Nội
-                jobs.add(job_data)
+            if(job_data.exp in self.find_level and job_data.address.find("Hồ Chí Minh") != -1 ): # Hồ Chí Minh Hà Nội
+                if job_data.link not in self.scraped_links:
+                    jobs.append(job_data)
+                    self.scraped_links.add(job_data.link) # Ghi chú lại link này
         return jobs
     
     async def parse_card_detail(self, card):
@@ -70,9 +73,9 @@ class TopDevJobScraper(JobScraper):
         while True:
             print(f"🚅 Crawling page {current_page}...")
             if(today):
-                all_jobs.update(await self.crawl_today())
+                all_jobs.extend(await self.crawl_today())
             else:
-                all_jobs.update(await self.crawl()) 
+                all_jobs.extend(await self.crawl()) 
             
             next_button = self.page.get_by_label("Go to next page")
             
@@ -97,7 +100,7 @@ class TopDevJobScraper(JobScraper):
                
                 
     async def crawl_today(self):
-        jobs = set()
+        jobs = []
         container = self.page.locator("div.flex-col.gap-2").first
         cards = await container.locator(".text-card-foreground").all()        
         print(f"🔍 Found {len(cards)} job cards")
@@ -106,7 +109,9 @@ class TopDevJobScraper(JobScraper):
             card = cards[i]
             job_data = await self.parse_card_detail(card) # Hàm bóc tách chi tiết đã viết 
             if(job_data.exp in self.find_level and job_data.address.find("Hồ Chí Minh") != -1 and job_data.posted_date.find("hours") != -1): # Hồ Chí Minh  Hà Nội
-                jobs.add(job_data)
+                if job_data.link not in self.scraped_links:
+                    jobs.append(job_data)
+                    self.scraped_links.add(job_data.link) # Ghi chú lại link này
         return jobs
     
     def send_to_discord(self, job_data):
