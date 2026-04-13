@@ -78,13 +78,13 @@ class TopDevJobScraper(JobScraper):
             
             # Kiểm tra nếu nút Next còn tồn tại và có thể click được
             # (Nút Next cuối cùng thường có class opacity-0 hoặc hidden)
-            if await next_button.count() > 0:
+            if await next_button.count() > 0 and await next_button.is_visible() and await next_button.is_enabled():
                 # Lấy class để kiểm tra xem có bị ẩn (trang cuối) không
                 class_attr = await next_button.get_attribute("class")
                 
                 # Nếu KHÔNG chứa 'opacity-0' thì mới là nút bấm được
                 if "opacity-0" not in class_attr:
-                    print("➡️ Nút Next đang sẵn sàng, bấm để sang trang tiếp...")
+                    print("➡️ Next button is visible and enabled. Clicking to go to the next page...")
                     await next_button.click(force=True)  # Dùng force để đảm bảo click dù có phần tử nào đó chồng lên
                     current_page += 1
                     # Đợi dữ liệu mới nạp xong
@@ -92,7 +92,7 @@ class TopDevJobScraper(JobScraper):
                     # Đợi thêm 1s để chắc chắn các card cũ đã bị thay thế (tránh cào trùng)
                     await self.page.wait_for_timeout(1000)
                 else:
-                    print("🏁 Đã thấy nút Next nhưng nó bị ẩn (Trang cuối rồi).")
+                    print("🏁 Last page reached.")
                     return all_jobs
                 
     async def crawl_today(self):
