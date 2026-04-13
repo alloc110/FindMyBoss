@@ -79,21 +79,22 @@ class TopDevJobScraper(JobScraper):
             # Kiểm tra nếu nút Next còn tồn tại và có thể click được
             # (Nút Next cuối cùng thường có class opacity-0 hoặc hidden)
             if await next_button.count() > 0 and await next_button.is_visible() and await next_button.is_enabled():
+                
                 # Lấy class để kiểm tra xem có bị ẩn (trang cuối) không
                 class_attr = await next_button.get_attribute("class")
-             
-                # Nếu KHÔNG chứa 'opacity-0' thì mới là nút bấm được
-                if "opacity-0" not in class_attr:
-                    print("➡️ Next button is visible and enabled. Clicking to go to the next page...")
-                    await next_button.click(force=True)  # Dùng force để đảm bảo click dù có phần tử nào đó chồng lên
-                    current_page += 1
-                    # Đợi dữ liệu mới nạp xong
-                    await self.page.wait_for_load_state("networkidle")
-                    # Đợi thêm 1s để chắc chắn các card cũ đã bị thay thế (tránh cào trùng)
-                    await self.page.wait_for_timeout(1000)
-                else:
-                    print("🏁 Last page reached.")
+                if "pointer-events-none opacity-0" in class_attr:
+                    print("🚫 Next button is present but disabled (opacity-0 or pointer-events-none). This is the last page!")
                     return all_jobs
+                
+                # Nếu KHÔNG chứa 'opacity-0' thì mới là nút bấm được
+                print("➡️ Next button is visible and enabled. Clicking to go to the next page...")
+                await next_button.click(force=True)  # Dùng force để đảm bảo click dù có phần tử nào đó chồng lên
+                current_page += 1
+                # Đợi dữ liệu mới nạp xong
+                await self.page.wait_for_load_state("networkidle")
+                # Đợi thêm 1s để chắc chắn các card cũ đã bị thay thế (tránh cào trùng)
+                await self.page.wait_for_timeout(1000)
+               
                 
     async def crawl_today(self):
         jobs = []
@@ -104,7 +105,6 @@ class TopDevJobScraper(JobScraper):
             # print(f"📄 Processing card {i+1}/{len(cards)}...")
             card = cards[i]
             job_data = await self.parse_card_detail(card) # Hàm bóc tách chi tiết đã viết 
-            print(job_data.title)
             if(job_data.exp in self.find_level and job_data.address.find("Hồ Chí Minh") != -1 and job_data.posted_date.find("hours") != -1): # Hồ Chí Minh  Hà Nội
                 jobs.append(job_data)
         return jobs
