@@ -10,7 +10,7 @@ class TopDevJobScraper(JobScraper):
         self.url = "https://topdev.vn/jobs/search"
         self.find_level = ["Intern", "Fresher", "Junior"]
     async def crawl(self):
-        jobs = []
+        jobs = set()
         container = self.page.locator("div.flex-col.gap-2").first
         cards = await container.locator(".text-card-foreground").all()        
         print(f"🔍 Found {len(cards)} job cards")
@@ -19,7 +19,7 @@ class TopDevJobScraper(JobScraper):
             card = cards[i]
             job_data = await self.parse_card_detail(card) # Hàm bóc tách chi tiết đã viết
             if(job_data.exp in self.find_level and job_data.address.find("Hồ Chí Minh") != -1): # Hồ Chí Minh Hà Nội
-                jobs.append(job_data)
+                jobs.add(job_data)
         return jobs
     
     async def parse_card_detail(self, card):
@@ -65,14 +65,14 @@ class TopDevJobScraper(JobScraper):
         roles = ["Software Developer", "Data Engineer / Scientist / Analyst", "Machine Learning / AI Engineer", "DevOps Engineer"]
         for role in roles:
             await self.page.locator('div[style*="width:600px"] button').filter(has_text=role).click()
-        all_jobs = []
+        all_jobs = set()
         await self.page.get_by_role("button", name="Apply", exact=True).click() 
         while True:
             print(f"🚅 Crawling page {current_page}...")
             if(today):
-                all_jobs.extend(await self.crawl_today())
+                all_jobs.update(await self.crawl_today())
             else:
-                all_jobs.extend(await self.crawl()) 
+                all_jobs.update(await self.crawl()) 
             
             next_button = self.page.get_by_label("Go to next page")
             
@@ -97,7 +97,7 @@ class TopDevJobScraper(JobScraper):
                
                 
     async def crawl_today(self):
-        jobs = []
+        jobs = set()
         container = self.page.locator("div.flex-col.gap-2").first
         cards = await container.locator(".text-card-foreground").all()        
         print(f"🔍 Found {len(cards)} job cards")
@@ -106,7 +106,7 @@ class TopDevJobScraper(JobScraper):
             card = cards[i]
             job_data = await self.parse_card_detail(card) # Hàm bóc tách chi tiết đã viết 
             if(job_data.exp in self.find_level and job_data.address.find("Hồ Chí Minh") != -1 and job_data.posted_date.find("hours") != -1): # Hồ Chí Minh  Hà Nội
-                jobs.append(job_data)
+                jobs.add(job_data)
         return jobs
     
     def send_to_discord(self, job_data):
