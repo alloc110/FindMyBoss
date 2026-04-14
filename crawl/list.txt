@@ -1,11 +1,10 @@
-TopDev
-ITviec (hard)
-TopCV
+TopDev      Done 
+ITviec (hard)  Done 
+TopCV       
 VietnamWorks
 CareerViet
 Vieclam24h
 Linkedln
 Indeed
 Wellfound (cloulfrane)
-ITnavi
 JobsGO (cloulfrane)

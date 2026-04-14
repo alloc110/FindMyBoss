@@ -13,22 +13,29 @@ class ITviecJob(JobScraper):
                             "FRESHER", 
                             "JUNIOR"
                             ]
+        self.un_find_level = [
+                            "SENIOR",
+                            "LEAD",
+                            "MANAGER",
+                            "DIRECTOR",
+                            "HEAD",
+                            "CHIEF",
+                            "TRƯỞNG",
+                            "PHÓ",
+                            "GIÁM ĐỐC",
+                            "QUẢN LÝ",
+                            "TRƯỞNG PHÒNG",
+                            "PHÓ PHÒNG",
+                            "TRƯỞNG BAN",
+                            "PHÓ BAN",
+                            "TRƯỞNG NHÓM",
+                            "PHÓ NHÓM",
+                            "TRƯỞNG DỰ ÁN",    
+                            ]
         self.roles = {
                       "Backend Developer": "backend-developer" ,
                       "Frontend Developer": "frontend-developer",
-                      "Fullstack Developer": "fullstack-developer",
-                      "Mobile Application Developer": "mobile-application-developer",
-                      "Data Analyst": "data-analyst",
-                      "Big Data Engineer": "big-data-engineer"  ,
-                      "Data Engineer": "data-engineer",
-                      "DataOps / MLOps Engineer": "dataops-mlops-engineer",
-                      "Database Engineer": "database-engineer",
-                      "AI / Machine Learning Engineer": "ai-machine-learning-engineer",
-                      "AI Researcher": "ai-researcher",
-                      "Computer Vision Engineer": "computer-vision-engineer",
-                      "Data Scientist": "data-scientist",
-                      "UX/UI Designer": "ux-ui-designer" 
-                      
+                      "Fullstack Developer": "fullstack-developer"                      
         }
         # "Frontend Developer": "frontend-developer",
         #               "Fullstack Developer": "fullstack-developer",
@@ -58,12 +65,22 @@ class ITviecJob(JobScraper):
             if job.link not in self.scraped_links:
                 self.scraped_links.add(job.link)
                 if job.address.find("Hồ Chí Minh") != -1:
+                    flag = False
                     for level in self.find_level:
                         if job.title.upper().find(level) != -1:
                             job.exp = level
                             jobs.append(job)
-                            break       
-        
+                            Flag = True
+                            break
+                    flag2 = False       
+                    if not flag:
+                        for level in self.un_find_level:
+                            if job.title.upper().find(level) != -1:
+                                flag2 = True
+                                break
+                        if not flag2:
+                            job.exp = "Unknown"
+                            jobs.append(job)
         return jobs
     
     async def parse_card_detail(self, card):
@@ -97,22 +114,17 @@ class ITviecJob(JobScraper):
         return job
     
     async def crawl_all_pages(self, today = False):
-        await self.page.goto(self.url)
         all_jobs = []
         for role, slug in self.roles.items():
             print(f"📂 Đang chuyển sang chuyên mục: {role}")
             target_url = f"https://itviec.com/it-jobs/{slug}"
             
             await self.page.goto(target_url)
-            # 1. Gọi function chuyên xử lý việc chuyển trang/chọn role
             
             await self.page.wait_for_timeout(2000) # Đợi thêm 2s để chắc chắn trang đã load xong
             # Thực hiện cào dữ liệu ở đây...
             role_jobs = await self.scrape_current_role_pages(today)
             all_jobs.extend(role_jobs)
-            
-            # Quay lại trang danh mục để bấm cái tiếp theo
-            await self.page.goto(self.url)
         
         return all_jobs
     
@@ -160,11 +172,22 @@ class ITviecJob(JobScraper):
             if job.link not in self.scraped_links:
                 self.scraped_links.add(job.link)
                 if job.address.find("Hồ Chí Minh") != -1 and job.posted_date.find("hours") != -1:
+                    flag = False
                     for level in self.find_level:
                         if job.title.upper().find(level) != -1:
                             job.exp = level
                             jobs.append(job)
-                            break       
+                            Flag = True
+                            break
+                    flag2 = False       
+                    if not flag:
+                        for level in self.un_find_level:
+                            if job.title.upper().find(level) != -1:
+                                flag2 = True
+                                break
+                        if not flag2:
+                            job.exp = "Unknown"
+                            jobs.append(job) 
         
         return jobs
     

@@ -3,7 +3,7 @@ name: Job Scraper
 # 1. Cấu hình thời gian chạy tự động (ví dụ: 8h sáng mỗi ngày) hoặc chạy tay
 on:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '0 5 * * *'
   workflow_dispatch:      # Cho phép bấm nút "Run workflow" trên giao diện GitHub
 
 jobs:
