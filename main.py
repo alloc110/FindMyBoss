@@ -9,7 +9,7 @@ load_dotenv()
 
 async def test_scraper():
     async with async_playwright() as p:
-        crawlers = (ITviecJob,TopDevJobScraper) # Thay bằng class của bạn nếu muốn test cái khác
+        crawlers = (TopDevJobScraper, ITviecJob,) # Thay bằng class của bạn nếu muốn test cái khác
         for crawler_class in crawlers:
             print(f"\n\n================ Testing {crawler_class.__name__} ================\n")
             # 1. Mở trình duyệt (để headless=False để tận mắt xem nó click)
@@ -32,7 +32,7 @@ async def test_scraper():
             print("🚀 Start crawling... ")
             
             try:
-                jobs = await scraper.crawl_all_pages(today = False) # Nếu bạn chỉ muốn crawl hôm nay thì truyền today=True)
+                jobs = await scraper.crawl_all_pages(today = True) # Nếu bạn chỉ muốn crawl hôm nay thì truyền today=True)
                 
                 print(f"✅ Crawled {len(jobs)} jobs from {crawler_class.__name__}")
                 scraper.print_jobs(jobs) 

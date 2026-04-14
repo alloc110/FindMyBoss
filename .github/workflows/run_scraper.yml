@@ -43,5 +43,4 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           GITHUB_ACTIONS: "true"
         run: |
-          # xvfb-run giúp trình duyệt chạy ở chế độ headless=False mà không bị crash
           xvfb-run --auto-servernum --server-args="-screen 0 1280x800x24" python main.py
