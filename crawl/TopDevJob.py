@@ -9,6 +9,7 @@ class TopDevJobScraper(JobScraper):
         super().__init__(page = page, webhook_url = webhook_url)
         self.url = "https://topdev.vn/jobs/search"
         self.find_level = ["Intern", "Fresher", "Junior"]
+        self.scraped_links = set() # Dùng để lưu các link đã cào được, tránh trùng lặp khi crawl nhiều trang
     async def crawl(self):
         jobs = []
         container = self.page.locator("div.flex-col.gap-2").first
@@ -18,8 +19,10 @@ class TopDevJobScraper(JobScraper):
             # print(f"📄 Processing card {i+1}/{len(cards)}...")
             card = cards[i]
             job_data = await self.parse_card_detail(card) # Hàm bóc tách chi tiết đã viết
-            if(job_data.exp in self.find_level and job_data.address.find("Hồ Chí Minh") != -1): # Hồ Chí Minh Hà Nội
-                jobs.append(job_data)
+            if(job_data.exp in self.find_level and job_data.address.find("Hồ Chí Minh") != -1 ): # Hồ Chí Minh Hà Nội
+                if job_data.link not in self.scraped_links:
+                    jobs.append(job_data)
+                    self.scraped_links.add(job_data.link) # Ghi chú lại link này
         return jobs
     
     async def parse_card_detail(self, card):
@@ -78,22 +81,23 @@ class TopDevJobScraper(JobScraper):
             
             # Kiểm tra nếu nút Next còn tồn tại và có thể click được
             # (Nút Next cuối cùng thường có class opacity-0 hoặc hidden)
-            if await next_button.count() > 0:
+            if await next_button.count() > 0 and await next_button.is_visible() and await next_button.is_enabled():
+                
                 # Lấy class để kiểm tra xem có bị ẩn (trang cuối) không
                 class_attr = await next_button.get_attribute("class")
+                if "pointer-events-none opacity-0" in class_attr:
+                    print("🚫 Next button is present but disabled (opacity-0 or pointer-events-none). This is the last page!")
+                    return all_jobs
                 
                 # Nếu KHÔNG chứa 'opacity-0' thì mới là nút bấm được
-                if "opacity-0" not in class_attr:
-                    print("➡️ Nút Next đang sẵn sàng, bấm để sang trang tiếp...")
-                    await next_button.click()
-                    current_page += 1
-                    # Đợi dữ liệu mới nạp xong
-                    await self.page.wait_for_load_state("networkidle")
-                    # Đợi thêm 1s để chắc chắn các card cũ đã bị thay thế (tránh cào trùng)
-                    await self.page.wait_for_timeout(1000)
-                else:
-                    print("🏁 Đã thấy nút Next nhưng nó bị ẩn (Trang cuối rồi).")
-                    return all_jobs
+                print("➡️ Next button is visible and enabled. Clicking to go to the next page...")
+                await next_button.click(force=True)  # Dùng force để đảm bảo click dù có phần tử nào đó chồng lên
+                current_page += 1
+                # Đợi dữ liệu mới nạp xong
+                await self.page.wait_for_load_state("networkidle")
+                # Đợi thêm 1s để chắc chắn các card cũ đã bị thay thế (tránh cào trùng)
+                await self.page.wait_for_timeout(1000)
+               
                 
     async def crawl_today(self):
         jobs = []
@@ -105,7 +109,9 @@ class TopDevJobScraper(JobScraper):
             card = cards[i]
             job_data = await self.parse_card_detail(card) # Hàm bóc tách chi tiết đã viết 
             if(job_data.exp in self.find_level and job_data.address.find("Hồ Chí Minh") != -1 and job_data.posted_date.find("hours") != -1): # Hồ Chí Minh  Hà Nội
-                jobs.append(job_data)
+                if job_data.link not in self.scraped_links:
+                    jobs.append(job_data)
+                    self.scraped_links.add(job_data.link) # Ghi chú lại link này
         return jobs
     
     def send_to_discord(self, job_data):

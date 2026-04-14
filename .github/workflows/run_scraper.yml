@@ -6,6 +6,9 @@ on:
     - cron: '0 */12 * * *'
   workflow_dispatch: # Cho phép bạn bấm nút "Run" thủ công trên GitHub
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
