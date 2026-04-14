@@ -22,3 +22,4 @@ class Job:
             "footer": {"text": f"Nguồn: {self.posted_date}"},
             "image": {"url": self.image}
         }
+   
