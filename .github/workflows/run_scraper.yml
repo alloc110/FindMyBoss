@@ -1,4 +1,4 @@
-name: ITviec Job Scraper
+name: Job Scraper
 
 # 1. Cấu hình thời gian chạy tự động (ví dụ: 8h sáng mỗi ngày) hoặc chạy tay
 on:
