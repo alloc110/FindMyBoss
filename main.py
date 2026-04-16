@@ -14,9 +14,9 @@ load_dotenv()
 
 async def test_scraper():
     async with async_playwright() as p:
-        crawlers = (JobsGoJob,
+        crawlers = (TopDevJobScraper,
+                    JobsGoJob,
                     IndeedJob,
-                    TopDevJobScraper,
                     VietnamWorksJob,
                     ITviecJob,
                     TopCVJob,
