@@ -48,6 +48,7 @@ async def test_scraper():
                 # scraper.print_jobs(jobs) 
                 
                 for job in jobs:
+                    
                     scraper.send_to_discord(job)
                 
             except Exception as e:
