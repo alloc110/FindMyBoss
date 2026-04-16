@@ -21,34 +21,27 @@ async def test_scraper():
                     ITviecJob,
                     TopCVJob,
                     ) 
-    
+        webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
+
         for crawler_class in crawlers:
             print(f"\n\n================ Crawling {crawler_class.__name__} ================\n")
             # 1. Mở trình duyệt (để headless=False để tận mắt xem nó click)
         
-            browser = await p.chromium.launch(headless=False,
-                                              args=[
-                                    "--disable-blink-features=AutomationControlled", # Ẩn danh bot
-                                    "--no-sandbox",
-                                    "--disable-infobars",
-                                    "--window-position=0,0",
-                                    "--ignore-certificate-errors",
-    ]
-                                              )
+            browser = await p.chromium.launch(headless=False)
+                                         
             context = await browser.new_context(
-                    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"         
+                    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"    ,
+                    viewport={'width': 1280, 'height': 800}     
                     )
-            page = await context.new_page()
                 
-            webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
-            scraper = crawler_class(page = page,webhook_url=webhook_url)
-            
             custom_languages = ("fr-FR", "fr")
             stealth = Stealth(
                     navigator_languages_override=custom_languages,
                     init_scripts_only=True
                 )
             await stealth.apply_stealth_async(context)
+            page = await context.new_page()
+            scraper = crawler_class(page = page,webhook_url=webhook_url)
 
             print("🚀 Start crawling... ")
             

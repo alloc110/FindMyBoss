@@ -166,14 +166,8 @@ class VietnamWorksJob(JobScraper):
         return jobs
     
     def filter(self, all_jobs):
-        cleaned_job = []
-        
-        for job in all_jobs:
-            flag = True
-            for filter_name in self.unfind:
-                if job.title.lower().find(filter_name) != -1 :
-                    flag = False
-                    break
-            if flag:
-                cleaned_job.append(job)
-        
+        cleaned_job = [
+        job for job in all_jobs 
+        if not any(filter_name in job.title.lower() for filter_name in self.unfind)
+        ]
+        return cleaned_job
