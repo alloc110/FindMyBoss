@@ -50,6 +50,7 @@ class VietnamWorksJob(JobScraper):
         
         
         title = await card.locator("h2 a").inner_text()
+        title = title.replace("Mới", "").strip()
         company = await card.locator(".sc-cpgxJx").inner_text()
         raw_href = await card.locator("h2 a").get_attribute("href")
         link = f"https://www.vietnamworks.com{raw_href}"            

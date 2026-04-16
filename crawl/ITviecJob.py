@@ -95,7 +95,9 @@ class ITviecJob(JobScraper):
         location = await card.locator('div[title]').last.get_attribute("title")
         if location.find("Ho Chi Minh") != -1:
             location = "Hồ Chí Minh"
+            
         posted_date = await card.locator(".small-text.text-dark-grey").first.inner_text()
+        posted_date = posted_date.replace("Posted", "").strip()
         
         logo_element = card.locator('picture source')
 
