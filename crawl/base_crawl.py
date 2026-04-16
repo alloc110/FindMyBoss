@@ -1,7 +1,7 @@
 import requests
 from playwright.async_api import async_playwright
 from models.Job import Job
-
+import time
 class JobScraper:
     def __init__(self, page = None, url = None, webhook_url  = None):
         self.page = page
@@ -36,10 +36,8 @@ class JobScraper:
             ]
         }
         response = requests.post(self.webhook_url, json=payload)
-        if response.status_code == 204:
-            print("Gửi tin nhắn tuyển dụng thành công!")
-        else:
-            print(f"Lỗi: {response.status_code}, {response.text}")
+        time.sleep(1) # Nghỉ nhẹ 1 giâ
+
     
     def print_jobs(self, jobs):
         for i, job in enumerate(jobs, 1):

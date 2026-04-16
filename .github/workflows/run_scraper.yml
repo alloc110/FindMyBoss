@@ -3,7 +3,7 @@ name: Job Scraper
 # 1. Cấu hình thời gian chạy tự động (ví dụ: 8h sáng mỗi ngày) hoặc chạy tay
 on:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '0 5 * * *'
   workflow_dispatch:      # Cho phép bấm nút "Run workflow" trên giao diện GitHub
 
 jobs:
@@ -43,5 +43,4 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           GITHUB_ACTIONS: "true"
         run: |
-          # xvfb-run giúp trình duyệt chạy ở chế độ headless=False mà không bị crash
           xvfb-run --auto-servernum --server-args="-screen 0 1280x800x24" python main.py
