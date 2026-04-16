@@ -1,10 +1,7 @@
 TopDev      Done 
 ITviec (hard)  Done 
 TopCV       Done 
-VietnamWorks
-CareerViet
-Vieclam24h
+VietnamWorks Done
 Linkedln
-Indeed
-Wellfound (cloulfrane)
-JobsGO (cloulfrane)
+Indeed      standing
+JobsGO (cloulflane)

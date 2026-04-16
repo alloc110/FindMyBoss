@@ -11,7 +11,7 @@ class VietnamWorksJob(JobScraper):
         self.url = "https://www.vietnamworks.com/viec-lam?q="
         self.roles = {
                         "Software Engineer": "software-engineer",
-                        "Backend Developer": "frontend-developer",
+                        "Backend Developer": "backend-developer",
                         "Frontend Developer": "frontend-developer",
                         "Data Engineer": "data-engineer",
                         "Data Analysist": "data-analyst"
