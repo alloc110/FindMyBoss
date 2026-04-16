@@ -45,7 +45,7 @@ async def test_scraper():
                 jobs = await scraper.crawl_all_pages(today = True) # Nếu bạn chỉ muốn crawl hôm nay thì truyền today=True)
                 
                 print(f"✅ Crawled {len(jobs)} jobs from {crawler_class.__name__}")
-                scraper.print_jobs(jobs) 
+                # scraper.print_jobs(jobs) 
                 
                 for job in jobs:
                     scraper.send_to_discord(job)
