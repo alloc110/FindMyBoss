@@ -9,7 +9,11 @@ class TopDevJobScraper(JobScraper):
         super().__init__(page = page, webhook_url = webhook_url)
         self.url = "https://topdev.vn/jobs/search"
         self.find_level = ["Intern", "Fresher", "Junior"]
-        self.scraped_links = set() # Dùng để lưu các link đã cào được, tránh trùng lặp khi crawl nhiều trang
+        self.roles = ["Software Developer", "Data Engineer / Scientist / Analyst", "Machine Learning / AI Engineer", "DevOps Engineer"]
+
+        self.scraped_links = set() 
+        
+        
     async def crawl(self):
         jobs = []
         container = self.page.locator("div.flex-col.gap-2").first
@@ -65,12 +69,14 @@ class TopDevJobScraper(JobScraper):
         await self.page.locator("ul li span").filter(has_text="IT").first.click()
         await self.page.locator("ul li span").filter(has_text="IT").first.click()
 
-        roles = ["Software Developer", "Data Engineer / Scientist / Analyst", "Machine Learning / AI Engineer", "DevOps Engineer"]
-        for role in roles:
+        for role in self.roles:
             await self.page.locator('div[style*="width:600px"] button').filter(has_text=role).click()
         all_jobs = []
         await self.page.get_by_role("button", name="Apply", exact=True).click() 
+        past_page = 0
         while True:
+            if past_page == current_page:
+                return all_jobs
             print(f"🚅 Crawling page {current_page}...")
             if(today):
                 all_jobs.extend(await self.crawl_today())
@@ -78,6 +84,7 @@ class TopDevJobScraper(JobScraper):
                 all_jobs.extend(await self.crawl()) 
             
             next_button = self.page.get_by_label("Go to next page")
+            past_page = current_page
             
             # Kiểm tra nếu nút Next còn tồn tại và có thể click được
             # (Nút Next cuối cùng thường có class opacity-0 hoặc hidden)
