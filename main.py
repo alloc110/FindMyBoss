@@ -5,6 +5,7 @@ from crawl.ITviecJob import ITviecJob # Import class của bạn
 from crawl.TopCVJob import TopCVJob # Import class của bạn
 from crawl.VietnamWorksJob import VietnamWorksJob
 from crawl.IndeedJob import IndeedJob
+from crawl.JobsGoJob import JobsGoJob
 from dotenv import load_dotenv
 import os
 from playwright_stealth import Stealth
@@ -13,21 +14,30 @@ load_dotenv()
 
 async def test_scraper():
     async with async_playwright() as p:
-        crawlers = (IndeedJob
-                    ,TopDevJobScraper,
+        crawlers = (JobsGoJob,
+                    IndeedJob,
+                    TopDevJobScraper,
                     VietnamWorksJob,
                     ITviecJob,
                     TopCVJob,
                     ) 
-                    #   TopDevJobScraper,
-                    #   ITviecJob,
     
         for crawler_class in crawlers:
-            print(f"\n\n================ Testing {crawler_class.__name__} ================\n")
+            print(f"\n\n================ Crawling {crawler_class.__name__} ================\n")
             # 1. Mở trình duyệt (để headless=False để tận mắt xem nó click)
         
-            browser = await p.chromium.launch(headless=False)
-            context = await browser.new_context()
+            browser = await p.chromium.launch(headless=False,
+                                              args=[
+                                    "--disable-blink-features=AutomationControlled", # Ẩn danh bot
+                                    "--no-sandbox",
+                                    "--disable-infobars",
+                                    "--window-position=0,0",
+                                    "--ignore-certificate-errors",
+    ]
+                                              )
+            context = await browser.new_context(
+                    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"         
+                    )
             page = await context.new_page()
                 
             webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
@@ -46,10 +56,10 @@ async def test_scraper():
                 jobs = await scraper.crawl_all_pages(today = True) # Nếu bạn chỉ muốn crawl hôm nay thì truyền today=True)
                 
                 print(f"✅ Crawled {len(jobs)} jobs from {crawler_class.__name__}")
-                scraper.print_jobs(jobs) 
+                # scraper.print_jobs(jobs) 
                 
-                # for job in jobs:
-                #     scraper.send_to_discord(job)
+                for job in jobs:
+                    scraper.send_to_discord(job)
                 
             except Exception as e:
                 print(f"❌ Error: {e}")
