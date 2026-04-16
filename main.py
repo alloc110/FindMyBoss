@@ -3,19 +3,23 @@ from playwright.async_api import async_playwright
 from crawl.TopDevJob import TopDevJobScraper # Import class của bạn
 from crawl.ITviecJob import ITviecJob # Import class của bạn
 from crawl.TopCVJob import TopCVJob # Import class của bạn
+from crawl.VietnamWorksJob import VietnamWorksJob
 from dotenv import load_dotenv
 import os
 from playwright_stealth import Stealth
+from datetime import datetime
 load_dotenv()
 
 async def test_scraper():
     async with async_playwright() as p:
-        crawlers = (
+        crawlers = (TopDevJobScraper,
+                    VietnamWorksJob,
                     ITviecJob,
-                    TopDevJobScraper
+                    TopCVJob,
                     ) 
                     #   TopDevJobScraper,
                     #   ITviecJob,
+    
         for crawler_class in crawlers:
             print(f"\n\n================ Testing {crawler_class.__name__} ================\n")
             # 1. Mở trình duyệt (để headless=False để tận mắt xem nó click)
@@ -38,13 +42,13 @@ async def test_scraper():
             print("🚀 Start crawling... ")
             
             try:
-                jobs = await scraper.crawl_all_pages(today = False) # Nếu bạn chỉ muốn crawl hôm nay thì truyền today=True)
+                jobs = await scraper.crawl_all_pages(today = True) # Nếu bạn chỉ muốn crawl hôm nay thì truyền today=True)
                 
                 print(f"✅ Crawled {len(jobs)} jobs from {crawler_class.__name__}")
                 scraper.print_jobs(jobs) 
                 
-                # for job in jobs:
-                #     scraper.send_to_discord(job)
+                for job in jobs:
+                    scraper.send_to_discord(job)
                 
             except Exception as e:
                 print(f"❌ Error: {e}")

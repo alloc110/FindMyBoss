@@ -2,32 +2,40 @@ from crawl.base_crawl import JobScraper
 from playwright.async_api import async_playwright
 import asyncio
 import models.Job as Job
-import requests
-import random
-class TopCVJob(JobScraper):
+import re
+from datetime import datetime
+class VietnamWorksJob(JobScraper):
     def __init__(self, page, webhook_url):
         super().__init__(page = page, webhook_url = webhook_url)
-        self.url = "https://www.topcv.vn/tim-viec-lam-cong-nghe-thong-tin-cr257?category_family=r257"
+        # https://www.vietnamworks.com/viec-lam?q=data-engineer&l=29&level=
+        self.url = "https://www.vietnamworks.com/viec-lam?q="
         self.roles = {
-                        "Software Engineer": "https://www.topcv.vn/tim-viec-lam-software-engineer",
-                        "Backend Developer": "https://www.topcv.vn/tim-viec-lam-backend-developer",
-                        "Frontend Developer": "https://www.topcv.vn/tim-viec-lam-frontend-developer",
-                        "Data Engineer": "https://www.topcv.vn/tim-viec-lam-data-engineer",
+                        "Software Engineer": "software-engineer",
+                        "Backend Developer": "frontend-developer",
+                        "Frontend Developer": "frontend-developer",
+                        "Data Engineer": "data-engineer",
+                        "Data Analysist": "data-analyst"
                     }
         
-        self.exp = {"1" : "Không yêu cầu", "2": "Dưới 1 năm", "3": "1 năm"} # 1: Không yêu cầu, 2: Dưới 1 năm, 3: 1 năm
+        self.exp = {"8": "Thực tập sinh/Sinh viên", "1": "Mới tốt nghiệp", "5": "Nhân viên"} # 8: Thuc tap/ sinh vien  1: Moi ra truong, 3: Nhan vien
         self.scraped_links = set() # Dùng để lưu các link đã cào được, tránh trùng lặp khi crawl nhiều trang
         
         
     async def crawl(self):
         jobs = []
-        empty_block = self.page.locator('.none-suitable-job')
-        if  await empty_block.is_visible():
-            print(f"🔍 Không tìm thấy công việc phù hợp")
-
-            return jobs
-        container = self.page.locator(".job-list-search-result").first
-        cards = await container.locator(".job-item-search-result").all()
+        try:
+            await self.page.wait_for_selector(".view_job_item, .noResultWrapper", timeout=10000)
+        except:
+            print("⚠️ Hết thời gian chờ: Trang không phản hồi.")
+            return []
+     
+        if await self.page.locator(".noResultWrapper").is_visible():
+            print("🚫 Không tìm thấy công việc nào. Đang thoát...")
+            return []
+        
+        await self.page.wait_for_selector(".block-job-list")
+        cards = await self.page.locator(".view_job_item").all()
+        
         print(f"🔍 Tìm thấy {len(cards)} công việc trên trang này")
         
         for card in cards: 
@@ -40,24 +48,19 @@ class TopCVJob(JobScraper):
     
     async def parse_card_detail(self, card):
         
-        title = await card.locator('h3.title').inner_text()    
-        company = await card.locator('.company-name').inner_text()  
-        link = await card.locator('h3.title a').get_attribute('href')
-            
-        label_locator = card.locator(".label-update")
-
-        # Kiểm tra số lượng phần tử tìm thấy
-        if await label_locator.count() > 0:
-            posted_date = await label_locator.inner_text()
-        else:
-            posted_date = "Không rõ ngày đăng"    
-        posted_date = posted_date.replace("Đăng", "").strip()  
-              
-        salary = await card.locator('label.salary').inner_text()
-        salary = salary.replace("\n", " ").strip() if salary else "Không rõ mức lương"
         
-        logo_element = card.locator(".avatar img.w-100")
-        image = await logo_element.get_attribute("data-src") or await logo_element.get_attribute("src")
+        title = await card.locator("h2 a").inner_text()
+        company = await card.locator(".sc-cpgxJx").inner_text()
+        raw_href = await card.locator("h2 a").get_attribute("href")
+        link = f"https://www.vietnamworks.com{raw_href}"            
+
+
+        salary = await card.locator(".sc-dauhQT").inner_text()
+
+        posted_date = await card.locator(".sc-lccgLh").inner_text()
+        posted_date = posted_date.replace("Cập nhật:", "").strip()
+        image = await card.locator(".img_job_card img").get_attribute("src")
+        if(image == "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"): image = "https://images.vietnamworks.com/img/company-default-logo.svg"
         # Lấy giá trị từ thuộc tính data-srcset hoặc srcset
         job = Job.Job(
             title=title,
@@ -69,8 +72,8 @@ class TopCVJob(JobScraper):
             posted_date=posted_date,
             image=image
         )
-        
         return job
+       
     
     async def crawl_all_pages(self, today = False):
         all_jobs = []
@@ -78,21 +81,20 @@ class TopCVJob(JobScraper):
             for exp, name_exp in self.exp.items():  
                 print(f"📂 Đang chuyển sang chuyên mục: {role} | {name_exp}")
 
-                target_url = slug + f"-tai-ho-chi-minh-kl2cr257?exp=1&type_keyword={exp}&sba=1&category_family=r257&locations=l2&saturday_status=0"
+                target_url = self.url + slug + f"&l=29&level={exp}"
                 
                 await self.page.goto(target_url)
-                # 1. Gọi function chuyên xử lý việc chuyển trang/chọn role
             
                 await self.page.wait_for_timeout(2000) # Đợi thêm 2s để chắc chắn trang đã load xong
                 # Thực hiện cào dữ liệu ở đây...
                 role_jobs = await self.scrape_current_role_pages(today)
                 for job in role_jobs:
-                    if exp == "1":
-                        job.exp = "Không yêu cầu kinh nghiệm"
-                    elif exp == "2":
-                        job.exp = "Dưới 1 năm kinh nghiệm"
-                    elif exp == "3":
-                        job.exp = "1 năm kinh nghiệm"
+                    if exp == "8":
+                        job.exp = "Thực tập sinh/Sinh viên"
+                    elif exp == "1":
+                        job.exp = "Mới tốt nghiệp"
+                    elif exp == "5":
+                        job.exp = "Nhân viên"
                 all_jobs.extend(role_jobs)
                 
                 try:
@@ -111,19 +113,17 @@ class TopCVJob(JobScraper):
         
         while True:
             print(f"🚅 Crawling page {current_page} for current role...")
-            current_page += 1
             if(today):
                 role_jobs.extend(await self.crawl_today())
             else:
                 role_jobs.extend(await self.crawl()) 
             
-            next_button = self.page.locator('a[rel="next"]')
-
+            next_button = self.page.locator(f".pagination button:text-is('{current_page+1}')")    
             if await next_button.count() > 0:
                 print("➡️ Đang chuyển sang trang tiếp theo...")
                 
                 await next_button.dispatch_event("click")
-                
+                current_page += 1
                 try:
                     await self.page.wait_for_load_state("networkidle", timeout=5000)
                 except:
@@ -139,18 +139,24 @@ class TopCVJob(JobScraper):
                 
     async def crawl_today(self):
         jobs = []
+        try:
+            await self.page.wait_for_selector(".view_job_item, .noResultWrapper", timeout=10000)
+        except:
+            print("⚠️ Hết thời gian chờ: Trang không phản hồi.")
+            return []
+     
+        if await self.page.locator(".noResultWrapper").is_visible():
+            print("🚫 Không tìm thấy công việc nào. Đang thoát...")
+            return []
         
-        empty_block = self.page.locator('.none-suitable-job')
-        if  await empty_block.is_visible():
-            print(f"🔍 Không tìm thấy - 0 công việc phù hợp")
-            return jobs
-        container = self.page.locator(".job-list-search-result").first
-        cards = await container.locator(".job-item-search-result").all()
+        await self.page.wait_for_selector(".block-job-list")
+        cards = await self.page.locator(".view_job_item").all()
+        
         print(f"🔍 Tìm thấy {len(cards)} công việc trên trang này")
         
         for card in cards: 
             job = await self.parse_card_detail(card)
-            if job.link not in self.scraped_links and ("hôm nay" in job.posted_date.lower() or "vừa đăng" in job.posted_date.lower()):
+            if job.link not in self.scraped_links and "Hôm nay" == job.posted_date:
                 self.scraped_links.add(job.link)
                 jobs.append(job)
                                 
