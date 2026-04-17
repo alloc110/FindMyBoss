@@ -14,7 +14,6 @@ Key Feature: Multi-platform data ingestion using Playwright Stealth, automated s
 - [Prerequisites](#-prerequisites)
 - [Installation & Setup](#-installation--setup)
 - [Running the Application](#-running-the-application)
-- [Monitoring & Observability](#-monitoring--observability)
 - [Data Flow Pipeline](#-data-flow-pipeline)
 
 ---
