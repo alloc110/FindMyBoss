@@ -1,10 +1,10 @@
-from crawl.base_crawl import JobScraper
+from crawl.BaseJobs import BaseJobs
 from playwright.async_api import async_playwright
 import asyncio
 import models.Job as Job
 import re
 from datetime import datetime
-class VietnamWorksJob(JobScraper):
+class VietnamWorksJob(BaseJobs):
     def __init__(self, page, webhook_url):
         super().__init__(page = page, webhook_url = webhook_url)
         # https://www.vietnamworks.com/viec-lam?q=data-engineer&l=29&level=
