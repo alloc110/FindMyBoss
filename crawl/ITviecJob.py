@@ -1,10 +1,10 @@
-from crawl.base_crawl import JobScraper
+from crawl.BaseJobs import BaseJobs
 from playwright.async_api import async_playwright
 import asyncio
 import models.Job as Job
 import requests
 import random
-class ITviecJob(JobScraper):
+class ITviecJob(BaseJobs):
     def __init__(self, page, webhook_url):
         super().__init__(page = page, webhook_url = webhook_url)
         self.url = "https://itviec.com/jobs-expertise-index"
