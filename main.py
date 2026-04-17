@@ -22,25 +22,25 @@ async def test_scraper():
                     TopCVJob,
                     ) 
         webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
-
+        browser = await p.chromium.launch(headless=False)
+        context = await browser.new_context(
+                    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"    ,
+                    viewport={'width': 1280, 'height': 800} ,
+                    locale="vi-VN",
+                    timezone_id="Asia/Ho_Chi_Minh"  
+                )
+        stealth = Stealth(init_scripts_only=True)
+        page = await context.new_page()
+               
         for crawler_class in crawlers:
             print(f"\n\n================ Crawling {crawler_class.__name__} ================\n")
-            # 1. Mở trình duyệt (để headless=False để tận mắt xem nó click)
-        
-            browser = await p.chromium.launch(headless=False)
-                                         
-            context = await browser.new_context(
-                    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"    ,
-                    viewport={'width': 1280, 'height': 800}     
-                    )
-                
-            custom_languages = ("fr-FR", "fr")
-            stealth = Stealth(
-                    navigator_languages_override=custom_languages,
-                    init_scripts_only=True
-                )
+
+            
+            await page.wait_for_timeout(2000)
+            await page.mouse.move(200, 300)
+            await page.mouse.wheel(0, 500)
+                                                             
             await stealth.apply_stealth_async(context)
-            page = await context.new_page()
             scraper = crawler_class(page = page,webhook_url=webhook_url)
 
             print("🚀 Start crawling... ")
@@ -58,7 +58,8 @@ async def test_scraper():
                 print(f"❌ Error: {e}")
                 
             await asyncio.sleep(5)
-            await browser.close()
+            
+        await browser.close()
     
 if __name__ == "__main__":
     asyncio.run(test_scraper())
