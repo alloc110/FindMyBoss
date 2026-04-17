@@ -30,7 +30,7 @@ class JobScraper:
                         "url": job_data.image if job_data.image else ""
                     },
                     "footer": {
-                        "text": "Data Zoo 🦫 • Cập nhật tự động"
+                        "text": "Data Zoo 🦫 • ⚡ Phản hồi nhanh để chiếm ưu thế! •"
                     }
                 }
             ]

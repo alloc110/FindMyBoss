@@ -19,7 +19,7 @@ class VietnamWorksJob(JobScraper):
         
         self.exp = {"8": "Thực tập sinh/Sinh viên", "1": "Mới tốt nghiệp", "5": "Nhân viên"} # 8: Thuc tap/ sinh vien  1: Moi ra truong, 3: Nhan vien
         self.scraped_links = set() # Dùng để lưu các link đã cào được, tránh trùng lặp khi crawl nhiều trang
-        
+        self.unfind=["senior", "middle", "sr", "mid", "lead"]
         
     async def crawl(self):
         jobs = []
@@ -106,6 +106,8 @@ class VietnamWorksJob(JobScraper):
                 await self.page.wait_for_load_state("networkidle", timeout=2000)
             except:
                 pass
+            
+        all_jobs = self.filter(all_jobs)
         return all_jobs
     
     async def scrape_current_role_pages(self, today=False):
@@ -163,3 +165,9 @@ class VietnamWorksJob(JobScraper):
                                 
         return jobs
     
+    def filter(self, all_jobs):
+        cleaned_job = [
+        job for job in all_jobs 
+        if not any(filter_name in job.title.lower() for filter_name in self.unfind)
+        ]
+        return cleaned_job
