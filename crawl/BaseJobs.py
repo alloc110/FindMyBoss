@@ -31,12 +31,13 @@ class BaseJobs:
                     },
                     "footer": {
                         "text": "Data Zoo 🦫 • ⚡ Phản hồi nhanh để chiếm ưu thế! •"
-                    }
+                    },
+                    "timestamp": job_data.time
                 }
             ]
         }
         response = requests.post(self.webhook_url, json=payload)
-        time.sleep(1) # Nghỉ nhẹ 1 giâ
+        time.sleep(0.5)
 
     
     def print_jobs(self, jobs):
@@ -49,4 +50,5 @@ class BaseJobs:
             print(f"   🕒 Đăng cách đây: {job.posted_date}")
             print(f"   🔗 Link:      {job.link}")
             print(f"   🖼️ Logo:      {job.image}")
+            print(f"   ⏰ Time:        {job.time} ")
             print(f"{'-'*60}")

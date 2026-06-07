@@ -1,173 +1,220 @@
-from crawl.BaseJobs import BaseJobs
-from playwright.async_api import async_playwright
-import asyncio
+from typing import List, Set, Optional, Dict
+import datetime
+import logging
+import os
+import random
+import zoneinfo
+
+from crawl.base_crawl import JobScraper
 import models.Job as Job
-import re
-from datetime import datetime
-class VietnamWorksJob(BaseJobs):
-    def __init__(self, page, webhook_url):
-        super().__init__(page = page, webhook_url = webhook_url)
-        # https://www.vietnamworks.com/viec-lam?q=data-engineer&l=29&level=
-        self.url = "https://www.vietnamworks.com/viec-lam?q="
-        self.roles = {
-                        "Software Engineer": "software-engineer",
-                        "Backend Developer": "backend-developer",
-                        "Frontend Developer": "frontend-developer",
-                        "Data Engineer": "data-engineer",
-                        "Data Analysist": "data-analyst"
-                    }
+from playwright.async_api import Page, Locator
+
+# =================================================================
+# COMPONENT-BASED NATIVE LOGGING (ENGLISH STANDARD)
+# =================================================================
+logger = logging.getLogger("VietnamWorksJobScraper")
+logger.setLevel(logging.INFO)
+
+if not logger.handlers:
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter('[%(asctime)s] %(levelname)s [%(name)s]: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+VN_TIMEZONE = zoneinfo.ZoneInfo('Asia/Ho_Chi_Minh')
+
+class VietnamWorksJob(JobScraper):
+    # --- CENTRALIZED SELECTORS DICTIONARY ---
+    SELECTORS = {
+        "state_indicators": ".view_job_item, .noResultWrapper",
+        "no_result_wrapper": ".noResultWrapper",
+        "job_list_block": ".block-job-list",
+        "job_card": ".view_job_item",
+        "title_anchor": "h2 a",
+        "company_name": ".sc-cpgxJx",
+        "salary_text": ".sc-dauhQT",
+        "posted_date": ".sc-lccgLh",
+        "company_logo": ".img_job_card img"
+    }
+
+    def __init__(self, page: Page, webhook_url: Optional[str]):
+        super().__init__(page=page, webhook_url=webhook_url)
+        self.url: str = "https://www.vietnamworks.com/viec-lam?q="
+        self.roles: Dict[str, str] = {
+            "Data Engineer": "data-engineer",
+        }
+        self.exp: Dict[str, str] = {"8": "Thực tập sinh/Sinh viên", "1": "Mới tốt nghiệp", "5": "Nhân viên"}
+        self.scraped_links: Set[str] = set()
+        self.unfind: List[str] = ["senior", "middle", "sr", "mid", "lead"]
         
-        self.exp = {"8": "Thực tập sinh/Sinh viên", "1": "Mới tốt nghiệp", "5": "Nhân viên"} # 8: Thuc tap/ sinh vien  1: Moi ra truong, 3: Nhan vien
-        self.scraped_links = set() # Dùng để lưu các link đã cào được, tránh trùng lặp khi crawl nhiều trang
-        self.unfind=["senior", "middle", "sr", "mid", "lead"]
-        
-    async def crawl(self):
-        jobs = []
+    async def _execute_extraction_pipeline(self, enforce_today: bool = False) -> List[Job.Job]:
+        """Unified internal tracking processor executing extraction, deduplication, and time-frame filtering."""
+        valid_jobs: List[Job.Job] = []
         try:
-            await self.page.wait_for_selector(".view_job_item, .noResultWrapper", timeout=10000)
-        except:
-            print("⚠️ Hết thời gian chờ: Trang không phản hồi.")
-            return []
+            # Synchronize initial indicators early
+            await self.page.wait_for_selector(self.SELECTORS["state_indicators"], timeout=10000)
+        except Exception:
+            logger.warning("⚠️ Execution timeout exceeded: Target platform failed to respond.")
+            return valid_jobs
      
-        if await self.page.locator(".noResultWrapper").is_visible():
-            print("🚫 Không tìm thấy công việc nào. Đang thoát...")
-            return []
+        if await self.page.locator(self.SELECTORS["no_result_wrapper"]).is_visible():
+            logger.info("🚫 Empty state matched: No target jobs matching search criteria on this layout.")
+            return valid_jobs
         
-        await self.page.wait_for_selector(".block-job-list")
-        cards = await self.page.locator(".view_job_item").all()
-        
-        print(f"🔍 Tìm thấy {len(cards)} công việc trên trang này")
-        
-        for card in cards: 
-            job = await self.parse_card_detail(card)
-            if job.link not in self.scraped_links:
-                self.scraped_links.add(job.link)
-                jobs.append(job)
+        try:
+            await self.page.wait_for_selector(self.SELECTORS["job_list_block"], timeout=5000)
+            cards = await self.page.locator(self.SELECTORS["job_card"]).all()
+            logger.info(f"🔍 Found {len(cards)} raw job card tokens on the current page viewport.")
+            
+            for card in cards: 
+                job = await self.parse_card_detail(card)
+                
+                if job.link != "N/A" and job.link not in self.scraped_links:
+                    # Enforce real-time temporal logging verification validation if required
+                    if enforce_today and "hôm nay" not in job.posted_date.lower():
+                        continue
+                        
+                    self.scraped_links.add(job.link)
+                    valid_jobs.append(job)
+        except Exception as e:
+            logger.error(f"❌ Error executing page extraction block pipeline: {str(e)}")
                                 
-        return jobs
+        return valid_jobs
+
+    async def crawl(self) -> List[Job.Job]:
+        """Scrapes all accessible historical records present on the target listing workspace."""
+        return await self._execute_extraction_pipeline(enforce_today=False)
     
-    async def parse_card_detail(self, card):
+    async def crawl_today(self) -> List[Job.Job]:
+        """Scrapes records published exclusively within the current business date sequence."""
+        return await self._execute_extraction_pipeline(enforce_today=True)
+    
+    async def parse_card_detail(self, card: Locator) -> Job.Job:
+        """Transforms unstable UI styled-component element boundaries into an explicit structural model."""
+        ELEMENT_TIMEOUT: float = 1500.0  # Defensive isolated 1.5s timeout barrier per dynamic field
         
+        try:
+            title_anchor = card.locator(self.SELECTORS["title_anchor"]).first
+            title_raw = await title_anchor.inner_text(timeout=ELEMENT_TIMEOUT)
+            title = title_raw.replace("Mới", "").strip()
+            
+            raw_href = await title_anchor.get_attribute("href", timeout=ELEMENT_TIMEOUT)
+            link = f"https://www.vietnamworks.com{raw_href}" if raw_href else "N/A"
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to extract fundamental tracking bounds (Title/Link) from layout element: {str(e)}")
+            return Job.Job(title="N/A", company="N/A", link="N/A", address="Unknown", exp=None, salary="Deal", posted_date="N/A", image=None, time=datetime.datetime.now(VN_TIMEZONE).isoformat())
+
+        # Defensive handling for unpredictable styled-component hashes
+        try:
+            company = await card.locator(self.SELECTORS["company_name"]).inner_text(timeout=ELEMENT_TIMEOUT)
+            company = company.strip()
+        except Exception:
+            company = "Unknown Company"
+
+        try:
+            salary = await card.locator(self.SELECTORS["salary_text"]).inner_text(timeout=ELEMENT_TIMEOUT)
+            salary = salary.strip()
+        except Exception:
+            salary = "Competitive / Deal"
+
+        try:
+            posted_date_raw = await card.locator(self.SELECTORS["posted_date"]).inner_text(timeout=ELEMENT_TIMEOUT)
+            posted_date = posted_date_raw.replace("Cập nhật:", "").strip()
+        except Exception:
+            posted_date = "Available"
+
+        try:
+            image = await card.locator(self.SELECTORS["company_logo"]).get_attribute("src", timeout=ELEMENT_TIMEOUT)
+            if not image or image.startswith("data:image/gif"):
+                image = "https://images.vietnamworks.com/img/company-default-logo.svg"
+        except Exception:
+            image = "https://images.vietnamworks.com/img/company-default-logo.svg"
         
-        title = await card.locator("h2 a").inner_text()
-        title = title.replace("Mới", "").strip()
-        company = await card.locator(".sc-cpgxJx").inner_text()
-        raw_href = await card.locator("h2 a").get_attribute("href")
-        link = f"https://www.vietnamworks.com{raw_href}"            
-
-
-        salary = await card.locator(".sc-dauhQT").inner_text()
-
-        posted_date = await card.locator(".sc-lccgLh").inner_text()
-        posted_date = posted_date.replace("Cập nhật:", "").strip()
-        image = await card.locator(".img_job_card img").get_attribute("src")
-        if(image == "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"): image = "https://images.vietnamworks.com/img/company-default-logo.svg"
-        # Lấy giá trị từ thuộc tính data-srcset hoặc srcset
-        job = Job.Job(
+        return Job.Job(
             title=title,
             company=company,
             link=link,
             address="Hồ Chí Minh",
             exp=None,
-            salary= salary,
+            salary=salary,
             posted_date=posted_date,
-            image=image
+            image=image,
+            time=datetime.datetime.now(VN_TIMEZONE).isoformat()
         )
-        return job
        
-    
-    async def crawl_all_pages(self, today = False):
-        all_jobs = []
+    async def crawl_all_pages(self, today: bool = False) -> List[Job.Job]:
+        """Executes full search engine permutation matrices over configured parameters."""
+        all_jobs: List[Job.Job] = []
+        
+        exp_mapping = {
+            "8": "Thực tập sinh/Sinh viên",
+            "1": "Mới tốt nghiệp",
+            "5": "Nhân viên"
+        }
+        
         for role, slug in self.roles.items():
             for exp, name_exp in self.exp.items():  
-                print(f"📂 Đang chuyển sang chuyên mục: {role} | {name_exp}")
-
-                target_url = self.url + slug + f"&l=29&level={exp}"
-                
-                await self.page.goto(target_url)
-            
-                await self.page.wait_for_timeout(2000) # Đợi thêm 2s để chắc chắn trang đã load xong
-                # Thực hiện cào dữ liệu ở đây...
-                role_jobs = await self.scrape_current_role_pages(today)
-                for job in role_jobs:
-                    if exp == "8":
-                        job.exp = "Thực tập sinh/Sinh viên"
-                    elif exp == "1":
-                        job.exp = "Mới tốt nghiệp"
-                    elif exp == "5":
-                        job.exp = "Nhân viên"
-                all_jobs.extend(role_jobs)
+                logger.info(f"📂 Shifting focus context matrix to target: [{role}] | Level Filter: [{name_exp}]")
+                target_url = f"{self.url}{slug}&l=29&level={exp}"
                 
                 try:
-                    await self.page.wait_for_load_state("networkidle", timeout=5000)
-                except:
-                    pass
-            try:
-                await self.page.wait_for_load_state("networkidle", timeout=2000)
-            except:
-                pass
+                    await self.page.goto(target_url, wait_until="load", timeout=25000)
+                    await self.page.wait_for_timeout(2000) 
+                    
+                    role_jobs = await self.scrape_current_role_pages(today)
+                    
+                    # Apply semantic mapping logic cleanly post-extraction
+                    for job in role_jobs:
+                        job.exp = exp_mapping.get(exp, "Unknown")
+                        
+                    all_jobs.extend(role_jobs)
+                    
+                    try:
+                        await self.page.wait_for_load_state("networkidle", timeout=5000)
+                    except Exception:
+                        pass
+                except Exception as ex:
+                    logger.error(f"💥 Critical routing failure requesting index endpoint target [{target_url}]: {str(ex)}")
+                    continue
             
         all_jobs = self.filter(all_jobs)
         return all_jobs
     
-    async def scrape_current_role_pages(self, today=False):
-        current_page = 1
-        role_jobs = []
+    async def scrape_current_role_pages(self, today: bool = False) -> List[Job.Job]:
+        """Manages step-by-step UI pagination loops via safe client-side JavaScript execution."""
+        current_page: int = 1
+        role_jobs: List[Job.Job] = []
         
         while True:
-            print(f"🚅 Crawling page {current_page} for current role...")
-            if(today):
+            logger.info(f"Processing evaluation batch index at Page: {current_page}")
+            if today:
                 role_jobs.extend(await self.crawl_today())
             else:
                 role_jobs.extend(await self.crawl()) 
             
-            next_button = self.page.locator(f".pagination button:text-is('{current_page+1}')")    
+            # Formulate dynamic next-page target selector tracking indices sequentially
+            next_button = self.page.locator(f".pagination button:text-is('{current_page + 1}')")    
             if await next_button.count() > 0:
-                print("➡️ Đang chuyển sang trang tiếp theo...")
+                logger.info(f"➡️ Pagination layout matched target step index {current_page + 1}. Dispatched JS event.")
                 
                 await next_button.dispatch_event("click")
                 current_page += 1
                 try:
                     await self.page.wait_for_load_state("networkidle", timeout=5000)
-                except:
+                    await self.page.wait_for_timeout(1000)
+                except Exception:
                     pass
-                
             else:
-                print("🏁 Last page .")
+                logger.info(f"🏁 Pagination terminal edge reached. Processed array context closed at ({current_page}) total records.")
                 break   
                     
         return role_jobs
     
-
-                
-    async def crawl_today(self):
-        jobs = []
-        try:
-            await self.page.wait_for_selector(".view_job_item, .noResultWrapper", timeout=10000)
-        except:
-            print("⚠️ Hết thời gian chờ: Trang không phản hồi.")
-            return []
-     
-        if await self.page.locator(".noResultWrapper").is_visible():
-            print("🚫 Không tìm thấy công việc nào. Đang thoát...")
-            return []
-        
-        await self.page.wait_for_selector(".block-job-list")
-        cards = await self.page.locator(".view_job_item").all()
-        
-        print(f"🔍 Tìm thấy {len(cards)} công việc trên trang này")
-        
-        for card in cards: 
-            job = await self.parse_card_detail(card)
-            if job.link not in self.scraped_links and "Hôm nay" == job.posted_date:
-                self.scraped_links.add(job.link)
-                jobs.append(job)
-                                
-        return jobs
-    
-    def filter(self, all_jobs):
+    def filter(self, all_jobs: List[Job.Job]) -> List[Job.Job]:
+        """Filter out jobs containing management/senior level keywords via list comprehension."""
         cleaned_job = [
-        job for job in all_jobs 
-        if not any(filter_name in job.title.lower() for filter_name in self.unfind)
+            job for job in all_jobs 
+            if not any(filter_name in job.title.lower() for filter_name in self.unfind)
         ]
+        logger.info(f"📋 Global execution summary filter: Retained {len(cleaned_job)}/{len(all_jobs)} valid jobs.")
         return cleaned_job

@@ -11,3 +11,17 @@ class Job:
     salary: str 
     posted_date: str
     image: str 
+    time: str | None = None
+
+    def to_discord_embed(self):
+        return {
+            "title": f"🚀 {self.title}",
+            "description": f"**Công ty:** {self.company}\n**Lương:** {self.salary}",
+            "LOGO": self.link, # Sử dụng link làm logo tạm thời
+            "url": self.link,
+            "color": 5814783, # Màu xanh dương
+            "footer": {"text": f"Nguồn: {self.posted_date}"},
+            "image": {"url": self.image},
+            "timestamp": self.time
+        }
+   
