@@ -2,7 +2,7 @@ import requests
 from playwright.async_api import async_playwright
 from models.Job import Job
 import time
-class JobScraper:
+class BaseJobs:
     def __init__(self, page = None, url = None, webhook_url  = None):
         self.page = page
         self.url = url
