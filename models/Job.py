@@ -11,6 +11,7 @@ class Job:
     salary: str 
     posted_date: str
     image: str 
+    time: str | None = None
 
     def to_discord_embed(self):
         return {
@@ -20,6 +21,7 @@ class Job:
             "url": self.link,
             "color": 5814783, # Màu xanh dương
             "footer": {"text": f"Nguồn: {self.posted_date}"},
-            "image": {"url": self.image}
+            "image": {"url": self.image},
+            "timestamp": self.time
         }
    

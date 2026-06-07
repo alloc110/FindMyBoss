@@ -1,0 +1,757 @@
+/bin/sh: 1: /home/loc/job-scraper/run_scraper.sh: not found
+/home/loc/venv/bin/python3: can't open file '/home/loc/job-scraper/run_scraper.py': [Errno 2] No such file or directory
+[2026-05-31 22:41:01] INFO [ScraperOrchestrator]: Initializing global enterprise chromium infrastructure...
+[2026-05-31 22:41:03] INFO [ScraperOrchestrator]: ================ Launching Engine: IndeedJob ================
+[2026-05-31 22:41:03] INFO [IndeedJobScraper]: 🚀 Opening Indeed homepage: https://vn.indeed.com/
+[2026-05-31 22:41:35] ERROR [IndeedJobScraper]: 💥 Critical system error executing global Indeed pipeline: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#text-input-what")
+Traceback (most recent call last):
+  File "/home/loc/job-scraper/crawl/IndeedJob.py", line 143, in crawl_all_pages
+    await self._clear_and_fill(self.SELECTORS["input_what"], slug_name)
+  File "/home/loc/job-scraper/crawl/IndeedJob.py", line 61, in _clear_and_fill
+    await locator.click()
+  File "/home/loc/venv/lib/python3.13/site-packages/playwright/async_api/_generated.py", line 15603, in click
+    await self._impl_obj.click(
+    ...<10 lines>...
+    )
+  File "/home/loc/venv/lib/python3.13/site-packages/playwright/_impl/_locator.py", line 162, in click
+    return await self._frame._click(self._selector, strict=True, **params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/loc/venv/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 566, in _click
+    await self._channel.send("click", self._timeout, locals_to_params(locals()))
+  File "/home/loc/venv/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/home/loc/venv/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("#text-input-what")
+
+[2026-05-31 22:41:35] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from IndeedJob
+[2026-05-31 22:41:40] INFO [ScraperOrchestrator]: Cumulative tracking metric: 0 total jobs aggregated so far.
+[2026-05-31 22:41:41] INFO [ScraperOrchestrator]: ================ Launching Engine: VietnamWorksJob ================
+[2026-05-31 22:41:41] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Thực tập sinh/Sinh viên]
+[2026-05-31 22:41:49] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-05-31 22:41:49] INFO [VietnamWorksJobScraper]: 🔍 Found 2 raw job card tokens on the current page viewport.
+[2026-05-31 22:41:49] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-05-31 22:41:49] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Mới tốt nghiệp]
+[2026-05-31 22:41:54] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-05-31 22:41:54] INFO [VietnamWorksJobScraper]: 🔍 Found 3 raw job card tokens on the current page viewport.
+[2026-05-31 22:41:55] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-05-31 22:41:55] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Nhân viên]
+[2026-05-31 22:41:59] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-05-31 22:41:59] INFO [VietnamWorksJobScraper]: 🔍 Found 9 raw job card tokens on the current page viewport.
+[2026-05-31 22:41:59] INFO [VietnamWorksJobScraper]: ➡️ Pagination layout matched target step index 2. Dispatched JS event.
+[2026-05-31 22:42:00] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 2
+[2026-05-31 22:42:00] INFO [VietnamWorksJobScraper]: 🔍 Found 9 raw job card tokens on the current page viewport.
+[2026-05-31 22:42:01] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (2) total records.
+[2026-05-31 22:42:01] INFO [VietnamWorksJobScraper]: 📋 Global execution summary filter: Retained 0/2 valid jobs.
+[2026-05-31 22:42:01] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from VietnamWorksJob
+[2026-05-31 22:42:06] INFO [ScraperOrchestrator]: Cumulative tracking metric: 0 total jobs aggregated so far.
+[2026-05-31 22:42:07] INFO [ScraperOrchestrator]: ================ Launching Engine: ITviecJob ================
+[2026-05-31 22:42:07] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Data Analyst]
+[2026-05-31 22:42:10] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-05-31 22:42:10] INFO [ITviecJobScraper]: 🔍 Found 18 job tokens raw blocks on current canvas.
+[2026-05-31 22:42:10] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-05-31 22:42:10] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Big Data Engineer]
+[2026-05-31 22:42:13] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-05-31 22:42:13] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-05-31 22:42:13] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-05-31 22:42:13] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Data Engineer]
+[2026-05-31 22:42:15] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-05-31 22:42:15] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-05-31 22:42:15] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-05-31 22:42:15] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [DataOps / MLOps Engineer]
+[2026-05-31 22:42:17] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-05-31 22:42:17] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-05-31 22:42:17] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-05-31 22:42:17] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Database Engineer]
+[2026-05-31 22:42:19] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-05-31 22:42:19] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-05-31 22:42:19] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-05-31 22:42:19] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from ITviecJob
+[2026-05-31 22:42:24] INFO [ScraperOrchestrator]: Cumulative tracking metric: 0 total jobs aggregated so far.
+[2026-05-31 22:42:26] INFO [ScraperOrchestrator]: ================ Launching Engine: JobsGoJob ================
+[2026-05-31 22:42:26] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [khong-can-kinh-nghiem]
+[2026-05-31 22:42:30] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-05-31 22:42:31] INFO [JobsGoJobScraper]: 🔍 Found 6 raw job card tokens on the current viewport.
+[2026-05-31 22:42:31] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-05-31 22:42:34] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [duoi-1-nam-kinh-nghiem]
+[2026-05-31 22:42:36] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-05-31 22:42:36] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-05-31 22:42:36] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-05-31 22:42:36] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [1-2-nam-kinh-nghiem]
+[2026-05-31 22:42:38] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-05-31 22:42:38] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-05-31 22:42:38] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-05-31 22:42:38] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [khong-can-kinh-nghiem]
+[2026-05-31 22:42:41] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-05-31 22:42:41] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-05-31 22:42:41] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-05-31 22:42:41] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [duoi-1-nam-kinh-nghiem]
+[2026-05-31 22:42:43] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-05-31 22:42:43] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-05-31 22:42:43] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-05-31 22:42:43] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [1-2-nam-kinh-nghiem]
+[2026-05-31 22:42:45] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-05-31 22:42:45] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-05-31 22:42:45] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-05-31 22:42:45] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from JobsGoJob
+[2026-05-31 22:42:50] INFO [ScraperOrchestrator]: Cumulative tracking metric: 0 total jobs aggregated so far.
+[2026-05-31 22:42:51] INFO [ScraperOrchestrator]: ================ Launching Engine: TopCVJob ================
+[2026-05-31 22:42:51] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [Không yêu cầu]
+[2026-05-31 22:43:03] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-05-31 22:43:03] INFO [TopCVJobScraper]: 🔍 Empty state matched: No suitable target jobs available on this viewport.
+[2026-05-31 22:43:03] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-05-31 22:43:08] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [Dưới 1 năm]
+[2026-05-31 22:43:13] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-05-31 22:43:13] INFO [TopCVJobScraper]: 🔍 Found 0 raw job card tokens on current canvas area.
+[2026-05-31 22:43:13] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-05-31 22:43:13] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [1 năm]
+[2026-05-31 22:43:18] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-05-31 22:43:18] INFO [TopCVJobScraper]: 🔍 Found 0 raw job card tokens on current canvas area.
+[2026-05-31 22:43:18] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-05-31 22:43:18] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from TopCVJob
+[2026-05-31 22:43:23] INFO [ScraperOrchestrator]: Cumulative tracking metric: 0 total jobs aggregated so far.
+[2026-05-31 22:43:24] INFO [ScraperOrchestrator]: ================ Launching Engine: TopDevJobScraper ================
+[2026-05-31 22:43:24] INFO [TopDevJobScraper]: 🚀 Navigating orchestration framework to target endpoint index: https://topdev.vn/jobs/search
+[2026-05-31 22:43:28] INFO [TopDevJobScraper]: 🎯 Selecting target domain specialization classification [IT] via client JS Engine...
+[2026-05-31 22:43:58] ERROR [TopDevJobScraper]: 💥 Critical layout configuration failure during initial form assembly routing: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("button", name="Apply", exact=True)
+
+[2026-05-31 22:43:58] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from TopDevJobScraper
+[2026-05-31 22:44:03] INFO [ScraperOrchestrator]: Cumulative tracking metric: 0 total jobs aggregated so far.
+[2026-05-31 22:44:03] INFO [ScraperOrchestrator]: ================================================================================
+[2026-05-31 22:44:03] INFO [ScraperOrchestrator]: Pipeline executed successfully. Aggregated jobs count: 0
+[2026-05-31 22:44:03] INFO [ScraperOrchestrator]: Total orchestration execution duration: 182.12 seconds
+[2026-05-31 22:44:03] INFO [ScraperOrchestrator]: ================================================================================
+[2026-06-02 22:41:02] INFO [ScraperOrchestrator]: Initializing global enterprise chromium infrastructure...
+[2026-06-02 22:41:05] INFO [ScraperOrchestrator]: ================ Launching Engine: IndeedJob ================
+[2026-06-02 22:41:08] INFO [IndeedJobScraper]: 🚀 Routing directly to search results target endpoint: https://vn.indeed.com/jobs?q=data+engineer&l=Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh&fromage=1
+[2026-06-02 22:41:19] INFO [IndeedJobScraper]: Processing extraction on batch page: 1
+[2026-06-02 22:41:19] INFO [IndeedJobScraper]: 🔍 [Today] Found 16 job cards on this page viewport
+[2026-06-02 22:41:21] INFO [IndeedJobScraper]: 🚀 Routing directly to search results target endpoint: https://vn.indeed.com/jobs?q=data+engineer+intern&l=Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh&fromage=1
+[2026-06-02 22:41:26] INFO [IndeedJobScraper]: Processing extraction on batch page: 1
+[2026-06-02 22:41:26] INFO [IndeedJobScraper]: 🔍 [Today] Found 0 job cards on this page viewport
+[2026-06-02 22:41:26] INFO [IndeedJobScraper]: 📋 Filter summary: Retained 10/16 matching jobs.
+[2026-06-02 22:41:26] INFO [ScraperOrchestrator]: Successfully harvested 10 jobs from IndeedJob
+[2026-06-02 22:41:42] INFO [ScraperOrchestrator]: Cumulative tracking metric: 10 total jobs aggregated so far.
+[2026-06-02 22:41:43] INFO [ScraperOrchestrator]: ================ Launching Engine: VietnamWorksJob ================
+[2026-06-02 22:41:43] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Thực tập sinh/Sinh viên]
+[2026-06-02 22:41:49] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-02 22:41:49] INFO [VietnamWorksJobScraper]: 🔍 Found 2 raw job card tokens on the current page viewport.
+[2026-06-02 22:41:53] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-02 22:41:53] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Mới tốt nghiệp]
+[2026-06-02 22:41:58] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-02 22:41:58] INFO [VietnamWorksJobScraper]: 🔍 Found 4 raw job card tokens on the current page viewport.
+[2026-06-02 22:42:04] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-02 22:42:04] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Nhân viên]
+[2026-06-02 22:42:10] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-02 22:42:10] INFO [VietnamWorksJobScraper]: 🔍 Found 9 raw job card tokens on the current page viewport.
+[2026-06-02 22:42:24] INFO [VietnamWorksJobScraper]: ➡️ Pagination layout matched target step index 2. Dispatched JS event.
+[2026-06-02 22:42:25] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 2
+[2026-06-02 22:42:25] INFO [VietnamWorksJobScraper]: 🔍 Found 9 raw job card tokens on the current page viewport.
+[2026-06-02 22:42:39] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (2) total records.
+[2026-06-02 22:42:39] INFO [VietnamWorksJobScraper]: 📋 Global execution summary filter: Retained 0/0 valid jobs.
+[2026-06-02 22:42:39] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from VietnamWorksJob
+[2026-06-02 22:42:44] INFO [ScraperOrchestrator]: Cumulative tracking metric: 10 total jobs aggregated so far.
+[2026-06-02 22:42:45] INFO [ScraperOrchestrator]: ================ Launching Engine: ITviecJob ================
+[2026-06-02 22:42:45] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Data Analyst]
+[2026-06-02 22:42:48] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-02 22:42:49] INFO [ITviecJobScraper]: 🔍 Found 17 job tokens raw blocks on current canvas.
+[2026-06-02 22:42:50] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-02 22:42:50] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Big Data Engineer]
+[2026-06-02 22:42:53] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-02 22:42:53] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-02 22:42:53] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-02 22:42:53] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Data Engineer]
+[2026-06-02 22:42:55] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-02 22:42:55] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-02 22:42:55] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-02 22:42:55] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [DataOps / MLOps Engineer]
+[2026-06-02 22:42:57] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-02 22:42:57] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-02 22:42:57] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-02 22:42:57] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Database Engineer]
+[2026-06-02 22:42:59] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-02 22:43:00] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-02 22:43:00] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-02 22:43:00] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from ITviecJob
+[2026-06-02 22:43:05] INFO [ScraperOrchestrator]: Cumulative tracking metric: 10 total jobs aggregated so far.
+[2026-06-02 22:43:06] INFO [ScraperOrchestrator]: ================ Launching Engine: JobsGoJob ================
+[2026-06-02 22:43:06] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [khong-can-kinh-nghiem]
+[2026-06-02 22:43:10] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-02 22:43:10] INFO [JobsGoJobScraper]: 🔍 Found 6 raw job card tokens on the current viewport.
+[2026-06-02 22:43:10] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-02 22:43:13] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [duoi-1-nam-kinh-nghiem]
+[2026-06-02 22:43:15] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-02 22:43:15] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-02 22:43:15] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-02 22:43:15] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [1-2-nam-kinh-nghiem]
+[2026-06-02 22:43:18] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-02 22:43:18] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-02 22:43:18] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-02 22:43:18] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [khong-can-kinh-nghiem]
+[2026-06-02 22:43:20] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-02 22:43:20] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-02 22:43:20] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-02 22:43:20] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [duoi-1-nam-kinh-nghiem]
+[2026-06-02 22:43:22] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-02 22:43:22] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-02 22:43:22] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-02 22:43:22] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [1-2-nam-kinh-nghiem]
+[2026-06-02 22:43:24] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-02 22:43:24] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-02 22:43:24] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-02 22:43:24] INFO [ScraperOrchestrator]: Successfully harvested 1 jobs from JobsGoJob
+[2026-06-02 22:43:30] INFO [ScraperOrchestrator]: Cumulative tracking metric: 11 total jobs aggregated so far.
+[2026-06-02 22:43:32] INFO [ScraperOrchestrator]: ================ Launching Engine: TopCVJob ================
+[2026-06-02 22:43:32] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [Không yêu cầu]
+[2026-06-02 22:43:44] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-02 22:43:44] INFO [TopCVJobScraper]: 🔍 Empty state matched: No suitable target jobs available on this viewport.
+[2026-06-02 22:43:44] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-02 22:43:49] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [Dưới 1 năm]
+[2026-06-02 22:43:54] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-02 22:43:54] INFO [TopCVJobScraper]: 🔍 Found 0 raw job card tokens on current canvas area.
+[2026-06-02 22:43:54] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-02 22:43:54] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [1 năm]
+[2026-06-02 22:43:59] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-02 22:43:59] INFO [TopCVJobScraper]: 🔍 Found 0 raw job card tokens on current canvas area.
+[2026-06-02 22:43:59] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-02 22:43:59] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from TopCVJob
+[2026-06-02 22:44:04] INFO [ScraperOrchestrator]: Cumulative tracking metric: 11 total jobs aggregated so far.
+[2026-06-02 22:44:06] INFO [ScraperOrchestrator]: ================ Launching Engine: TopDevJobScraper ================
+[2026-06-02 22:44:06] INFO [TopDevJobScraper]: 🚀 Navigating orchestration framework to target endpoint index: https://topdev.vn/jobs/search
+[2026-06-02 22:44:10] INFO [TopDevJobScraper]: 🎯 Selecting target domain specialization classification [IT] via client JS Engine...
+[2026-06-02 22:44:21] INFO [TopDevJobScraper]: Processing execution matrix extraction on context tracking page index: 1
+[2026-06-02 22:44:21] INFO [TopDevJobScraper]: Found 15 raw job card tokens on the current page viewport.
+[2026-06-02 22:44:22] INFO [TopDevJobScraper]: 🚫 Next page button status flag marked disabled. Terminal array index matched.
+[2026-06-02 22:44:22] INFO [ScraperOrchestrator]: Successfully harvested 2 jobs from TopDevJobScraper
+[2026-06-02 22:44:29] INFO [ScraperOrchestrator]: Cumulative tracking metric: 13 total jobs aggregated so far.
+[2026-06-02 22:44:29] INFO [ScraperOrchestrator]: ================================================================================
+[2026-06-02 22:44:29] INFO [ScraperOrchestrator]: Pipeline executed successfully. Aggregated jobs count: 13
+[2026-06-02 22:44:29] INFO [ScraperOrchestrator]: Total orchestration execution duration: 207.26 seconds
+[2026-06-02 22:44:29] INFO [ScraperOrchestrator]: ================================================================================
+[2026-06-04 20:00:02] INFO [ScraperOrchestrator]: Initializing global enterprise chromium infrastructure...
+[2026-06-04 20:00:06] INFO [ScraperOrchestrator]: ================ Launching Engine: IndeedJob ================
+[2026-06-04 20:00:07] INFO [IndeedJobScraper]: 🚀 Routing directly to search results target endpoint: https://vn.indeed.com/jobs?q=data+engineer&l=Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh&fromage=1
+[2026-06-04 20:00:14] INFO [IndeedJobScraper]: Processing extraction on batch page: 1
+[2026-06-04 20:00:14] INFO [IndeedJobScraper]: 🔍 [Today] Found 16 job cards on this page viewport
+[2026-06-04 20:00:16] INFO [IndeedJobScraper]: 🚀 Routing directly to search results target endpoint: https://vn.indeed.com/jobs?q=data+engineer+intern&l=Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh&fromage=1
+[2026-06-04 20:00:22] INFO [IndeedJobScraper]: Processing extraction on batch page: 1
+[2026-06-04 20:00:22] INFO [IndeedJobScraper]: 🔍 [Today] Found 0 job cards on this page viewport
+[2026-06-04 20:00:22] INFO [IndeedJobScraper]: 📋 Filter summary: Retained 12/16 matching jobs.
+[2026-06-04 20:00:22] INFO [ScraperOrchestrator]: Successfully harvested 12 jobs from IndeedJob
+[2026-06-04 20:00:44] INFO [ScraperOrchestrator]: Cumulative tracking metric: 12 total jobs aggregated so far.
+[2026-06-04 20:00:45] INFO [ScraperOrchestrator]: ================ Launching Engine: VietnamWorksJob ================
+[2026-06-04 20:00:45] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Thực tập sinh/Sinh viên]
+[2026-06-04 20:00:53] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-04 20:00:53] INFO [VietnamWorksJobScraper]: 🔍 Found 2 raw job card tokens on the current page viewport.
+[2026-06-04 20:00:53] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-04 20:00:53] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Mới tốt nghiệp]
+[2026-06-04 20:00:59] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-04 20:00:59] INFO [VietnamWorksJobScraper]: 🔍 Found 2 raw job card tokens on the current page viewport.
+[2026-06-04 20:00:59] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-04 20:00:59] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Nhân viên]
+[2026-06-04 20:01:04] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-04 20:01:04] INFO [VietnamWorksJobScraper]: 🔍 Found 9 raw job card tokens on the current page viewport.
+[2026-06-04 20:01:05] INFO [VietnamWorksJobScraper]: ➡️ Pagination layout matched target step index 2. Dispatched JS event.
+[2026-06-04 20:01:06] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 2
+[2026-06-04 20:01:06] INFO [VietnamWorksJobScraper]: 🔍 Found 9 raw job card tokens on the current page viewport.
+[2026-06-04 20:01:06] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (2) total records.
+[2026-06-04 20:01:06] INFO [VietnamWorksJobScraper]: 📋 Global execution summary filter: Retained 1/2 valid jobs.
+[2026-06-04 20:01:06] INFO [ScraperOrchestrator]: Successfully harvested 1 jobs from VietnamWorksJob
+[2026-06-04 20:01:12] INFO [ScraperOrchestrator]: Cumulative tracking metric: 13 total jobs aggregated so far.
+[2026-06-04 20:01:13] INFO [ScraperOrchestrator]: ================ Launching Engine: ITviecJob ================
+[2026-06-04 20:01:13] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Data Analyst]
+[2026-06-04 20:01:16] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-04 20:01:18] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:01:20] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:01:25] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 2
+[2026-06-04 20:01:25] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:01:27] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:01:32] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 3
+[2026-06-04 20:01:32] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:01:33] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:01:38] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 4
+[2026-06-04 20:01:38] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:01:39] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:01:45] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 5
+[2026-06-04 20:01:45] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:01:46] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:01:51] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 6
+[2026-06-04 20:01:51] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:01:52] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:01:57] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 7
+[2026-06-04 20:01:57] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:01:58] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:02:03] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 8
+[2026-06-04 20:02:03] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:02:05] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:02:10] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 9
+[2026-06-04 20:02:10] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:02:11] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:02:16] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 10
+[2026-06-04 20:02:16] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:02:17] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:02:22] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 11
+[2026-06-04 20:02:22] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:02:24] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:02:29] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 12
+[2026-06-04 20:02:29] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:02:30] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:02:35] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 13
+[2026-06-04 20:02:35] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:02:37] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:02:42] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 14
+[2026-06-04 20:02:42] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:02:43] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:02:48] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 15
+[2026-06-04 20:02:48] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:02:49] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:02:54] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 16
+[2026-06-04 20:02:54] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:02:55] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:03:00] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 17
+[2026-06-04 20:03:00] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:03:02] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:03:07] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 18
+[2026-06-04 20:03:07] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:03:08] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:03:13] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 19
+[2026-06-04 20:03:13] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:03:15] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:03:20] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 20
+[2026-06-04 20:03:20] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:03:21] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:03:26] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 21
+[2026-06-04 20:03:26] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-04 20:03:28] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-04 20:03:33] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 22
+[2026-06-04 20:03:33] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-04 20:03:33] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (22) indexes.
+[2026-06-04 20:03:33] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Big Data Engineer]
+[2026-06-04 20:03:35] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-04 20:03:35] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-04 20:03:35] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-04 20:03:35] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Data Engineer]
+[2026-06-04 20:03:37] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-04 20:03:37] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-04 20:03:37] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-04 20:03:37] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [DataOps / MLOps Engineer]
+[2026-06-04 20:03:40] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-04 20:03:40] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-04 20:03:40] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-04 20:03:40] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Database Engineer]
+[2026-06-04 20:03:42] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-04 20:03:42] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-04 20:03:42] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-04 20:03:42] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from ITviecJob
+[2026-06-04 20:03:47] INFO [ScraperOrchestrator]: Cumulative tracking metric: 13 total jobs aggregated so far.
+[2026-06-04 20:03:48] INFO [ScraperOrchestrator]: ================ Launching Engine: JobsGoJob ================
+[2026-06-04 20:03:48] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [khong-can-kinh-nghiem]
+[2026-06-04 20:03:53] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-04 20:03:53] INFO [JobsGoJobScraper]: 🔍 Found 2 raw job card tokens on the current viewport.
+[2026-06-04 20:03:53] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-04 20:03:56] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [duoi-1-nam-kinh-nghiem]
+[2026-06-04 20:03:58] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-04 20:03:58] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-04 20:03:58] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-04 20:03:58] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [1-2-nam-kinh-nghiem]
+[2026-06-04 20:04:01] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-04 20:04:01] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-04 20:04:01] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-04 20:04:01] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [khong-can-kinh-nghiem]
+[2026-06-04 20:04:03] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-04 20:04:03] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-04 20:04:03] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-04 20:04:03] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [duoi-1-nam-kinh-nghiem]
+[2026-06-04 20:04:05] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-04 20:04:05] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-04 20:04:05] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-04 20:04:05] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [1-2-nam-kinh-nghiem]
+[2026-06-04 20:04:08] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-04 20:04:08] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-04 20:04:08] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-04 20:04:08] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from JobsGoJob
+[2026-06-04 20:04:13] INFO [ScraperOrchestrator]: Cumulative tracking metric: 13 total jobs aggregated so far.
+[2026-06-04 20:04:14] INFO [ScraperOrchestrator]: ================ Launching Engine: TopCVJob ================
+[2026-06-04 20:04:14] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [Không yêu cầu]
+[2026-06-04 20:04:26] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-04 20:04:26] INFO [TopCVJobScraper]: 🔍 Empty state matched: No suitable target jobs available on this viewport.
+[2026-06-04 20:04:26] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-04 20:04:31] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [Dưới 1 năm]
+[2026-06-04 20:04:36] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-04 20:04:37] INFO [TopCVJobScraper]: 🔍 Found 0 raw job card tokens on current canvas area.
+[2026-06-04 20:04:37] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-04 20:04:37] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [1 năm]
+[2026-06-04 20:04:42] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-04 20:04:42] INFO [TopCVJobScraper]: 🔍 Found 0 raw job card tokens on current canvas area.
+[2026-06-04 20:04:42] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-04 20:04:42] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from TopCVJob
+[2026-06-04 20:04:47] INFO [ScraperOrchestrator]: Cumulative tracking metric: 13 total jobs aggregated so far.
+[2026-06-04 20:04:48] INFO [ScraperOrchestrator]: ================ Launching Engine: TopDevJobScraper ================
+[2026-06-04 20:04:48] INFO [TopDevJobScraper]: 🚀 Navigating orchestration framework to target endpoint index: https://topdev.vn/jobs/search
+[2026-06-04 20:04:51] INFO [TopDevJobScraper]: 🎯 Selecting target domain specialization classification [IT] via client JS Engine...
+[2026-06-04 20:04:59] INFO [TopDevJobScraper]: Processing execution matrix extraction on context tracking page index: 1
+[2026-06-04 20:04:59] INFO [TopDevJobScraper]: Found 15 raw job card tokens on the current page viewport.
+[2026-06-04 20:05:00] INFO [TopDevJobScraper]: 🚫 Next page button status flag marked disabled. Terminal array index matched.
+[2026-06-04 20:05:00] INFO [ScraperOrchestrator]: Successfully harvested 3 jobs from TopDevJobScraper
+[2026-06-04 20:05:08] INFO [ScraperOrchestrator]: Cumulative tracking metric: 16 total jobs aggregated so far.
+[2026-06-04 20:05:08] INFO [ScraperOrchestrator]: ================================================================================
+[2026-06-04 20:05:08] INFO [ScraperOrchestrator]: Pipeline executed successfully. Aggregated jobs count: 16
+[2026-06-04 20:05:08] INFO [ScraperOrchestrator]: Total orchestration execution duration: 305.93 seconds
+[2026-06-04 20:05:08] INFO [ScraperOrchestrator]: ================================================================================
+[2026-06-05 20:00:01] INFO [ScraperOrchestrator]: Initializing global enterprise chromium infrastructure...
+[2026-06-05 20:00:04] INFO [ScraperOrchestrator]: ================ Launching Engine: IndeedJob ================
+[2026-06-05 20:00:07] INFO [IndeedJobScraper]: 🚀 Routing directly to search results target endpoint: https://vn.indeed.com/jobs?q=data+engineer&l=Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh&fromage=1
+[2026-06-05 20:00:14] INFO [IndeedJobScraper]: Processing extraction on batch page: 1
+[2026-06-05 20:00:14] INFO [IndeedJobScraper]: 🔍 [Today] Found 16 job cards on this page viewport
+[2026-06-05 20:00:16] INFO [IndeedJobScraper]: 🚀 Routing directly to search results target endpoint: https://vn.indeed.com/jobs?q=data+engineer+intern&l=Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh&fromage=1
+[2026-06-05 20:00:20] INFO [IndeedJobScraper]: Processing extraction on batch page: 1
+[2026-06-05 20:00:20] INFO [IndeedJobScraper]: 🔍 [Today] Found 0 job cards on this page viewport
+[2026-06-05 20:00:20] INFO [IndeedJobScraper]: 📋 Filter summary: Retained 10/16 matching jobs.
+[2026-06-05 20:00:20] INFO [ScraperOrchestrator]: Successfully harvested 10 jobs from IndeedJob
+[2026-06-05 20:00:44] INFO [ScraperOrchestrator]: Cumulative tracking metric: 10 total jobs aggregated so far.
+[2026-06-05 20:00:45] INFO [ScraperOrchestrator]: ================ Launching Engine: VietnamWorksJob ================
+[2026-06-05 20:00:45] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Thực tập sinh/Sinh viên]
+[2026-06-05 20:00:53] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-05 20:00:53] INFO [VietnamWorksJobScraper]: 🔍 Found 2 raw job card tokens on the current page viewport.
+[2026-06-05 20:00:53] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-05 20:00:53] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Mới tốt nghiệp]
+[2026-06-05 20:00:57] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-05 20:00:57] INFO [VietnamWorksJobScraper]: 🔍 Found 2 raw job card tokens on the current page viewport.
+[2026-06-05 20:00:58] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-05 20:00:58] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Nhân viên]
+[2026-06-05 20:01:03] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-05 20:01:03] INFO [VietnamWorksJobScraper]: 🔍 Found 9 raw job card tokens on the current page viewport.
+[2026-06-05 20:01:04] INFO [VietnamWorksJobScraper]: ➡️ Pagination layout matched target step index 2. Dispatched JS event.
+[2026-06-05 20:01:05] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 2
+[2026-06-05 20:01:05] INFO [VietnamWorksJobScraper]: 🔍 Found 9 raw job card tokens on the current page viewport.
+[2026-06-05 20:01:06] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (2) total records.
+[2026-06-05 20:01:06] INFO [VietnamWorksJobScraper]: 📋 Global execution summary filter: Retained 1/3 valid jobs.
+[2026-06-05 20:01:06] INFO [ScraperOrchestrator]: Successfully harvested 1 jobs from VietnamWorksJob
+[2026-06-05 20:01:12] INFO [ScraperOrchestrator]: Cumulative tracking metric: 11 total jobs aggregated so far.
+[2026-06-05 20:01:13] INFO [ScraperOrchestrator]: ================ Launching Engine: ITviecJob ================
+[2026-06-05 20:01:13] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Data Analyst]
+[2026-06-05 20:01:17] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-05 20:01:19] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:01:23] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:01:28] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 2
+[2026-06-05 20:01:28] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:01:30] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:01:35] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 3
+[2026-06-05 20:01:35] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:01:36] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:01:41] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 4
+[2026-06-05 20:01:41] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:01:42] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:01:47] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 5
+[2026-06-05 20:01:47] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:01:47] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:01:53] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 6
+[2026-06-05 20:01:53] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:01:53] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:01:58] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 7
+[2026-06-05 20:01:58] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:01:59] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:02:04] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 8
+[2026-06-05 20:02:04] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:02:05] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:02:11] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 9
+[2026-06-05 20:02:11] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:02:11] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:02:16] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 10
+[2026-06-05 20:02:16] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:02:18] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:02:23] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 11
+[2026-06-05 20:02:23] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:02:23] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:02:29] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 12
+[2026-06-05 20:02:29] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:02:29] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:02:34] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 13
+[2026-06-05 20:02:34] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:02:35] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:02:40] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 14
+[2026-06-05 20:02:40] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:02:41] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:02:46] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 15
+[2026-06-05 20:02:46] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:02:47] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:02:52] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 16
+[2026-06-05 20:02:52] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:02:52] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:02:57] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 17
+[2026-06-05 20:02:57] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:02:58] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:03:03] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 18
+[2026-06-05 20:03:03] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:03:04] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:03:09] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 19
+[2026-06-05 20:03:09] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:03:10] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:03:15] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 20
+[2026-06-05 20:03:15] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:03:16] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:03:21] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 21
+[2026-06-05 20:03:21] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:03:23] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:03:28] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 22
+[2026-06-05 20:03:28] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-05 20:03:29] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-05 20:03:34] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 23
+[2026-06-05 20:03:34] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-05 20:03:34] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (23) indexes.
+[2026-06-05 20:03:34] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Big Data Engineer]
+[2026-06-05 20:03:36] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-05 20:03:36] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-05 20:03:36] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-05 20:03:36] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Data Engineer]
+[2026-06-05 20:03:38] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-05 20:03:38] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-05 20:03:38] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-05 20:03:38] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [DataOps / MLOps Engineer]
+[2026-06-05 20:03:41] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-05 20:03:41] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-05 20:03:41] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-05 20:03:41] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Database Engineer]
+[2026-06-05 20:03:43] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-05 20:03:43] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-05 20:03:43] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-05 20:03:43] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from ITviecJob
+[2026-06-05 20:03:48] INFO [ScraperOrchestrator]: Cumulative tracking metric: 11 total jobs aggregated so far.
+[2026-06-05 20:03:49] INFO [ScraperOrchestrator]: ================ Launching Engine: JobsGoJob ================
+[2026-06-05 20:03:49] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [khong-can-kinh-nghiem]
+[2026-06-05 20:03:53] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-05 20:03:53] INFO [JobsGoJobScraper]: 🔍 Found 4 raw job card tokens on the current viewport.
+[2026-06-05 20:03:53] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-05 20:03:56] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [duoi-1-nam-kinh-nghiem]
+[2026-06-05 20:03:58] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-05 20:03:58] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-05 20:03:58] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-05 20:03:58] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [1-2-nam-kinh-nghiem]
+[2026-06-05 20:04:00] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-05 20:04:00] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-05 20:04:00] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-05 20:04:00] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [khong-can-kinh-nghiem]
+[2026-06-05 20:04:03] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-05 20:04:03] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-05 20:04:03] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-05 20:04:03] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [duoi-1-nam-kinh-nghiem]
+[2026-06-05 20:04:05] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-05 20:04:05] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-05 20:04:05] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-05 20:04:05] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [1-2-nam-kinh-nghiem]
+[2026-06-05 20:04:07] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-05 20:04:07] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-05 20:04:07] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-05 20:04:07] INFO [ScraperOrchestrator]: Successfully harvested 2 jobs from JobsGoJob
+[2026-06-05 20:04:14] INFO [ScraperOrchestrator]: Cumulative tracking metric: 13 total jobs aggregated so far.
+[2026-06-05 20:04:16] INFO [ScraperOrchestrator]: ================ Launching Engine: TopCVJob ================
+[2026-06-05 20:04:16] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [Không yêu cầu]
+[2026-06-05 20:04:28] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-05 20:04:28] INFO [TopCVJobScraper]: 🔍 Empty state matched: No suitable target jobs available on this viewport.
+[2026-06-05 20:04:28] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-05 20:04:33] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [Dưới 1 năm]
+[2026-06-05 20:04:38] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-05 20:04:38] INFO [TopCVJobScraper]: 🔍 Found 0 raw job card tokens on current canvas area.
+[2026-06-05 20:04:38] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-05 20:04:38] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [1 năm]
+[2026-06-05 20:04:43] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-05 20:04:43] INFO [TopCVJobScraper]: 🔍 Found 0 raw job card tokens on current canvas area.
+[2026-06-05 20:04:43] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-05 20:04:43] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from TopCVJob
+[2026-06-05 20:04:48] INFO [ScraperOrchestrator]: Cumulative tracking metric: 13 total jobs aggregated so far.
+[2026-06-05 20:04:49] INFO [ScraperOrchestrator]: ================ Launching Engine: TopDevJobScraper ================
+[2026-06-05 20:04:49] INFO [TopDevJobScraper]: 🚀 Navigating orchestration framework to target endpoint index: https://topdev.vn/jobs/search
+[2026-06-05 20:04:53] INFO [TopDevJobScraper]: 🎯 Selecting target domain specialization classification [IT] via client JS Engine...
+[2026-06-05 20:05:00] INFO [TopDevJobScraper]: Processing execution matrix extraction on context tracking page index: 1
+[2026-06-05 20:05:00] INFO [TopDevJobScraper]: Found 15 raw job card tokens on the current page viewport.
+[2026-06-05 20:05:01] INFO [TopDevJobScraper]: 🚫 Next page button status flag marked disabled. Terminal array index matched.
+[2026-06-05 20:05:01] INFO [ScraperOrchestrator]: Successfully harvested 2 jobs from TopDevJobScraper
+[2026-06-05 20:05:09] INFO [ScraperOrchestrator]: Cumulative tracking metric: 15 total jobs aggregated so far.
+[2026-06-05 20:05:09] INFO [ScraperOrchestrator]: ================================================================================
+[2026-06-05 20:05:09] INFO [ScraperOrchestrator]: Pipeline executed successfully. Aggregated jobs count: 15
+[2026-06-05 20:05:09] INFO [ScraperOrchestrator]: Total orchestration execution duration: 307.39 seconds
+[2026-06-05 20:05:09] INFO [ScraperOrchestrator]: ================================================================================
+[2026-06-06 20:00:01] INFO [ScraperOrchestrator]: Initializing global enterprise chromium infrastructure...
+[2026-06-06 20:00:04] INFO [ScraperOrchestrator]: ================ Launching Engine: IndeedJob ================
+[2026-06-06 20:00:06] INFO [IndeedJobScraper]: 🚀 Routing directly to search results target endpoint: https://vn.indeed.com/jobs?q=data+engineer&l=Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh&fromage=1
+[2026-06-06 20:00:12] INFO [IndeedJobScraper]: Processing extraction on batch page: 1
+[2026-06-06 20:00:12] INFO [IndeedJobScraper]: 🔍 [Today] Found 16 job cards on this page viewport
+[2026-06-06 20:00:15] INFO [IndeedJobScraper]: 🚀 Routing directly to search results target endpoint: https://vn.indeed.com/jobs?q=data+engineer+intern&l=Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh&fromage=1
+[2026-06-06 20:00:18] INFO [IndeedJobScraper]: Processing extraction on batch page: 1
+[2026-06-06 20:00:18] INFO [IndeedJobScraper]: 🔍 [Today] Found 0 job cards on this page viewport
+[2026-06-06 20:00:18] INFO [IndeedJobScraper]: 📋 Filter summary: Retained 10/16 matching jobs.
+[2026-06-06 20:00:18] INFO [ScraperOrchestrator]: Successfully harvested 10 jobs from IndeedJob
+[2026-06-06 20:00:38] INFO [ScraperOrchestrator]: Cumulative tracking metric: 10 total jobs aggregated so far.
+[2026-06-06 20:00:39] INFO [ScraperOrchestrator]: ================ Launching Engine: VietnamWorksJob ================
+[2026-06-06 20:00:39] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Thực tập sinh/Sinh viên]
+[2026-06-06 20:00:47] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-06 20:00:48] INFO [VietnamWorksJobScraper]: 🔍 Found 2 raw job card tokens on the current page viewport.
+[2026-06-06 20:00:51] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-06 20:00:51] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Mới tốt nghiệp]
+[2026-06-06 20:00:56] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-06 20:00:56] INFO [VietnamWorksJobScraper]: 🔍 Found 2 raw job card tokens on the current page viewport.
+[2026-06-06 20:00:59] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-06 20:00:59] INFO [VietnamWorksJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Level Filter: [Nhân viên]
+[2026-06-06 20:01:06] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-06 20:01:06] INFO [VietnamWorksJobScraper]: 🔍 Found 9 raw job card tokens on the current page viewport.
+[2026-06-06 20:01:20] INFO [VietnamWorksJobScraper]: ➡️ Pagination layout matched target step index 2. Dispatched JS event.
+[2026-06-06 20:01:21] INFO [VietnamWorksJobScraper]: Processing evaluation batch index at Page: 2
+[2026-06-06 20:01:21] INFO [VietnamWorksJobScraper]: 🔍 Found 9 raw job card tokens on the current page viewport.
+[2026-06-06 20:01:35] INFO [VietnamWorksJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (2) total records.
+[2026-06-06 20:01:35] INFO [VietnamWorksJobScraper]: 📋 Global execution summary filter: Retained 0/0 valid jobs.
+[2026-06-06 20:01:35] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from VietnamWorksJob
+[2026-06-06 20:01:40] INFO [ScraperOrchestrator]: Cumulative tracking metric: 10 total jobs aggregated so far.
+[2026-06-06 20:01:41] INFO [ScraperOrchestrator]: ================ Launching Engine: ITviecJob ================
+[2026-06-06 20:01:41] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Data Analyst]
+[2026-06-06 20:01:44] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-06 20:01:44] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:01:46] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:01:51] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 2
+[2026-06-06 20:01:51] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:01:52] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:01:57] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 3
+[2026-06-06 20:01:57] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:01:58] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:02:03] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 4
+[2026-06-06 20:02:03] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:02:04] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:02:09] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 5
+[2026-06-06 20:02:09] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:02:10] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:02:15] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 6
+[2026-06-06 20:02:15] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:02:16] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:02:21] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 7
+[2026-06-06 20:02:21] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:02:22] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:02:27] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 8
+[2026-06-06 20:02:27] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:02:27] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:02:33] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 9
+[2026-06-06 20:02:33] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:02:33] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:02:38] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 10
+[2026-06-06 20:02:38] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:02:39] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:02:44] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 11
+[2026-06-06 20:02:44] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:02:45] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:02:50] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 12
+[2026-06-06 20:02:50] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:02:50] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:02:56] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 13
+[2026-06-06 20:02:56] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:02:57] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:03:02] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 14
+[2026-06-06 20:03:02] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:03:03] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:03:09] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 15
+[2026-06-06 20:03:09] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:03:09] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:03:14] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 16
+[2026-06-06 20:03:14] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:03:15] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:03:20] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 17
+[2026-06-06 20:03:20] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:03:21] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:03:26] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 18
+[2026-06-06 20:03:26] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:03:27] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:03:32] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 19
+[2026-06-06 20:03:32] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:03:32] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:03:37] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 20
+[2026-06-06 20:03:37] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:03:39] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:03:44] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 21
+[2026-06-06 20:03:44] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:03:44] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:03:49] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 22
+[2026-06-06 20:03:49] INFO [ITviecJobScraper]: 🔍 Found 20 job tokens raw blocks on current canvas.
+[2026-06-06 20:03:50] INFO [ITviecJobScraper]: ➡️ Pagination hyperlink boundary verified. Dispatched JS event click.
+[2026-06-06 20:03:55] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 23
+[2026-06-06 20:03:55] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-06 20:03:55] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (23) indexes.
+[2026-06-06 20:03:55] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Big Data Engineer]
+[2026-06-06 20:03:57] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-06 20:03:57] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-06 20:03:57] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-06 20:03:57] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Data Engineer]
+[2026-06-06 20:04:00] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-06 20:04:00] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-06 20:04:00] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-06 20:04:00] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [DataOps / MLOps Engineer]
+[2026-06-06 20:04:02] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-06 20:04:02] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-06 20:04:02] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-06 20:04:02] INFO [ITviecJobScraper]: 📂 Navigating execution matrix context to specialization: [Database Engineer]
+[2026-06-06 20:04:04] INFO [ITviecJobScraper]: Batch processing extraction matrix index at Page: 1
+[2026-06-06 20:04:04] INFO [ITviecJobScraper]: 🔍 Found 0 job tokens raw blocks on current canvas.
+[2026-06-06 20:04:04] INFO [ITviecJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-06 20:04:04] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from ITviecJob
+[2026-06-06 20:04:09] INFO [ScraperOrchestrator]: Cumulative tracking metric: 10 total jobs aggregated so far.
+[2026-06-06 20:04:10] INFO [ScraperOrchestrator]: ================ Launching Engine: JobsGoJob ================
+[2026-06-06 20:04:10] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [khong-can-kinh-nghiem]
+[2026-06-06 20:04:15] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-06 20:04:15] INFO [JobsGoJobScraper]: 🔍 Found 3 raw job card tokens on the current viewport.
+[2026-06-06 20:04:15] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-06 20:04:18] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [duoi-1-nam-kinh-nghiem]
+[2026-06-06 20:04:20] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-06 20:04:20] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-06 20:04:20] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-06 20:04:20] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Software Engineer] | Filter: [1-2-nam-kinh-nghiem]
+[2026-06-06 20:04:22] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-06 20:04:22] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-06 20:04:22] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-06 20:04:22] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [khong-can-kinh-nghiem]
+[2026-06-06 20:04:25] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-06 20:04:25] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-06 20:04:25] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-06 20:04:25] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [duoi-1-nam-kinh-nghiem]
+[2026-06-06 20:04:27] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-06 20:04:27] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-06 20:04:27] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-06 20:04:27] INFO [JobsGoJobScraper]: 📂 Navigating execution context matrix to: [Data Engineer] | Filter: [1-2-nam-kinh-nghiem]
+[2026-06-06 20:04:29] INFO [JobsGoJobScraper]: Processing extraction batch at tracking index Page: 1
+[2026-06-06 20:04:29] INFO [JobsGoJobScraper]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-06-06 20:04:29] INFO [JobsGoJobScraper]: 🏁 Termination boundary reached. Paginated array finalized at total: (1) indexes.
+[2026-06-06 20:04:29] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from JobsGoJob
+[2026-06-06 20:04:34] INFO [ScraperOrchestrator]: Cumulative tracking metric: 10 total jobs aggregated so far.
+[2026-06-06 20:04:35] INFO [ScraperOrchestrator]: ================ Launching Engine: TopCVJob ================
+[2026-06-06 20:04:35] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [Không yêu cầu]
+[2026-06-06 20:04:48] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-06 20:04:48] INFO [TopCVJobScraper]: 🔍 Empty state matched: No suitable target jobs available on this viewport.
+[2026-06-06 20:04:48] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-06 20:04:53] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [Dưới 1 năm]
+[2026-06-06 20:04:59] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-06 20:04:59] INFO [TopCVJobScraper]: 🔍 Found 0 raw job card tokens on current canvas area.
+[2026-06-06 20:04:59] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-06 20:04:59] INFO [TopCVJobScraper]: 📂 Shifting focus context matrix to target: [Data Engineer] | Class: [1 năm]
+[2026-06-06 20:05:04] INFO [TopCVJobScraper]: Processing evaluation batch index at Page: 1
+[2026-06-06 20:05:04] INFO [TopCVJobScraper]: 🔍 Found 0 raw job card tokens on current canvas area.
+[2026-06-06 20:05:04] INFO [TopCVJobScraper]: 🏁 Pagination terminal edge reached. Processed array context closed at (1) total records.
+[2026-06-06 20:05:04] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from TopCVJob
+[2026-06-06 20:05:09] INFO [ScraperOrchestrator]: Cumulative tracking metric: 10 total jobs aggregated so far.
+[2026-06-06 20:05:10] INFO [ScraperOrchestrator]: ================ Launching Engine: TopDevJobScraper ================
+[2026-06-06 20:05:10] INFO [TopDevJobScraper]: 🚀 Navigating orchestration framework to target endpoint index: https://topdev.vn/jobs/search
+[2026-06-06 20:05:13] INFO [TopDevJobScraper]: 🎯 Selecting target domain specialization classification [IT] via client JS Engine...
+[2026-06-06 20:05:43] ERROR [TopDevJobScraper]: 💥 Critical layout configuration failure during initial form assembly routing: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("button", name="Apply", exact=True)
+
+[2026-06-06 20:05:43] INFO [ScraperOrchestrator]: Successfully harvested 0 jobs from TopDevJobScraper
+[2026-06-06 20:05:48] INFO [ScraperOrchestrator]: Cumulative tracking metric: 10 total jobs aggregated so far.
+[2026-06-06 20:05:49] INFO [ScraperOrchestrator]: ================================================================================
+[2026-06-06 20:05:49] INFO [ScraperOrchestrator]: Pipeline executed successfully. Aggregated jobs count: 10
+[2026-06-06 20:05:49] INFO [ScraperOrchestrator]: Total orchestration execution duration: 347.2 seconds
+[2026-06-06 20:05:49] INFO [ScraperOrchestrator]: ================================================================================
