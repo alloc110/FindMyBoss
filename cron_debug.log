@@ -755,3 +755,7 @@ Call log:
 [2026-06-06 20:05:49] INFO [ScraperOrchestrator]: Pipeline executed successfully. Aggregated jobs count: 10
 [2026-06-06 20:05:49] INFO [ScraperOrchestrator]: Total orchestration execution duration: 347.2 seconds
 [2026-06-06 20:05:49] INFO [ScraperOrchestrator]: ================================================================================
+Traceback (most recent call last):
+  File "/home/loc/job-scraper/main.py", line 14, in <module>
+    from crawl.base_crawl import JobScraper
+ModuleNotFoundError: No module named 'crawl.base_crawl'
