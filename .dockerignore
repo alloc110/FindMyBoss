@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+crawl_log.txt
+cron_debug.log
+
+# Git
+.git/
+.gitignore
+
+# Environments
+venv/
+env/
+.env
+
+# Data & Output (mounted via volume)
+data/*.jsonl
+logs/
+
+# IDE
+.vscode/
+.idea/

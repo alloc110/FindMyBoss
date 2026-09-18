@@ -147,9 +147,23 @@ source venv/bin/activate
 python3 main.py
 ```
 
-### ⏰ Phase 3: Set up Automation (Cron)
+### 🐳 Phase 2: Run via Ephemeral Docker Container (Recommended)
 
-Now, let's schedule the "brain" to run daily at 20:00 (8:00 PM) without manual intervention.
+To run the scraper without maintaining a persistent Python environment and shut down automatically after completion (0% background RAM/CPU):
+
+```bash
+# 1. Build the container image (one-time)
+docker compose build
+
+# 2. Run container once (executes crawl, saves to data/jobs.jsonl, alerts Discord, and exits)
+./run-docker.sh
+# or directly with docker compose:
+docker compose run --rm scraper
+```
+
+### ⏰ Phase 3: Schedule Automated Runs (Crontab)
+
+Schedule the container to start at your desired times, execute the job scrape, and automatically shutdown and destroy the container (`--rm`):
 
 1. Open the crontab editor:
 
@@ -157,20 +171,27 @@ Now, let's schedule the "brain" to run daily at 20:00 (8:00 PM) without manual i
 crontab -e
 ```
 
-2. Add the following line to the end of the file:
+2. Add the schedule (e.g., runs at 08:00 every morning):
 
 ```bash
-00 20 * * * /runner.sh
+0 8 * * * /home/loc/job-scraper/run-docker.sh
+```
+
+*(Optional) Run twice daily at 08:00 AM and 06:00 PM:*
+```bash
+0 8,18 * * * /home/loc/job-scraper/run-docker.sh
 ```
 
 ### 2. Monitoring & Logs
 
-Since we are running a lightweight setup without Grafana/Prometheus, monitoring is done through real-time log files:
-
-- View Live Logs: To see exactly what the bot is doing right now, run:
-
+- View daily container logs:
 ```bash
-tail -f crawl_log.txt
+tail -f logs/scraper_$(date '+%Y%m%d').log
+```
+- View saved raw JDs dataset:
+```bash
+wc -l data/jobs.jsonl
+head -n 1 data/jobs.jsonl | jq .
 ```
 
 ## 🌊 Data Flow Pipeline

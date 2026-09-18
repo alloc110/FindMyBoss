@@ -1,11 +1,23 @@
 #!/bin/bash
+set -e
 
-# 1. Navigate to the absolute project root directory
-cd /home/loc/job-scraper || { echo "CRITICAL: Project directory not found!" && exit 1; }
+# Navigate to the absolute project root directory
+PROJECT_DIR="/home/loc/job-scraper"
+cd "$PROJECT_DIR" || { echo "CRITICAL: Project directory $PROJECT_DIR not found!" && exit 1; }
 
-# 3. Execute the orchestrator directly using the virtual environment's binary
-# MẸO: Hãy chắc chắn file chạy tổng của bạn tên là run_scraper.py (file tụi mình vừa sửa) hay main.py nhé!
-/home/loc/venv/bin/python3 main.py
+# Determine python executable (prefer local venv, then system user venv)
+if [ -x "$PROJECT_DIR/venv/bin/python3" ]; then
+    PYTHON_BIN="$PROJECT_DIR/venv/bin/python3"
+elif [ -x "/home/loc/venv/bin/python3" ]; then
+    PYTHON_BIN="/home/loc/venv/bin/python3"
+else
+    PYTHON_BIN="$(command -v python3)"
+fi
 
-# 4. Log completion metrics using absolute paths to prevent tracking loss
-echo "Pipeline execution finished successfully at: $(date)" >> /home/loc/job-scraper/crawl_log.txt
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting job scraping pipeline with $PYTHON_BIN..." >> "$PROJECT_DIR/crawl_log.txt"
+
+# Execute orchestrator
+"$PYTHON_BIN" main.py
+
+# Log completion metrics
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Pipeline execution finished successfully." >> "$PROJECT_DIR/crawl_log.txt"

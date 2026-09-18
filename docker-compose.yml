@@ -1,0 +1,17 @@
+services:
+  scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: findmyboss-scraper:latest
+    container_name: findmyboss_scraper
+    restart: "no" # Never auto-restart: container stops and shuts down upon completion
+    shm_size: "2gb" # Prevent Chromium crashes from shared memory exhaustion
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Ho_Chi_Minh
