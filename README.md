@@ -24,10 +24,6 @@
 ## 🎬 Visual Showcase & Demo
 
 ### 1. Trải nghiệm Hệ thống Toàn diện (Interactive Demo Video)
-<div align="center">
-  <img src="assets/demo_multi_model.webp" alt="FindMyBoss Multi-Model Studio Interactive Demo" width="95%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);">
-</div>
-
 ---
 
 ### 2. Thư viện Ảnh Tính năng (Screenshots Gallery)
