@@ -9,7 +9,17 @@ from typing import Any, Dict, Iterator, List, Optional
 
 
 def load_scraped_jobs(data_path: str = "data/jobs.jsonl") -> Iterator[Dict[str, Any]]:
-    """Yields parsed job records from the persistent JSONL dataset."""
+    """Yields parsed job records from SQLite database or fallback to JSONL dataset."""
+    db_file = Path("data/jobs.db")
+    if data_path == "data/jobs.jsonl" and db_file.exists():
+        from services.storage import JobStorage
+
+        storage = JobStorage(db_path=str(db_file), legacy_jsonl="")
+        jobs, _ = storage.get_jobs(limit=1000)
+        for j in reversed(jobs):
+            yield j
+        return
+
     path = Path(data_path)
     if not path.exists():
         return

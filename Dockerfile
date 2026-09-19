@@ -14,7 +14,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tzdata \
     ca-certificates \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh \
+    && mkdir -p /app/bin && mv tectonic /app/bin/tectonic && chmod +x /app/bin/tectonic
 
 # Install Python requirements and Chromium with all native OS dependencies
 COPY requirements.txt .

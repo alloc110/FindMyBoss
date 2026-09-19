@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FindMyBoss Studio | Job Board & ATS CV Tailor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+
+  <!-- Top App Navigation -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-logo">FindMyBoss</div>
+      <span class="brand-badge">ATS Studio</span>
+    </div>
+
+    <div class="header-stats">
+      <div class="stat-pill">
+        <span>Tổng Jobs:</span>
+        <strong id="statTotalJobs">0</strong>
+      </div>
+      <div class="stat-pill">
+        <span>Đã tạo CV:</span>
+        <strong id="statTotalCvs">0</strong>
+      </div>
+      <div class="gemini-status-pill" id="geminiStatusPill">
+        <span class="status-dot active"></span>
+        <span id="geminiStatusText">Checking AI Engine...</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-primary btn-sm" id="btnOpenSettings" title="Cài đặt hệ thống, Mô hình AI, Giao diện & Hồ sơ">
+        Cài đặt
+      </button>
+      <a href="https://github.com/alloc110/FindMyBoss" target="_blank" class="btn btn-secondary btn-sm">
+        GitHub
+      </a>
+    </div>
+  </header>
+
+  <!-- Split-View Main App Container -->
+  <div class="app-container">
+    
+    <!-- Left Column: Jobs List & Filters -->
+    <aside class="pane-jobs">
+      <div class="jobs-search-bar">
+        <div class="search-input-wrapper">
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="Tìm theo vị trí, công ty, kỹ năng (vd: Python, React, FPT)..."
+          >
+        </div>
+        <div class="quick-filters">
+          <button class="filter-chip active" data-filter="all">Tất cả</button>
+          <button class="filter-chip" data-filter="has_cv">Đã có CV</button>
+          <button class="filter-chip" data-filter="no_cv">Chưa có CV</button>
+          <button class="filter-chip" data-filter="status:saved">Chưa nộp</button>
+          <button class="filter-chip" data-filter="status:applied">Đã nộp</button>
+          <button class="filter-chip" data-filter="status:interviewing">Phỏng vấn</button>
+          <button class="filter-chip" data-filter="status:offered">Offer</button>
+          <button class="filter-chip" data-filter="status:rejected">Từ chối</button>
+          <button class="filter-chip" data-filter="python">Python</button>
+          <button class="filter-chip" data-filter="react">React</button>
+          <button class="filter-chip" data-filter="intern">Intern</button>
+          <button class="filter-chip" data-filter="fresher">Fresher</button>
+        </div>
+      </div>
+
+      <div class="jobs-list-container" id="jobsList">
+        <!-- Job Cards dynamically rendered here -->
+      </div>
+    </aside>
+
+    <!-- Right Column: Detail & AI CV Studio -->
+    <main class="pane-detail" id="detailPane">
+      <!-- Detail Header -->
+      <div class="detail-header">
+        <div class="detail-headline">
+          <h2 id="detailJobTitle">Chọn một công việc để xem chi tiết</h2>
+          <div class="detail-headline-meta">
+            <span id="detailJobCompany">Công ty</span>
+            <span id="detailJobSalary">Deal</span>
+            <span id="detailJobAddress">Hồ Chí Minh</span>
+            <a id="detailJobLink" href="#" target="_blank" rel="noopener">Xem tin gốc</a>
+          </div>
+        </div>
+
+        <div class="detail-header-actions">
+          <div class="status-selector-wrapper">
+            <label for="detailJobStatusSelect" class="status-label">Trạng thái:</label>
+            <select id="detailJobStatusSelect" class="job-status-select" title="Cập nhật tiến độ ứng tuyển">
+              <option value="saved">Chưa nộp</option>
+              <option value="applied">Đã nộp CV</option>
+              <option value="interviewing">Đang phỏng vấn</option>
+              <option value="offered">Nhận Offer</option>
+              <option value="rejected">Bị từ chối</option>
+            </select>
+          </div>
+          <button class="btn btn-danger btn-sm" id="btnDeleteJob" title="Xóa công việc này khỏi danh sách">
+            Xóa Job
+          </button>
+          <button class="btn btn-primary" id="btnTailorCv">
+            <span class="spinner" id="btnTailorSpinner" style="display: none;"></span>
+            <span id="btnTailorText">Tạo CV với Gemini</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="detail-tabs">
+        <button class="tab-btn active" data-tab="jd">Chi tiết JD</button>
+        <button class="tab-btn" data-tab="ai">Đánh giá ATS & Đề xuất AI</button>
+        <button class="tab-btn" data-tab="pdf">Xem trước PDF (Preview)</button>
+      </div>
+
+      <!-- Tab Content Area (Scrolls vertically) -->
+      <div class="tab-content-area" id="tabContentArea">
+        
+        <!-- Tab 1: JD Content -->
+        <div class="tab-pane active" id="tab-jd">
+          <div class="jd-content-card">
+            <h3>Tech Stack & Kỹ năng yêu cầu</h3>
+            <div class="skills-row" id="jdSkillsRow"></div>
+          </div>
+
+          <div class="jd-content-card">
+            <h3>Yêu cầu ứng viên</h3>
+            <div class="jd-body-text" id="jdRequirements"></div>
+          </div>
+
+          <div class="jd-content-card">
+            <h3>Raw Job Description</h3>
+            <div class="jd-body-text" id="jdFullRaw"></div>
+          </div>
+        </div>
+
+        <!-- Tab 2: AI CV Studio -->
+        <div class="tab-pane" id="tab-ai">
+          <!-- AI Rules & Master CV Sync Banner -->
+          <div class="ai-sync-banner" id="aiSyncBanner">
+            <div class="ai-sync-left">
+              <span id="aiSyncStatusText">
+                <strong>Quy chế AI:</strong> Luôn nạp Master CV PDF & Tuân thủ Bộ Quy tắc ATS/CV.
+              </span>
+            </div>
+            <button class="btn btn-secondary btn-xs" id="btnQuickEditRules">Chỉnh sửa Rules</button>
+          </div>
+
+          <!-- Score summary -->
+          <div class="ai-score-card">
+            <div class="score-circle">
+              <span class="score-number" id="aiMatchScore">--%</span>
+              <span class="score-label">ATS Match</span>
+            </div>
+            <div class="score-details">
+              <h4>Nhận định của Chuyên gia Tuyển dụng AI</h4>
+              <p id="aiMatchAnalysis">Chưa phân tích. Nhấn "Tạo CV với Gemini" để kích hoạt mô hình AI.</p>
+            </div>
+          </div>
+
+          <!-- Missing Keywords -->
+          <div class="missing-keywords-box">
+            <h4>Từ khóa ATS trọng yếu còn thiếu trong CV:</h4>
+            <div class="keyword-chips" id="missingKeywordsList">
+              <span style="color: var(--text-dim); font-size: 12px;">Chưa phân tích</span>
+            </div>
+          </div>
+
+          <!-- Tailored Summary -->
+          <div class="tailored-section">
+            <h4>
+              <span>Đoạn tóm tắt chuyên môn (Tailored Summary)</span>
+            </h4>
+            <p class="jd-body-text" id="tailoredSummaryText">Chưa tạo</p>
+          </div>
+
+          <!-- Tailored Bullets -->
+          <div class="tailored-section">
+            <h4>
+              <span>Các gạch đầu dòng kinh nghiệm (Google XYZ / STAR Format)</span>
+            </h4>
+            <div class="bullets-list" id="tailoredBulletsList">
+              <!-- Bullets rendered here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Overleaf-Style Side-by-Side LaTeX Studio -->
+        <div class="tab-pane" id="tab-pdf">
+          <div class="overleaf-studio">
+            <!-- Left Pane: LaTeX Code Editor (50%) -->
+            <div class="overleaf-editor-pane">
+              <div class="overleaf-toolbar">
+                <div class="overleaf-tab-title">
+                  <span class="file-name">cv_tailored.tex</span>
+                </div>
+                <div class="overleaf-editor-actions">
+                  <div class="template-selector-wrapper">
+                    <label for="templateSelector" class="template-label">Mẫu CV:</label>
+                    <select id="templateSelector" class="template-select">
+                      <option value="classic">Jake's ATS (Classic)</option>
+                      <option value="modern">Modern Professional</option>
+                      <option value="compact">Compact 1-Page</option>
+                    </select>
+                  </div>
+                  <button class="btn-recompile" id="btnRecompileLatex" title="Phím tắt: Ctrl + Enter">
+                    <span id="btnRecompileText">Recompile</span>
+                    <kbd class="shortcut-key">Ctrl+Enter</kbd>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="overleaf-code-container">
+                <textarea 
+                  id="latexSourceText" 
+                  class="overleaf-textarea" 
+                  spellcheck="false" 
+                  placeholder="% Mã nguồn LaTeX sẽ xuất hiện tại đây sau khi tạo CV...&#10;% Bạn có thể tự do chỉnh sửa và nhấn Recompile (hoặc bấm phím tắt Ctrl+Enter)"
+                ></textarea>
+              </div>
+              
+              <div class="overleaf-statusbar">
+                <span id="overleafCompileStatus">Sẵn sàng biên dịch</span>
+                <span id="overleafCharCount">0 dòng • 0 ký tự</span>
+              </div>
+            </div>
+
+            <!-- Right Pane: Live PDF Viewer (50%) -->
+            <div class="overleaf-pdf-pane">
+              <div class="overleaf-pdf-toolbar">
+                <div class="pdf-toolbar-info">
+                  <span>Live PDF Preview (Tectonic Engine)</span>
+                </div>
+                <div class="pdf-toolbar-actions">
+                  <a id="btnOpenPdfNewTab" href="#" target="_blank" class="btn btn-secondary btn-xs" title="Mở PDF toàn màn hình">
+                    Toàn màn hình
+                  </a>
+                  <a id="btnDownloadPdf" href="#" class="btn btn-primary btn-xs" title="Tải xuống file PDF">
+                    Tải PDF
+                  </a>
+                </div>
+              </div>
+              <div class="overleaf-pdf-wrapper">
+                <iframe id="pdfFrame" class="overleaf-pdf-frame" src="about:blank"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Empty Detail State (When no job is selected) -->
+    <div class="empty-state" id="emptyDetail" style="display: none;">
+      <h2>Chọn một công việc từ danh sách bên trái</h2>
+      <p>Hệ thống sẽ hiển thị JD chi tiết, hỗ trợ Gemini tối ưu hóa CV và biên dịch file PDF trực tiếp.</p>
+    </div>
+
+  </div>
+
+  <!-- Unified Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text-main);">
+          Cài đặt Hệ thống & Tùy chọn (Settings)
+        </h3>
+        <button class="btn btn-secondary btn-sm" id="btnCloseSettings">Đóng</button>
+      </div>
+
+      <!-- Modal Internal Tabs -->
+      <div class="modal-tabs">
+        <button class="modal-tab-btn active" data-modaltab="ai-model">Mô hình AI & API Key</button>
+        <button class="modal-tab-btn" data-modaltab="theme">Giao diện (Theme)</button>
+        <button class="modal-tab-btn" data-modaltab="master-pdf">Hồ sơ & Master CV</button>
+        <button class="modal-tab-btn" data-modaltab="rules">Quy chế ATS & CV</button>
+        <button class="modal-tab-btn" data-modaltab="scraper">Cấu hình Cào</button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- Tab 1: AI Model & API Key -->
+        <div class="modal-tab-pane active" id="pane-ai-model">
+          <!-- 1. Provider Selection -->
+          <div class="form-group">
+            <label>Nhà cung cấp Trí tuệ Nhân tạo (AI Provider)</label>
+            <select id="settingAiProvider" class="form-input">
+              <option value="gemini">Google Gemini (Gemini 2.5 Flash, 2.0 Flash, 1.5 Pro)</option>
+              <option value="openai">OpenAI / ChatGPT (GPT-4o, GPT-4o-mini, GPT-3.5-Turbo, o1, o3)</option>
+              <option value="claude">Anthropic Claude (Claude 3.7 Sonnet, 3.5 Sonnet, 3.5 Haiku)</option>
+              <option value="custom">Tùy biến / DeepSeek / OpenAI-Compatible (Ollama, vLLM, OpenRouter)</option>
+            </select>
+            <span class="form-hint">
+              Hỗ trợ đa nhà cung cấp. Bạn có thể dùng Gemini miễn phí, ChatGPT, Claude hoặc mô hình nguồn mở cục bộ.
+            </span>
+          </div>
+
+          <!-- 2. Model Selection -->
+          <div class="form-group">
+            <label>Mô hình AI (Model Catalog)</label>
+            <select id="settingAiModel" class="form-input">
+              <!-- Populated dynamically based on chosen provider -->
+            </select>
+            <div id="groupCustomModel" style="display: none; margin-top: 8px;">
+              <input 
+                type="text" 
+                id="settingCustomModel" 
+                class="form-input" 
+                placeholder="Nhập tên mô hình, vd: deepseek-chat, mistral-large, llama3.3:70b..."
+              >
+            </div>
+            <span class="form-hint">
+              Chọn mô hình phân tích JD, trích xuất kỹ năng và tối ưu hóa nội dung CV chuẩn ATS.
+            </span>
+          </div>
+
+          <!-- 3. Custom Base URL (for DeepSeek/Ollama/OpenRouter) -->
+          <div class="form-group" id="groupCustomBaseUrl" style="display: none;">
+            <label>API Base URL (Endpoint tùy chỉnh)</label>
+            <input 
+              type="text" 
+              id="settingCustomBaseUrl" 
+              class="form-input" 
+              placeholder="vd: https://api.deepseek.com/v1 hoặc http://localhost:11434/v1"
+            >
+            <span class="form-hint">
+              Địa chỉ endpoint tương thích OpenAI API (DeepSeek: https://api.deepseek.com/v1, Ollama: http://localhost:11434/v1).
+            </span>
+          </div>
+
+          <!-- 4. API Key & Test Connection -->
+          <div class="form-group">
+            <label id="lblApiKey">Google Gemini API Key</label>
+            <div style="display: flex; gap: 8px;">
+              <input 
+                type="password" 
+                id="settingApiKey" 
+                class="form-input" 
+                style="flex: 1;" 
+                placeholder="Dán mã API Key của bạn..."
+              >
+              <button type="button" class="btn btn-secondary btn-sm" id="btnToggleApiKey">Hiện</button>
+              <button type="button" class="btn btn-primary btn-sm" id="btnTestApiKey" style="white-space: nowrap;">
+                <span id="btnTestApiKeyIcon">⚡</span> Kiểm tra kết nối
+              </button>
+            </div>
+            <span class="form-hint" id="hintApiKey">
+              Lấy API Key miễn phí tại Google AI Studio (aistudio.google.com). Nếu để trống, hệ thống sẽ chạy ở Chế độ Mô phỏng Thông minh.
+            </span>
+
+            <!-- Test Connection Result Feedback Box -->
+            <div id="testApiKeyResult" class="test-result-box" style="display: none; margin-top: 10px;"></div>
+          </div>
+
+          <!-- 5. Current Connection Status -->
+          <div class="form-group" style="margin-top: 6px;">
+            <label>Trạng thái cấu hình lưu trữ:</label>
+            <div class="ai-status-box" id="settingAiStatusBox">
+              <span class="status-dot active" id="settingStatusDot"></span>
+              <span id="settingAiStatusDetail">Đang kiểm tra kết nối...</span>
+            </div>
+            <span class="form-hint">
+              Cấu hình được lưu bền vững trên đĩa (data/settings.json), không bị mất khi bạn tắt server hoặc bật lại.
+            </span>
+          </div>
+        </div>
+
+        <!-- Tab 2: Theme Selection -->
+        <div class="modal-tab-pane" id="pane-theme">
+          <div class="form-group">
+            <label>Tùy chọn Chế độ Hiển thị</label>
+            <span class="form-hint">Chọn giao diện làm việc phù hợp với ánh sáng phòng làm việc của bạn:</span>
+            
+            <div class="theme-choice-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px;">
+              <div class="theme-card-option" id="themeOptDark" style="padding: 16px; border: 2px solid var(--border-subtle); border-radius: var(--radius-md); cursor: pointer; background: #080c14; color: #f8fafc;">
+                <div style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                  <span>Chế độ Tối (Dark Mode)</span>
+                  <span class="theme-indicator-check" id="checkDark">Mặc định</span>
+                </div>
+                <div style="font-size: 12px; color: #94a3b8;">Nền Slate đen tuyền dịu mắt, độ tương phản cao, làm việc ban đêm không mỏi mắt.</div>
+              </div>
+
+              <div class="theme-card-option" id="themeOptLight" style="padding: 16px; border: 2px solid var(--border-subtle); border-radius: var(--radius-md); cursor: pointer; background: #f8fafc; color: #0f172a;">
+                <div style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                  <span>Chế độ Sáng (Light Mode)</span>
+                  <span class="theme-indicator-check" id="checkLight" style="display: none;">Đang chọn</span>
+                </div>
+                <div style="font-size: 12px; color: #475569;">Nền Slate sáng thanh lịch, chữ đen đậm sắc nét, tối ưu cho môi trường nhiều ánh sáng.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Upload Master CV PDF & Candidate Info -->
+        <div class="modal-tab-pane" id="pane-master-pdf">
+          <div class="form-group">
+            <label>Tải lên File PDF Tổng Hợp (Master Resume / Full Portfolio)</label>
+            <span class="form-hint">
+              Hệ thống và Gemini sẽ đọc trực tiếp file PDF này của bạn để làm nguồn sự thật (Source of Truth), tự động chọn lọc các kinh nghiệm, kỹ năng và dự án liên quan nhất với JD.
+            </span>
+            
+            <div class="upload-dropzone" id="dropzoneCv">
+              <span class="dropzone-text">Kéo thả file PDF vào đây hoặc bấm để chọn file</span>
+              <span class="dropzone-subtext">Hỗ trợ định dạng .pdf (khuyên dùng file tổng hợp mọi kinh nghiệm)</span>
+              <input type="file" id="fileMasterCv" accept="application/pdf" style="display: none;">
+            </div>
+
+            <!-- Upload progress / current file info -->
+            <div id="masterCvInfoBox" style="display: none;">
+              <div class="current-file-badge">
+                <div class="file-badge-info">
+                  <div>
+                    <strong id="badgeFileName">my_master_cv.pdf</strong>
+                    <div style="font-size: 11px; color: var(--text-dim);" id="badgeFileMeta">1 trang • 450 từ</div>
+                  </div>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btnChangePdf">Thay file khác</button>
+              </div>
+
+              <!-- Collapsible extracted text preview -->
+              <details style="margin-top: 10px;">
+                <summary style="font-size: 12px; color: var(--accent-cyan); cursor: pointer; font-weight: 600;">
+                  Xem trước nội dung Text trích xuất từ PDF
+                </summary>
+                <div class="extracted-text-box" id="extractedTextPreview"></div>
+              </details>
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 14px; margin-top: 6px;">
+            <h4 style="font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 12px;">Thông tin liên hệ cơ bản (Điền vào mẫu CV)</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="form-group">
+                <label>Họ và Tên</label>
+                <input type="text" id="inputProfileName" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>Chức danh mục tiêu (Title)</label>
+                <input type="text" id="inputProfileTitle" class="form-input">
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;">
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="inputProfileEmail" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>Số điện thoại</label>
+                <input type="text" id="inputProfilePhone" class="form-input">
+              </div>
+            </div>
+            <div class="form-group" style="margin-top: 10px;">
+              <label>Địa điểm (Thành phố, Quốc gia)</label>
+              <input type="text" id="inputProfileLocation" class="form-input">
+            </div>
+            <div class="form-group" style="margin-top: 10px;">
+              <label>Tóm tắt nền tảng cốt lõi (Base Summary)</label>
+              <textarea id="inputProfileSummary" class="form-textarea" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: ATS & CV Rules -->
+        <div class="modal-tab-pane" id="pane-rules">
+          <div class="form-group">
+            <label>Bộ Quy Tắc Đánh Giá ATS (ATS Evaluation Rules)</label>
+            <span class="form-hint">
+              Các chỉ dẫn nghiêm ngặt gửi cho Gemini khi phân tích mức độ phù hợp và chấm điểm Match Score giữa JD và CV của bạn.
+            </span>
+            <textarea 
+              id="inputAtsRules" 
+              class="form-textarea" 
+              rows="6" 
+              placeholder="Nhập các quy tắc đánh giá ATS (ví dụ: Chấm điểm khắt khe về backend; Yêu cầu bắt buộc các công nghệ Docker, FastAPI...)"
+            ></textarea>
+          </div>
+
+          <div class="form-group" style="margin-top: 12px;">
+            <label>Bộ Quy Tắc Tạo & Tối Ưu Hóa CV (CV Writing Rules)</label>
+            <span class="form-hint">
+              Các chỉ dẫn gửi cho Gemini khi viết lại đoạn Tóm tắt (Summary) và các gạch đầu dòng kinh nghiệm (Bullets) cho template LaTeX.
+            </span>
+            <textarea 
+              id="inputCvRules" 
+              class="form-textarea" 
+              rows="6" 
+              placeholder="Nhập các quy tắc viết CV (ví dụ: Viết theo công thức Google XYZ; Dùng Action Verbs mạnh mẽ; Tuyệt đối không bịa đặt kinh nghiệm ngoài file PDF gốc...)"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Tab 5: Scraper Configuration -->
+        <div class="modal-tab-pane" id="pane-scraper">
+          <!-- Portals Selection -->
+          <div class="form-group">
+            <label>Cổng thông tin tuyển dụng mục tiêu</label>
+            <div class="portal-grid">
+              <label class="portal-card-label">
+                <input type="checkbox" id="portalItviec" value="itviec" checked>
+                <span>ITviec</span>
+              </label>
+              <label class="portal-card-label">
+                <input type="checkbox" id="portalTopdev" value="topdev" checked>
+                <span>TopDev</span>
+              </label>
+              <label class="portal-card-label">
+                <input type="checkbox" id="portalTopcv" value="topcv" checked>
+                <span>TopCV</span>
+              </label>
+              <label class="portal-card-label">
+                <input type="checkbox" id="portalVietnamworks" value="vietnamworks" checked>
+                <span>VietnamWorks</span>
+              </label>
+              <label class="portal-card-label">
+                <input type="checkbox" id="portalJobsgo" value="jobsgo" checked>
+                <span>JobsGO</span>
+              </label>
+              <label class="portal-card-label">
+                <input type="checkbox" id="portalIndeed" value="indeed" checked>
+                <span>Indeed</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Search Keywords -->
+          <div class="form-group" style="margin-top: 10px;">
+            <label>Từ khóa tìm kiếm công việc (Ngăn cách bằng dấu phẩy)</label>
+            <input 
+              type="text" 
+              id="scraperKeywords" 
+              class="form-input" 
+              placeholder="Python, Data Analyst, Machine Learning, Backend, Fullstack, AI"
+            >
+            <span class="form-hint">Nhập các vị trí hoặc công nghệ bạn muốn crawler tự động quét.</span>
+          </div>
+
+          <!-- Target Levels -->
+          <div class="form-group" style="margin-top: 10px;">
+            <label>Cấp bậc kinh nghiệm ưu tiên</label>
+            <div class="chip-checkbox-group">
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Intern" class="level-chk" checked> Intern
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Fresher" class="level-chk" checked> Fresher
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Junior" class="level-chk" checked> Junior
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Middle" class="level-chk"> Middle
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Senior" class="level-chk"> Senior
+              </label>
+            </div>
+          </div>
+
+          <!-- Target Cities -->
+          <div class="form-group" style="margin-top: 10px;">
+            <label>Địa điểm làm việc ưu tiên</label>
+            <div class="chip-checkbox-group">
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Hồ Chí Minh" class="city-chk" checked> Hồ Chí Minh
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Hà Nội" class="city-chk" checked> Hà Nội
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Đà Nẵng" class="city-chk" checked> Đà Nẵng
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Remote" class="city-chk" checked> Remote / Toàn quốc
+              </label>
+            </div>
+          </div>
+
+          <!-- Blacklist Titles -->
+          <div class="form-group" style="margin-top: 10px;">
+            <label>Từ khóa loại trừ trong tiêu đề JD (Blacklist, ngăn cách bằng dấu phẩy)</label>
+            <input 
+              type="text" 
+              id="scraperBlacklist" 
+              class="form-input" 
+              placeholder="Tuyển sinh, Đào tạo, Thực tập sinh tiếng Nhật, Khóa học"
+            >
+            <span class="form-hint">Bỏ qua các bài đăng chứa từ khóa này để tránh tin rác hoặc đóng học phí.</span>
+          </div>
+
+          <!-- Advanced settings -->
+          <div class="form-row-2" style="margin-top: 10px;">
+            <div class="form-group">
+              <label>Số trang quét tối đa mỗi portal</label>
+              <input type="number" id="scraperMaxPages" class="form-input" min="1" max="20" value="3">
+            </div>
+            <div class="form-group">
+              <label>Thời gian nghỉ giữa các request (giây)</label>
+              <input type="number" id="scraperDelay" class="form-input" min="0.5" max="10" step="0.5" value="2.0">
+            </div>
+          </div>
+
+          <div style="margin-top: 12px;">
+            <button type="button" class="btn btn-secondary btn-sm" id="btnRunScraper">Lưu & Kích hoạt Cào Dữ Liệu Ngay</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="btnCancelSettings">Hủy</button>
+        <button class="btn btn-primary btn-sm" id="btnSaveSettings">Lưu Cài Đặt</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

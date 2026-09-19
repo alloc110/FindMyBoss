@@ -1,17 +1,116 @@
+# =========================================================
+# FindMyBoss — Docker Compose Microservices Stack
+# 3 chuyên biệt containers:
+#   1. web       (Port 8000) - Web Studio & API Gateway
+#   2. renderer  (Port 8001) - LaTeX PDF Engine (Tectonic)
+#   3. scraper   (Port 8002) - Playwright Job Harvester
+# =========================================================
+
 services:
-  scraper:
+  # ----------------------------------------------------------
+  # Microservice 1: Web Studio & API Gateway
+  # Responsibilities: UI Dashboard, AI CV Tailoring, Settings
+  # Image: ~200MB (python:3.12-slim + AI SDKs, no Chromium)
+  # ----------------------------------------------------------
+  web:
     build:
       context: .
-      dockerfile: Dockerfile
-    image: findmyboss-scraper:latest
-    container_name: findmyboss_scraper
-    restart: "no" # Never auto-restart: container stops and shuts down upon completion
-    shm_size: "2gb" # Prevent Chromium crashes from shared memory exhaustion
+      dockerfile: docker/web/Dockerfile
+    image: findmyboss-web:latest
+    container_name: findmyboss_web
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
     env_file:
       - .env
+    environment:
+      - RENDERER_SERVICE_URL=http://renderer:8001
+      - SCRAPER_SERVICE_URL=http://scraper:8002
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Ho_Chi_Minh
     volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
+      - ./data:/app/data          # SQLite DB, PDFs, settings, rules
+      - ./logs:/app/logs          # Application logs
+    depends_on:
+      renderer:
+        condition: service_healthy
+      scraper:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/stats"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - findmyboss_net
+
+  # ----------------------------------------------------------
+  # Microservice 2: LaTeX PDF Renderer Engine
+  # Responsibilities: Compile .tex → .pdf with Tectonic XeTeX
+  # Image: ~130MB (debian-slim + Tectonic binary + FastAPI)
+  # ----------------------------------------------------------
+  renderer:
+    build:
+      context: .
+      dockerfile: docker/renderer/Dockerfile
+    image: findmyboss-renderer:latest
+    container_name: findmyboss_renderer
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
     environment:
       - PYTHONUNBUFFERED=1
       - TZ=Asia/Ho_Chi_Minh
+    volumes:
+      - ./data:/app/data          # Shared volume for compiled PDFs in data/cvs/
+      - ./templates:/app/templates  # LaTeX templates (hot-reload friendly)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - findmyboss_net
+
+  # ----------------------------------------------------------
+  # Microservice 3: Job Harvester & Scraper Worker
+  # Responsibilities: Playwright Chromium crawler for VN job portals
+  # Image: ~1GB (python:3.12-slim + Playwright Chromium)
+  # shm_size: 2gb prevents Chromium shared-memory crashes
+  # ----------------------------------------------------------
+  scraper:
+    build:
+      context: .
+      dockerfile: docker/scraper/Dockerfile
+    image: findmyboss-scraper:latest
+    container_name: findmyboss_scraper
+    restart: unless-stopped
+    shm_size: "2gb"               # Critical: prevent Chromium from crashing on /dev/shm exhaustion
+    ports:
+      - "8002:8002"
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Ho_Chi_Minh
+    volumes:
+      - ./data:/app/data          # SQLite DB (jobs.db) and scraper config
+      - ./logs:/app/logs          # Scrape logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - findmyboss_net
+
+# ----------------------------------------------------------
+# Network: Isolated bridge network for inter-service comms
+# ----------------------------------------------------------
+networks:
+  findmyboss_net:
+    driver: bridge
+    name: findmyboss_net

@@ -1,0 +1,79 @@
+{
+  "name": "Nguyễn Văn A",
+  "title": "Software Engineer / Backend Developer",
+  "email": "nguyenvana.dev@gmail.com",
+  "phone": "+84 901 234 567",
+  "location": "Hồ Chí Minh, Việt Nam",
+  "github": "https://github.com/nguyenvana",
+  "linkedin": "https://linkedin.com/in/nguyenvana",
+  "summary": "Software Engineer with 1+ years of experience specializing in Python, FastAPI, and asynchronous backend architectures. Passionate about building robust web scrapers, automated workflows, and scalable API services.",
+  "skills": {
+    "Languages": [
+      "Python",
+      "JavaScript",
+      "SQL",
+      "Bash"
+    ],
+    "Frameworks & Tools": [
+      "FastAPI",
+      "Playwright",
+      "Docker",
+      "SQLite",
+      "PostgreSQL",
+      "Git"
+    ],
+    "Core Competencies": [
+      "RESTful APIs",
+      "Web Scraping",
+      "Data Extraction",
+      "CI/CD Automation"
+    ]
+  },
+  "experiences": [
+    {
+      "role": "Junior Backend / Python Developer",
+      "company": "Tech Solutions Vietnam",
+      "location": "Hồ Chí Minh",
+      "date": "2023 - Present",
+      "bullets": [
+        "Architected automated data collection pipelines with Playwright and BeautifulSoup, increasing data throughput by 40%.",
+        "Engineered RESTful APIs with FastAPI and SQLite, supporting asynchronous high-concurrency requests with low latency.",
+        "Containerized core microservices using Docker and integrated Discord webhook notifications for automated real-time alerts."
+      ]
+    },
+    {
+      "role": "Software Engineering Intern",
+      "company": "FPT Software",
+      "location": "Hồ Chí Minh",
+      "date": "2022 - 2023",
+      "bullets": [
+        "Collaborated with senior engineers to implement data ingestion scripts and database migration utilities.",
+        "Authored unit tests using pytest and unittest, achieving 85%+ test coverage across core application modules."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "FindMyBoss (Intelligent Job Scraper & ATS CV Engine)",
+      "technologies": "Python, Playwright, FastAPI, SQLite, Gemini AI, Tectonic",
+      "bullets": [
+        "Constructed a multi-portal scraper harvesting tech jobs across 6 Vietnamese platforms with anti-bot evasion.",
+        "Integrated Gemini API to automatically analyze job descriptions and compile ATS-compliant LaTeX CVs."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "Đại học Bách Khoa TP.HCM (HCMUT)",
+      "degree": "B.S. in Computer Science & Information Technology",
+      "location": "Hồ Chí Minh",
+      "date": "2019 - 2023"
+    }
+  ],
+  "master_cv_filename": "master_cv.pdf",
+  "master_cv_text": "Nguyễn Văn A\nSoftware Engineer / Backend Developer\n+84 901 234 567 | nguyenvana.dev@gmail.com | linkedin.com/in/nguyenvana | github.com/nguyenvana | Hồ Chí Minh, Việt Nam\nProfessional Summary\nPassionate Software Engineer specialized in high-performance web scrapers and async APIs.\nTechnical Skills\nLanguages: Python, JavaScript, SQL, Bash\nF rameworks & T ools: FastAPI, Playwright, Docker, SQLite, PostgreSQL, Git\nCore Competencies : RESTful APIs, Web Scraping, Data Extraction, CI/CD Automation\nT arget Role Keywords: FastAPI, Playwright, Docker, SQLite, Tectonic\nExperience\nJunior Backend / Python Developer Hồ Chí Minh\nTech Solutions Vietnam 2023 - Present\n– Engineered scalable microservices using Python and FastAPI, improving data processing speed by 35%.\n– Implemented automated Playwright scraping pipelines with anti-detection mechanisms across 6 platforms.\n– Constructed ATS-compliant resume compilation service using Tectonic engine.\nSoftware Engineering Intern Hồ Chí Minh\nFPT Software 2022 - 2023\n– Collaborated with senior engineers to implement data ingestion scripts and database migration utilities.\n– Authored unit tests using pytest and unittest, achieving 85%+ test coverage across core application modules.\nKey Projects\nFindMyBoss (Intelligent Job Scraper & A TS CV Engine) Python, Playwright, FastAPI, SQLite, Gemini AI, Tectonic\nKey Contributor\n– Constructed a multi-portal scraper harvesting tech jobs across 6 Vietnamese platforms with anti-bot evasion.\n– Integrated Gemini API to automatically analyze job descriptions and compile ATS-compliant LaTeX CVs.\nEducation\nĐại học Bách Khoa TP .HCM (HCMUT) Hồ Chí Minh\nB.S. in Computer Science & Information Technology 2019 - 2023",
+  "master_cv_pages": 1,
+  "ats_rules": "1. Chấm điểm khắt khe về các công nghệ cốt lõi và framework mà JD yêu cầu.\n2. Phân tích rõ các từ khóa kỹ thuật (technical keywords) quan trọng còn thiếu trong hồ sơ.\n3. Ưu tiên kinh nghiệm thực chiến, dự án thực tế và tự động hóa hệ thống.\n4. Đánh giá tính phù hợp thực tế với cấp bậc tuyển dụng (Intern/Fresher/Junior).",
+  "cv_rules": "1. Tuyệt đối dựa trên thông tin có thật trong File PDF Tổng hợp của ứng viên, KHÔNG ĐƯỢC BỊA ĐẶT kinh nghiệm.\n2. Lựa chọn và làm nổi bật các dự án/kinh nghiệm có độ tương thích cao nhất với JD này.\n3. Viết các gạch đầu dòng kinh nghiệm (Bullets) theo chuẩn Google XYZ (Accomplished [X] measured by [Y] by doing [Z]).\n4. Bắt đầu mỗi bullet bằng một động từ hành động mạnh mẽ (Architected, Spearheaded, Engineered, Optimized, Automated...).\n5. Tối ưu từ khóa kỹ thuật của JD một cách tự nhiên để vượt qua hệ thống quét ATS.\n6. Đoạn tóm tắt (Summary) viết từ 3-4 câu hướng thẳng vào giá trị thực tế mang lại cho vị trí mục tiêu tại công ty.",
+  "master_cv_words": 236
+}

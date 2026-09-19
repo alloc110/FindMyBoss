@@ -3,4 +3,13 @@ venv/
 __pycache__/
 *.pyc
 *.log
-*.png
+bin/
+*.pdf
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+data/cvs/
+data/master_cv.pdf
+data/master_cv_text.txt
+!assets/*

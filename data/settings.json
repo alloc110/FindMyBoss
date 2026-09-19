@@ -1,0 +1,11 @@
+{
+  "ai_provider": "gemini",
+  "gemini_api_key": "AIzaSyFakeTestKeyForUnitTests999",
+  "openai_api_key": "sk-proj-faketestkey1234567890abcdef",
+  "anthropic_api_key": "",
+  "custom_api_key": "",
+  "ai_model": "gemini-1.5-pro",
+  "gemini_model": "gemini-1.5-pro",
+  "custom_base_url": "https://api.deepseek.com/v1",
+  "theme": "light"
+}

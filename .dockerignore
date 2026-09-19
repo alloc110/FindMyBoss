@@ -9,15 +9,35 @@ cron_debug.log
 .git/
 .gitignore
 
-# Environments
+# Python virtual environment
 venv/
 env/
+.venv/
+
+# Secrets (never bake API keys into images)
 .env
 
-# Data & Output (mounted via volume)
-data/*.jsonl
+# Data & Output (mounted via Docker volumes, not baked into image)
+data/
 logs/
 
-# IDE
+# IDE & OS
 .vscode/
 .idea/
+*.DS_Store
+*.swp
+
+# Test artifacts
+tests/
+*.test.py
+pytest_cache/
+.coverage
+htmlcov/
+
+# Node (if any frontend tooling)
+node_modules/
+dist/
+.next/
+
+# Tectonic font cache (large, rebuilt inside container)
+.tectonic/

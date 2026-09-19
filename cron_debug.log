@@ -10817,3 +10817,412 @@ Call log:
 [2026-09-13 22:04:27] INFO [ScraperOrchestrator]: Pipeline executed successfully. Aggregated jobs count: 0
 [2026-09-13 22:04:27] INFO [ScraperOrchestrator]: Total orchestration execution duration: 265.75 seconds
 [2026-09-13 22:04:27] INFO [ScraperOrchestrator]: ================================================================================
+[2026-09-19 22:00:02] INFO [ScraperOrchestrator]: Initializing global enterprise chromium infrastructure...
+[2026-09-19 22:00:04] INFO [ScraperOrchestrator]: ================ Launching Engine: IndeedJob ================
+[2026-09-19 22:00:07] INFO [IndeedJob]: 🚀 Routing to Indeed target endpoint: https://vn.indeed.com/jobs?q=data+engineer&l=Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh&fromage=1
+[2026-09-19 22:00:14] INFO [IndeedJob]: Processing Indeed batch page: 1
+[2026-09-19 22:00:14] INFO [IndeedJob]: 🔍 [Today] Found 0 job cards on this page viewport
+[2026-09-19 22:00:15] INFO [IndeedJob]: 🚀 Routing to Indeed target endpoint: https://vn.indeed.com/jobs?q=data+engineer+intern&l=Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh&fromage=1
+[2026-09-19 22:00:23] INFO [IndeedJob]: Processing Indeed batch page: 1
+[2026-09-19 22:00:23] INFO [IndeedJob]: 🔍 [Today] Found 5 job cards on this page viewport
+[2026-09-19 22:00:24] INFO [IndeedJob]: 📋 Filter summary: Retained 3/5 valid jobs.
+[2026-09-19 22:00:24] INFO [ScraperOrchestrator]: Phase 1 complete: Harvested 3 candidate jobs from IndeedJob
+[2026-09-19 22:00:24] INFO [ScraperOrchestrator]: 🔍 [Phase 2] Deep scraping full JD (1/3): Software Engineer Intern (OPSWAT)
+[2026-09-19 22:00:27] INFO [ScraperOrchestrator]: 🔍 [Phase 2] Deep scraping full JD (2/3): Accountant Intern (Noventiq)
+[2026-09-19 22:00:30] INFO [ScraperOrchestrator]: 🔍 [Phase 2] Deep scraping full JD (3/3): Business Brand Partnership Project Intern (GBS) - 2026 Start (TikTok)
+[2026-09-19 22:00:34] INFO [JobStorage]: 💾 Persisted 3 new full-JD job records to: data/jobs.jsonl
+[2026-09-19 22:00:34] INFO [ScraperOrchestrator]: 💾 Saved 3 jobs to data/jobs.jsonl (Total in DB: 3)
+[2026-09-19 22:00:34] INFO [ScraperOrchestrator]: Dispatching 3 clean alert(s) to Discord...
+[2026-09-19 22:00:37] INFO [DiscordNotifier]: 📬 Dispatched 3/3 jobs successfully to Discord.
+[2026-09-19 22:00:42] INFO [ScraperOrchestrator]: Cumulative tracking metric: 3 total jobs aggregated so far.
+[2026-09-19 22:00:43] INFO [ScraperOrchestrator]: ================ Launching Engine: VietnamWorksJob ================
+[2026-09-19 22:00:43] INFO [VietnamWorksJob]: 📂 Shifting VietnamWorks context: [Data Engineer] | Level: [Thực tập sinh/Sinh viên]
+[2026-09-19 22:00:50] INFO [VietnamWorksJob]: Processing VietnamWorks batch at Page: 1
+[2026-09-19 22:00:50] INFO [VietnamWorksJob]: 🚫 No jobs matching search criteria on VietnamWorks layout.
+[2026-09-19 22:00:50] INFO [VietnamWorksJob]: 🏁 VietnamWorks pagination terminal reached at (1) pages.
+[2026-09-19 22:00:50] INFO [VietnamWorksJob]: 📂 Shifting VietnamWorks context: [Data Engineer] | Level: [Mới tốt nghiệp]
+[2026-09-19 22:00:54] INFO [VietnamWorksJob]: Processing VietnamWorks batch at Page: 1
+[2026-09-19 22:00:54] INFO [VietnamWorksJob]: 🔍 Found 2 raw job cards on VietnamWorks.
+[2026-09-19 22:01:03] INFO [VietnamWorksJob]: 🏁 VietnamWorks pagination terminal reached at (1) pages.
+[2026-09-19 22:01:03] INFO [VietnamWorksJob]: 📂 Shifting VietnamWorks context: [Data Engineer] | Level: [Nhân viên]
+[2026-09-19 22:01:07] INFO [VietnamWorksJob]: Processing VietnamWorks batch at Page: 1
+[2026-09-19 22:01:07] INFO [VietnamWorksJob]: 🔍 Found 9 raw job cards on VietnamWorks.
+[2026-09-19 22:01:47] INFO [VietnamWorksJob]: 🏁 VietnamWorks pagination terminal reached at (1) pages.
+[2026-09-19 22:01:47] INFO [VietnamWorksJob]: 📋 Filter summary: Retained 0/0 valid jobs.
+[2026-09-19 22:01:47] INFO [ScraperOrchestrator]: Phase 1 complete: Harvested 0 candidate jobs from VietnamWorksJob
+[2026-09-19 22:01:52] INFO [ScraperOrchestrator]: Cumulative tracking metric: 3 total jobs aggregated so far.
+[2026-09-19 22:01:53] INFO [ScraperOrchestrator]: ================ Launching Engine: ITviecJob ================
+[2026-09-19 22:01:53] INFO [ITviecJob]: 📂 Navigating execution context to specialization: [Data Analyst]
+[2026-09-19 22:01:57] INFO [ITviecJob]: Batch processing extraction matrix index at Page: 1
+[2026-09-19 22:01:57] INFO [ITviecJob]: 🔍 Found 14 raw job cards on current canvas.
+[2026-09-19 22:01:58] INFO [ITviecJob]: 🏁 Termination boundary reached at (1) pages.
+[2026-09-19 22:01:58] INFO [ITviecJob]: 📂 Navigating execution context to specialization: [Big Data Engineer]
+[2026-09-19 22:02:01] INFO [ITviecJob]: Batch processing extraction matrix index at Page: 1
+[2026-09-19 22:02:01] INFO [ITviecJob]: 🔍 Found 20 raw job cards on current canvas.
+[2026-09-19 22:02:06] INFO [ITviecJob]: Batch processing extraction matrix index at Page: 2
+[2026-09-19 22:02:06] INFO [ITviecJob]: 🔍 Found 10 raw job cards on current canvas.
+[2026-09-19 22:02:07] INFO [ITviecJob]: 🏁 Termination boundary reached at (2) pages.
+[2026-09-19 22:02:07] INFO [ITviecJob]: 📂 Navigating execution context to specialization: [Data Engineer]
+[2026-09-19 22:02:10] INFO [ITviecJob]: Batch processing extraction matrix index at Page: 1
+[2026-09-19 22:02:10] INFO [ITviecJob]: 🔍 Found 20 raw job cards on current canvas.
+[2026-09-19 22:02:16] INFO [ITviecJob]: Batch processing extraction matrix index at Page: 2
+[2026-09-19 22:02:16] INFO [ITviecJob]: 🔍 Found 9 raw job cards on current canvas.
+[2026-09-19 22:02:17] INFO [ITviecJob]: 🏁 Termination boundary reached at (2) pages.
+[2026-09-19 22:02:17] INFO [ITviecJob]: 📂 Navigating execution context to specialization: [DataOps / MLOps Engineer]
+[2026-09-19 22:02:19] INFO [ITviecJob]: Batch processing extraction matrix index at Page: 1
+[2026-09-19 22:02:19] INFO [ITviecJob]: 🔍 Found 7 raw job cards on current canvas.
+[2026-09-19 22:02:19] INFO [ITviecJob]: 🏁 Termination boundary reached at (1) pages.
+[2026-09-19 22:02:19] INFO [ITviecJob]: 📂 Navigating execution context to specialization: [Database Engineer]
+[2026-09-19 22:02:22] INFO [ITviecJob]: Batch processing extraction matrix index at Page: 1
+[2026-09-19 22:02:22] INFO [ITviecJob]: 🔍 Found 20 raw job cards on current canvas.
+[2026-09-19 22:02:28] INFO [ITviecJob]: Batch processing extraction matrix index at Page: 2
+[2026-09-19 22:02:28] INFO [ITviecJob]: 🔍 Found 20 raw job cards on current canvas.
+[2026-09-19 22:02:34] INFO [ITviecJob]: Batch processing extraction matrix index at Page: 3
+[2026-09-19 22:02:34] INFO [ITviecJob]: 🔍 Found 1 raw job cards on current canvas.
+[2026-09-19 22:02:34] INFO [ITviecJob]: 🏁 Termination boundary reached at (3) pages.
+[2026-09-19 22:02:34] INFO [ScraperOrchestrator]: Phase 1 complete: Harvested 0 candidate jobs from ITviecJob
+[2026-09-19 22:02:39] INFO [ScraperOrchestrator]: Cumulative tracking metric: 3 total jobs aggregated so far.
+[2026-09-19 22:02:40] INFO [ScraperOrchestrator]: ================ Launching Engine: JobsGoJob ================
+[2026-09-19 22:02:40] INFO [JobsGoJob]: 📂 Navigating execution context: [Software Engineer] | Filter: [khong-can-kinh-nghiem]
+[2026-09-19 22:02:45] WARNING [JobsGoJob]: 🚧 No target matches for [Software Engineer] | [khong-can-kinh-nghiem]. Skipping.
+[2026-09-19 22:02:45] INFO [JobsGoJob]: 📂 Navigating execution context: [Software Engineer] | Filter: [duoi-1-nam-kinh-nghiem]
+[2026-09-19 22:02:48] INFO [JobsGoJob]: Processing JobsGO extraction page: 1
+[2026-09-19 22:02:48] INFO [JobsGoJob]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-09-19 22:02:48] INFO [JobsGoJob]: 🏁 Termination boundary reached. Finalized at 1 pages.
+[2026-09-19 22:02:48] INFO [JobsGoJob]: 📂 Navigating execution context: [Software Engineer] | Filter: [1-2-nam-kinh-nghiem]
+[2026-09-19 22:02:50] INFO [JobsGoJob]: Processing JobsGO extraction page: 1
+[2026-09-19 22:02:50] INFO [JobsGoJob]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-09-19 22:02:50] INFO [JobsGoJob]: 🏁 Termination boundary reached. Finalized at 1 pages.
+[2026-09-19 22:02:50] INFO [JobsGoJob]: 📂 Navigating execution context: [Data Engineer] | Filter: [khong-can-kinh-nghiem]
+[2026-09-19 22:02:52] INFO [JobsGoJob]: Processing JobsGO extraction page: 1
+[2026-09-19 22:02:52] INFO [JobsGoJob]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-09-19 22:02:52] INFO [JobsGoJob]: 🏁 Termination boundary reached. Finalized at 1 pages.
+[2026-09-19 22:02:52] INFO [JobsGoJob]: 📂 Navigating execution context: [Data Engineer] | Filter: [duoi-1-nam-kinh-nghiem]
+[2026-09-19 22:02:54] INFO [JobsGoJob]: Processing JobsGO extraction page: 1
+[2026-09-19 22:02:54] INFO [JobsGoJob]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-09-19 22:02:54] INFO [JobsGoJob]: 🏁 Termination boundary reached. Finalized at 1 pages.
+[2026-09-19 22:02:54] INFO [JobsGoJob]: 📂 Navigating execution context: [Data Engineer] | Filter: [1-2-nam-kinh-nghiem]
+[2026-09-19 22:02:57] INFO [JobsGoJob]: Processing JobsGO extraction page: 1
+[2026-09-19 22:02:57] INFO [JobsGoJob]: 🔍 Found 0 raw job card tokens on the current viewport.
+[2026-09-19 22:02:57] INFO [JobsGoJob]: 🏁 Termination boundary reached. Finalized at 1 pages.
+[2026-09-19 22:02:57] INFO [ScraperOrchestrator]: Phase 1 complete: Harvested 0 candidate jobs from JobsGoJob
+[2026-09-19 22:03:02] INFO [ScraperOrchestrator]: Cumulative tracking metric: 3 total jobs aggregated so far.
+[2026-09-19 22:03:03] INFO [ScraperOrchestrator]: ================ Launching Engine: TopCVJob ================
+[2026-09-19 22:03:03] INFO [TopCVJob]: 📂 TopCV shifting context: [Data Engineer] | Level: [Không yêu cầu]
+[2026-09-19 22:03:12] INFO [TopCVJob]: Processing TopCV batch at Page: 1
+[2026-09-19 22:03:12] INFO [TopCVJob]: 🔍 Found 1 raw job cards on TopCV.
+[2026-09-19 22:03:12] INFO [TopCVJob]: 🏁 TopCV pagination terminal reached at 1 pages.
+[2026-09-19 22:03:12] INFO [TopCVJob]: 📂 TopCV shifting context: [Data Engineer] | Level: [Dưới 1 năm]
+[2026-09-19 22:03:18] INFO [TopCVJob]: Processing TopCV batch at Page: 1
+[2026-09-19 22:03:19] INFO [TopCVJob]: 🔍 Found 1 raw job cards on TopCV.
+[2026-09-19 22:03:19] INFO [TopCVJob]: 🏁 TopCV pagination terminal reached at 1 pages.
+[2026-09-19 22:03:19] INFO [TopCVJob]: 📂 TopCV shifting context: [Data Engineer] | Level: [1 năm]
+[2026-09-19 22:03:26] INFO [TopCVJob]: Processing TopCV batch at Page: 1
+[2026-09-19 22:03:26] INFO [TopCVJob]: 🔍 Found 1 raw job cards on TopCV.
+[2026-09-19 22:03:26] INFO [TopCVJob]: 🏁 TopCV pagination terminal reached at 1 pages.
+[2026-09-19 22:03:26] INFO [ScraperOrchestrator]: Phase 1 complete: Harvested 0 candidate jobs from TopCVJob
+[2026-09-19 22:03:31] INFO [ScraperOrchestrator]: Cumulative tracking metric: 3 total jobs aggregated so far.
+[2026-09-19 22:03:32] INFO [ScraperOrchestrator]: ================ Launching Engine: TopDevJob ================
+[2026-09-19 22:03:32] INFO [TopDevJob]: 🚀 Navigating TopDev to target index: https://topdev.vn/jobs/search
+[2026-09-19 22:03:37] INFO [TopDevJob]: 🎯 Selecting IT domain on TopDev...
+[2026-09-19 22:03:43] INFO [TopDevJob]: Processing TopDev extraction on page: 1
+[2026-09-19 22:03:43] INFO [TopDevJob]: Found 15 raw job cards on TopDev.
+[2026-09-19 22:03:44] INFO [TopDevJob]: 🚫 TopDev next page button marked disabled.
+[2026-09-19 22:03:44] INFO [ScraperOrchestrator]: Phase 1 complete: Harvested 2 candidate jobs from TopDevJob
+[2026-09-19 22:03:44] INFO [ScraperOrchestrator]: 🔍 [Phase 2] Deep scraping full JD (1/2): CHUYÊN VIÊN KHOA HỌC DỮ LIỆU - PHÒNG PHÂN TÍCH DỮ LIỆU & AI - KHỐI CÔNG NGHỆ THÔNG TIN (NGÂN HÀNG THƯƠNG MẠI CỔ PHẦN SÀI GÒN TÀI LỘC (SACOMBANK))
+[2026-09-19 22:03:48] INFO [ScraperOrchestrator]: 🔍 [Phase 2] Deep scraping full JD (2/2): PRODUCT MANAGER – IT/CYBERSECURITY VENDOR MANAGEMENT (CÔNG TY CỔ PHẦN TIN HỌC MI MI)
+[2026-09-19 22:03:51] INFO [JobStorage]: 💾 Persisted 2 new full-JD job records to: data/jobs.jsonl
+[2026-09-19 22:03:51] INFO [ScraperOrchestrator]: 💾 Saved 2 jobs to data/jobs.jsonl (Total in DB: 5)
+
+======================================================================
+📦 KẾT QUẢ CHI TIẾT (3 Jobs từ IndeedJob):
+======================================================================
+
+🔹 [1] SOFTWARE ENGINEER INTERN - OPSWAT
+   🔗 Link:        https://vn.indeed.com/rc/clk?jk=ffe69363c73071a8&bb=VlGza-aRbCfpeFDsjyMiWnEyVZuO71KRXtGDat1_B4wBjVST6n4vF5qTeCDsZQNqp-PRXKUUc3e8miBWVcpkaXw94rh5YUq5t8VDePG9rjpOmNRrrStVe1T50PyRdzxR&xkcb=SoAB67M2edN6gxTdpB0LbzkdCdPP&fccid=6ac8f6befa65982b&vjs=3
+   💰 Lương:       Deal
+   ⏳ Kinh nghiệm: Chưa rõ
+   📍 Địa điểm:    Thành phố Hồ Chí Minh
+   📋 Yêu cầu ứng viên:
+      này là a3d975b2dd539cce
+      
+      Trở về trang chủ
+        →
+      
+      Khắc phục sự cố lỗi Cloudflare
+      
+      Bạn cần giúp đỡ thêm? Liên hệ với chúng tôi
+   📅 Đăng:        Today
+----------------------------------------------------------------------
+
+🔹 [2] ACCOUNTANT INTERN - Noventiq
+   🔗 Link:        https://vn.indeed.com/rc/clk?jk=ada802ed9e32c90b&bb=VlGza-aRbCfpeFDsjyMiWhtu-3ZIB7ZHXQhBPG_vydlW66Wpx6PfcA1-nePQa7wK6BDu8YCkr9ufSeKqTAx4Jvxhn1IL5MePF9DOMPgIf4UEzPu6EGuKr0sKTXyqW1GY&xkcb=SoC167M2edN6gxTdpB0KbzkdCdPP&fccid=6f952a954909a9dc&vjs=3
+   💰 Lương:       Deal
+   ⏳ Kinh nghiệm: Chưa rõ
+   📍 Địa điểm:    Thành phố Hồ Chí Minh
+   📋 Yêu cầu ứng viên:
+      này là a3d975c84d529cce
+      
+      Trở về trang chủ
+        →
+      
+      Khắc phục sự cố lỗi Cloudflare
+      
+      Bạn cần giúp đỡ thêm? Liên hệ với chúng tôi
+   📅 Đăng:        Today
+----------------------------------------------------------------------
+
+🔹 [3] BUSINESS BRAND PARTNERSHIP PROJECT INTERN (GBS) - 2026 START - TikTok
+   🔗 Link:        https://vn.indeed.com/rc/clk?jk=a0a520a73e1d8c86&bb=VlGza-aRbCfpeFDsjyMiWueLxB16kXXHlKPy7NyyQCobM0nCTXkSgsGyj9OTE5GC5lIu8mWnu_VpRHHrolFUhP4QDb_9NgRGpQPcjSlArZVNQ7VYoPaHOZjUZn7uaTKG&xkcb=SoCc67M2edN6gxTdpB0IbzkdCdPP&fccid=caed318a9335aac0&vjs=3
+   💰 Lương:       Deal
+   ⏳ Kinh nghiệm: Chưa rõ
+   📍 Địa điểm:    Thành phố Hồ Chí Minh
+   📋 Yêu cầu ứng viên:
+      này là a3d975dc5d019cce
+      
+      Trở về trang chủ
+        →
+      
+      Khắc phục sự cố lỗi Cloudflare
+      
+      Bạn cần giúp đỡ thêm? Liên hệ với chúng tôi
+   📅 Đăng:        Today
+----------------------------------------------------------------------
+======================================================================
+
+
+======================================================================
+📦 KẾT QUẢ CHI TIẾT (2 Jobs từ TopDevJob):
+======================================================================
+
+🔹 [1] CHUYÊN VIÊN KHOA HỌC DỮ LIỆU - PHÒNG PHÂN TÍCH DỮ LIỆU & AI - KHỐI CÔNG NGHỆ THÔNG TIN - NGÂN HÀNG THƯƠNG MẠI CỔ PHẦN SÀI GÒN TÀI LỘC (SACOMBANK)
+   🔗 Link:        https://topdev.vn/detail-jobs/chuyen-vien-khoa-hoc-du-lieu-phong-phan-tich-du-lieu-ai-khoi-cong-nghe-thong-tin-ngan-hang-thuong-mai-co-phan-sai-gon-tai-loc-sacombank-2133067?src=topdev_home&medium=superhotjobs
+   💰 Lương:       Deal
+   ⏳ Kinh nghiệm: Chuyên viên
+   📍 Địa điểm:    Hồ Chí Minh
+   📋 Yêu cầu ứng viên:
+      Đại học trở lên trong các lĩnh vực: Thống kê, Toán học, Khoa học Máy tính, Khoa học Dữ liệu, Phân tích định lượng, Công nghệ Thông tin hoặc các ngành liên quan.
+      5 – 7+ năm kinh nghiệm thực tế trong phân tích dữ liệu, phát triển Machine Learning/Deep Learning trên dữ liệu quy mô lớn và mô hình thống kê nâng cao
+      Kinh nghiệm với công nghệ Big Data như Spark hoặc Scala.
+      Thành thạo Python (pandas, numpy, scikit-learn, xgboost, pytorch/tensorflow). Hiểu sâu về (Supervised / Unsupervised Learning, Feature Engineering , Model Evaluation & Tuning ).
+      Kinh nghiệm sử dụng các framework  như pytorch, tensorflow.
+      Kinh nghiệm làm việc với SQL, Oracle và hệ thống dữ liệu lớn.
+      Có thành tích triển khai thành công các sản phẩm dữ liệu, giải pháp phân tích nâng cao hoặc hệ thống AI trong môi trường thực tế.
+      Có kinh nghiệm ứng dụng Machine Learning/AI trong ngân hàng, tài chính hoặc các ngành có dữ liệu lớn và yêu cầu cao.
+      Tư duy chiến lược, có khả năng chuyển hóa insight kỹ thuật thành giá trị kinh doanh và trao đổi hiệu quả với lãnh đạo cấp cao
+      Kinh nghiệm làm việc trong môi trường Agile, hiểu rõ Scrum trong triển khai các dự án dữ liệu phức tạp
+      Năng lực lãnh đạo tốt: mentoring, xây dựng đội nhóm và thúc đẩy hiệu suất cao .
+      Kinh nghiệm MLOps (MLflow, Kubeflow, Docker, Kubernetes), cloud là lợi thế.
+      Có chứng chỉ hoặc công bố khoa học là lợi thế
+      Khả năng sử dụng tiếng Anh tốt trong môi trường làm việc chuyên nghiệp
+      3
+   🎁 Quyền lợi:
+      Quyền lợi
+      
+      Mức lương cạnh tranh theo năng lực 
+      Cơ hội tham gia các dự án chuyển đổi số quy mô lớn 
+      Môi trường làm việc chuyên nghiệp, ổn định và định hướng lâu dài 
+      Bảo hiểm, phúc lợi đầy đủ theo chính sách ngân hàng
+      
+       
+      
+      Địa điểm:
+      
+      TP Hồ Chí Minh.
+      More jobs for you
+      Senior AI Expert - Khối Công nghệ thông tin (2026TD450201)
+      MBBANK
+      Login to view salary
+      Machine Learning
+      NLP
+      Deep Learning
+      EASY APPLY
+      Test Developer (C#, Python, Linux, IP Networking)
+      Motorola Solutions, VietNam R&D Center
+      Login to view salary
+      Linux
+      C#
+      Python
+      EASY APPLY
+      AI Expert - Khối Công nghệ thông tin (2026TD450200)
+      MBBANK
+      Login to view salary
+      Machine Learning
+      NLP
+      Deep Learning
+      EASY APPLY
+      Trưởng phòng Nền tảng kiểm thử - Head of Testing Platform (Automation Test / Performance Test) - Khối Công nghệ thông tin (2026TD457052)
+      MBBANK
+      Login to view salary
+      Java
+      Python
+      Performance Testing
+      4+
+      EASY APPLY
+      SOFTWARE LEAD – GIẢI PHÁP KHO THÔNG MINH
+      Saramin's Client
+      Login to view salary
+      Java
+      Python
+      Golang
+      EASY APPLY
+      Software Test Engineer (Vietnam)
+      WEBSPARKS
+      Login to view salary
+      Python
+      Selenium
+      Test Engineer
+      EASY APPLY
+      AI Engineer - Agentic AI Platform
+      CÔNG TY CỔ PHẦN UDATA
+      Login to view salary
+      Python
+      AI
+      EASY APPLY
+      QA Automation Engineer (MLOps/ AI)
+      Motorola Solutions, VietNam R&D Center
+      Login to view salary
+      Python
+      Automation QA
+      EASY APPLY
+      Chuyên viên Cao cấp Công nghệ Mô hình - Senior Machine Learning Engineer - Khối Dữ liệu (2026TD456629)
+      MBBANK
+      Login to view salary
+      Python
+      Docker
+      EASY APPLY
+      NGÂN HÀNG THƯƠNG MẠI CỔ PHẦN SÀI GÒN TÀI LỘC (SACOMBANK)
+      Industry
+      Product, Fintech, Ngân Hàng, Finance
+      Size
+      10.000-19.999 Employees
+      Country
+      Vietnam
+      2 job openings
+      View company
+      1 Other jobs at this company
+      CHUYÊN VIÊN PHÁT TRIỂN PHẦN MỀM HỆ THỐNG (JAVA DEVELOPER)
+      Login to view salary
+      LET’S CONNECT THERE
+      WE ARE HERE
+      Level 12, 13, 14, AP Tower, 518B Dien Bien Phu Street, Thanh My Tay Ward, Ho Chi Minh City, Vietnam
+      SUBSCRIBE US ON
+      DOWNLOAD APP HERE
+      ABOUT SARAMIN
+   📅 Đăng:        20 hours ago
+----------------------------------------------------------------------
+
+🔹 [2] PRODUCT MANAGER – IT/CYBERSECURITY VENDOR MANAGEMENT - CÔNG TY CỔ PHẦN TIN HỌC MI MI
+   🔗 Link:        https://topdev.vn/detail-jobs/product-manager-it-cybersecurity-vendor-management-cong-ty-co-phan-tin-hoc-mi-mi-2132677?src=topdev_home&medium=superhotjobs[2026-09-19 22:03:51] INFO [ScraperOrchestrator]: Dispatching 2 clean alert(s) to Discord...
+[2026-09-19 22:03:53] INFO [DiscordNotifier]: 📬 Dispatched 2/2 jobs successfully to Discord.
+[2026-09-19 22:03:58] INFO [ScraperOrchestrator]: Cumulative tracking metric: 5 total jobs aggregated so far.
+[2026-09-19 22:03:58] INFO [ScraperOrchestrator]: ================================================================================
+[2026-09-19 22:03:58] INFO [ScraperOrchestrator]: Pipeline executed successfully. Aggregated jobs count: 5
+[2026-09-19 22:03:58] INFO [ScraperOrchestrator]: Total dataset records in data/jobs.jsonl: 5
+[2026-09-19 22:03:58] INFO [ScraperOrchestrator]: Total orchestration execution duration: 236.46 seconds
+[2026-09-19 22:03:58] INFO [ScraperOrchestrator]: ================================================================================
+
+   💰 Lương:       Thỏa thuận
+   ⏳ Kinh nghiệm: Nhân viên
+   📍 Địa điểm:    Hồ Chí Minh
+   📋 Yêu cầu ứng viên:
+      của dự án.
+      Phối hợp xử lý các vấn đề liên quan đến sản phẩm, pricing hoặc vendor support trong quá trình bán hàng.
+      Theo dõi pipeline và phối hợp với các bên liên quan để đảm bảo tiến độ cơ hội.
+      2
+      Your skills & qualifications
+      Có 2 năm kinh nghiệm trở lên trong các vị trí: Product Specialist / Product Executive / Product Manager; Vendor Management; IT Solution / Technology; Hoặc các vị trí tương đương trong lĩnh vực IT.
+      Kinh nghiệm trong Cybersecurity/Information Security là lợi thế lớn.
+      Có khả năng tìm hiểu và nắm bắt nhanh sản phẩm, công nghệ, pricing và thị trường.
+      Tiếng Anh tốt, có khả năng: Trao đổi email với vendor nước ngoài; Đọc hiểu tài liệu sản phẩm; Trao đổi và đàm phán về pricing, discount, chính sách hỗ trợ.
+      Kỹ năng giao tiếp, presentation và negotiation tốt.
+      Tư duy sản phẩm, khả năng phối hợp nhiều bên và xử lý vấn đề tốt.
+      3
+   🎁 Quyền lợi:
+      Thu nhập Up to, cạnh tranh theo năng lực & kinh nghiệm. 
+      Thưởng theo kết quả kinh doanh, lương tháng 13 và các khoản thưởng Lễ/Tết. 
+      Bảo hiểm sức khỏe nâng cao, bên cạnh các chế độ bảo hiểm bắt buộc theo quy định của Nhà nước 
+      Du lịch hằng năm và các hoạt động Team Building. 
+      Được đào tạo chuyên môn về sản phẩm, công nghệ và giải pháp bảo mật. 
+      Làm việc trong môi trường chuyên nghiệp và năng động. 
+      More jobs for you
+      QA Engineer
+      Công ty TNHH chứng khoán NH Việt Nam (NHSV)
+      Login to view salary
+      QA
+      Tester
+      English
+      2+
+      EASY APPLY
+      Kỹ Sư An Ninh Thông Tin
+      Tổng Công Ty Hạ Tầng Mạng (VNPT-Net)
+      Login to view salary
+      Linux
+      Windows
+      IT Security
+      1+
+      EASY APPLY
+      SALES INBOUND (English Speaking)
+      CÔNG TY TNHH DU LỊCH VIETPOWER
+      Login to view salary
+      English
+      EASY APPLY
+      DevSecOps
+      CÔNG TY TNHH GIẢI PHÁP BRAIN TECH
+      Login to view salary
+      Cybersecurity
+      DevOps
+      EASY APPLY
+      CHUYÊN GIA ĐẢM BẢO AN NINH THÔNG TIN
+      CÔNG TY CỔ PHẦN CHỨNG KHOÁN VPBANK
+      Login to view salary
+      Fintech
+      Security Engineer
+      Penetration Test
+      1+
+      EASY APPLY
+      Chuyên viên Kế toán tổng hợp - General Accounting Specialist - Khối Tài chính Kế toán (2026TD456909)
+      MBBANK
+      Login to view salary
+      English
+      EASY APPLY
+      Solution Consulting Manager (FC Manager)
+      CÔNG TY CỔ PHẦN GIẢI PHÁP ORIS
+      Login to view salary
+      ERP
+      IT Presales
+      EASY APPLY
+      Chuyên viên cao cấp Bảo mật dữ liệu - Senior Data Security - Khối Dữ liệu (2026TD450980)
+      MBBANK
+      Login to view salary
+      SQL
+      Data Science
+      Cloud
+      3+
+      EASY APPLY
+      Intern (QA)
+      V-KEY
+      Login to view salary
+      QA
+      Web Developer
+      English
+      EASY APPLY
+      CÔNG TY CỔ PHẦN TIN HỌC MI MI
+      Industry
+      Công nghệ thông tin
+      Size
+      25-99 Employees
+      Country
+      Vietnam
+      1 job openings
+      View company
+      LET’S CONNECT THERE
+      WE ARE HERE
+      Level 12, 13, 14, AP Tower, 518B Dien Bien Phu Street, Thanh My Tay Ward, Ho Chi Minh City, Vietnam
+      SUBSCRIBE US ON
+      DOWNLOAD APP HERE
+      ABOUT SARAMIN
+   📅 Đăng:        20 hours ago
+----------------------------------------------------------------------
+======================================================================
+
