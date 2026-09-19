@@ -11,10 +11,11 @@
 ![SQLite](https://img.shields.io/badge/SQLite-WAL_Mode-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-1.58.0-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)
 ![Tests](https://img.shields.io/badge/Tests-24%2F24_Passing-success?style=for-the-badge&logo=pytest&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-3_Microservices-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 **An intelligent, multi-portal Vietnamese tech job harvester, ATS gap analyzer, application tracker, and automated LaTeX CV tailoring studio powered by Multi-Provider AI (Google Gemini, OpenAI / ChatGPT, Anthropic Claude, DeepSeek/Local LLM) & Tectonic.**
 
-[Live Demo](#-visual-showcase--demo) • [Key Features](#-key-features) • [System Architecture](#️-high-level-system-architecture) • [Quickstart Guide](#-quickstart-guide) • [Configuration](#️-configuration--environment-variables) • [Testing](#-automated-testing)
+[Live Demo](#-visual-showcase--demo) • [Key Features](#-key-features) • [Architecture](#️-system-architecture--docker-microservices) • [Quickstart Guide](#️-quickstart-guide) • [Configuration](#️-configuration--environment-variables) • [Testing](#-automated-testing)
 
 </div>
 
