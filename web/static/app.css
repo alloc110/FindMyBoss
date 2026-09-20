@@ -1901,5 +1901,256 @@ body.theme-light .status-chip.status-rejected {
   .overleaf-editor-pane, .overleaf-pdf-pane {
     height: 520px;
   }
+/* ==========================================================================
+   QUICK SCRAPE, DATE BADGES & SCRAPER MODAL ENHANCEMENTS
+   ========================================================================== */
+
+/* Scraped Date & Posted Date Badges */
+.meta-chip.meta-date {
+  background: rgba(14, 165, 233, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(14, 165, 233, 0.25);
+  font-size: 0.72rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+body.theme-light .meta-chip.meta-date {
+  background: #f0f9ff;
+  color: #0284c7;
+  border-color: #bae6fd;
+}
+
+.meta-badge-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-subtle);
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.meta-badge-date strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+body.theme-light .meta-badge-date {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #64748b;
+}
+
+body.theme-light .meta-badge-date strong {
+  color: #0f172a;
+}
+
+/* Accent Button for Scrape Jobs */
+.btn-accent {
+  background: linear-gradient(135deg, #0ea5e9, #10b981);
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(14, 165, 233, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-accent:hover {
+  background: linear-gradient(135deg, #0284c7, #059669);
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-accent:active {
+  transform: translateY(0);
+}
+
+/* Scraper Status Pill in Header */
+.scraper-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(14, 165, 233, 0.4);
+  color: #38bdf8;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+body.theme-light .scraper-status-pill {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  color: #0369a1;
+}
+
+.status-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0ea5e9;
+  box-shadow: 0 0 0 rgba(14, 165, 233, 0.7);
+  animation: pulse-ring 1.5s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(14, 165, 233, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0);
+  }
+}
+
+/* Quick Scrape Modal Card */
+.scrape-modal-card {
+  max-width: 580px;
+  width: 92%;
+}
+
+.portal-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+}
+
+.portal-quick-actions .link-btn {
+  background: none;
+  border: none;
+  color: var(--accent-cyan);
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.75rem;
+  text-decoration: underline;
+}
+
+.portal-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.portal-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.portal-chip:hover {
+  background: rgba(14, 165, 233, 0.08);
+  border-color: rgba(14, 165, 233, 0.35);
+}
+
+.portal-chip input[type="checkbox"] {
+  accent-color: #0ea5e9;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.portal-chip-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.portal-chip-text small {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  display: block;
+}
+
+body.theme-light .portal-chip {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+body.theme-light .portal-chip:hover {
+  background: #f0f9ff;
+  border-color: #93c5fd;
+}
+
+/* Scrape Live Status Box */
+.scrape-status-box {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+body.theme-light .scrape-status-box {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+.scrape-status-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  margin-bottom: 10px;
+}
+
+.scrape-timer {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.scrape-progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+body.theme-light .scrape-progress-bar-container {
+  background: #e2e8f0;
+}
+
+.scrape-progress-bar {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #0ea5e9, #10b981, #0ea5e9);
+  background-size: 200% 100%;
+  animation: progress-indeterminate 1.8s infinite linear;
+  border-radius: 9999px;
+}
+
+@keyframes progress-indeterminate {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.scrape-status-detail {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
 }
 

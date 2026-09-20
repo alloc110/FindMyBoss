@@ -33,8 +33,10 @@ RUN playwright install --with-deps chromium \
 # Copy only what the scraper microservice needs
 # Crawler modules
 COPY crawl/ /app/crawl/
+COPY models/ /app/models/
 COPY services/scraper_microservice.py /app/services/scraper_microservice.py
 COPY services/storage.py /app/services/storage.py
+COPY services/notifier.py /app/services/notifier.py
 COPY services/__init__.py /app/services/__init__.py
 COPY config.py /app/config.py
 COPY main.py /app/main.py
@@ -42,9 +44,10 @@ COPY main.py /app/main.py
 # Create runtime directories
 RUN mkdir -p /app/data /app/logs
 
-EXPOSE 8002
+EXPOSE 8003
 
 HEALTHCHECK --interval=20s --timeout=10s --retries=3 --start-period=30s \
-  CMD curl -f http://localhost:8002/health || exit 1
+  CMD curl -f http://localhost:8003/health || exit 1
 
-CMD ["uvicorn", "services.scraper_microservice:app", "--host", "0.0.0.0", "--port", "8002"]
+CMD ["uvicorn", "services.scraper_microservice:app", "--host", "0.0.0.0", "--port", "8003"]
+

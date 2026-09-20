@@ -154,12 +154,17 @@ async def get_available_models():
             "placeholder": "Dán mã API Key của bạn (bắt đầu bằng AIzaSy...)",
             "hint": "Lấy API Key miễn phí tại Google AI Studio (aistudio.google.com). Nếu để trống, hệ thống sẽ chạy ở Chế độ Mô phỏng Thông minh.",
             "models": [
+                {"id": "gemini-3.8-flash", "name": "Gemini 3.8 Flash (High)", "desc": "Mô hình Gemini 3.8 Flash thế hệ mới - Siêu tốc độ, suy luận logic vượt trội", "tag": "Mới nhất 3.8"},
+                {"id": "gemini-3.0-pro", "name": "Gemini 3.0 Pro", "desc": "Mô hình Gemini 3.0 Pro Flagship - Tư duy chiều sâu, giải quyết vấn đề phức tạp", "tag": "Flagship 3.0"},
+                {"id": "gemini-3.0-flash", "name": "Gemini 3.0 Flash", "desc": "Mô hình Gemini 3.0 Flash - Cân bằng hoàn hảo tốc độ và độ chính xác", "tag": "Mới nhất 3.0"},
                 {"id": "gemini-2.5-flash", "name": "Gemini 2.5 Flash", "desc": "Khuyên dùng - Cực nhanh, thông minh & chuẩn xác nhất", "tag": "Khuyên dùng"},
-                {"id": "gemini-2.5-pro", "name": "Gemini 2.5 Pro", "desc": "Lập luận sâu, phân tích JD học thuật phức tạp", "tag": "Lý luận sâu"},
-                {"id": "gemini-2.0-flash", "name": "Gemini 2.0 Flash", "desc": "Tốc độ cao thế hệ mới", "tag": "Tốc độ"},
-                {"id": "gemini-1.5-pro", "name": "Gemini 1.5 Pro", "desc": "Cửa sổ ngữ cảnh siêu lớn", "tag": "Ngữ cảnh lớn"},
+                {"id": "gemini-2.5-pro", "name": "Gemini 2.5 Pro", "desc": "Lập luận sâu, phân tích JD học thuật & tối ưu CV toàn diện", "tag": "Lý luận sâu"},
+                {"id": "gemini-2.0-flash", "name": "Gemini 2.0 Flash", "desc": "Tốc độ cao thế hệ mới, đa phương thức tối ưu", "tag": "Tốc độ cao"},
+                {"id": "gemini-2.0-flash-thinking-exp-01-21", "name": "Gemini 2.0 Flash Thinking", "desc": "Suy luận logic từng bước, tối ưu từ khóa ATS chuyên sâu", "tag": "Tư duy AI"},
+                {"id": "gemini-2.0-pro-exp-02-05", "name": "Gemini 2.0 Pro Experimental", "desc": "Mô hình lập trình & coding mạnh mẽ nhất của Google", "tag": "Chuyên gia Tech"},
+                {"id": "gemini-1.5-pro", "name": "Gemini 1.5 Pro", "desc": "Cửa sổ ngữ cảnh 2M token siêu lớn cho JD dài", "tag": "Ngữ cảnh lớn"},
                 {"id": "gemini-1.5-flash", "name": "Gemini 1.5 Flash", "desc": "Tiết kiệm token & phản hồi nhanh", "tag": "Tiết kiệm"},
-                {"id": "custom", "name": "Mô hình Gemini tùy chỉnh...", "desc": "Tự nhập ID mô hình", "tag": "Tùy biến"},
+                {"id": "custom", "name": "Mô hình Gemini tùy chỉnh...", "desc": "Tự nhập ID mô hình (VD: gemini-3.0-ultra, preview...)", "tag": "Tùy biến"},
             ]
         },
         "openai": {
@@ -454,13 +459,16 @@ async def update_scraper_config(cfg: Dict[str, Any] = Body(...)):
 
 
 @app.post("/api/scraper/run")
-async def run_scraper(background_tasks: BackgroundTasks):
+async def run_scraper(
+    background_tasks: BackgroundTasks,
+    payload: Optional[Dict[str, Any]] = Body(None),
+):
     """Triggers job scraper either via Scraper Microservice or local subprocess."""
     scraper_url = os.getenv("SCRAPER_SERVICE_URL", "").rstrip("/")
     if scraper_url:
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
-                res = await client.post(f"{scraper_url}/api/scrape")
+                res = await client.post(f"{scraper_url}/api/scrape", json=payload or {})
                 return res.json()
         except Exception as e:
             logger.warning(f"Failed to trigger scraper microservice ({e}).")
@@ -469,7 +477,9 @@ async def run_scraper(background_tasks: BackgroundTasks):
         async def _local_scrape():
             try:
                 from main import main_orchestrator
-                await main_orchestrator()
+                portals = (payload or {}).get("portals")
+                today_only = (payload or {}).get("today_only", False)
+                await main_orchestrator(selected_portals=portals, today_only=today_only)
             except Exception as e:
                 logger.error(f"Local scraper failed: {e}")
         background_tasks.add_task(_local_scrape)

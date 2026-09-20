@@ -108,8 +108,9 @@ class IndeedJob(JobScraper):
                 query_parameters = {
                     "q": slug_name,
                     "l": "Thành phố Hồ Chí Minh",
-                    "fromage": "1",  # 24-hour filter parameter
                 }
+                if today:
+                    query_parameters["fromage"] = "1"  # 24-hour filter parameter
                 target_url = self._inject_query_param(self.base_search_url, query_parameters)
 
                 self.logger.info(f"🚀 Routing to Indeed target endpoint: {target_url}")

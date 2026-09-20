@@ -378,22 +378,50 @@ Produce a JSON object strictly matching this schema:
 - tailored_bullets: 3-4 high-impact bullet points for the candidate's most recent position. Follow Google XYZ formula: "Accomplished [X] as measured by [Y] by doing [Z]", naturally featuring technical keywords from this JD.
 """
 
+    @staticmethod
+    def _clean_and_parse_json(text: str) -> Dict[str, Any]:
+        """Strips markdown codeblocks and extracts JSON payload cleanly."""
+        clean = (text or "").strip()
+        if clean.startswith("```json"):
+            clean = clean[7:]
+        elif clean.startswith("```"):
+            clean = clean[3:]
+        if clean.endswith("```"):
+            clean = clean[:-3]
+        clean = clean.strip()
+        try:
+            return json.loads(clean)
+        except Exception:
+            match = re.search(r"\{.*\}", clean, re.DOTALL)
+            if match:
+                return json.loads(match.group(0))
+            raise
+
     def _call_gemini_api(self, job: Dict[str, Any], profile: Dict[str, Any]) -> GeminiTailorResponse:
         """Calls Google Gemini model with structured JSON output."""
         prompt = self._build_prompt(job, profile)
 
         if self._client:
             from google.genai import types
-            response = self._client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=GeminiTailorResponse,
-                    temperature=0.2,
-                ),
-            )
-            raw_text = response.text
+            try:
+                response = self._client.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        response_schema=GeminiTailorResponse,
+                        temperature=0.2,
+                    ),
+                )
+                raw_text = response.text
+            except Exception as client_err:
+                # Some experimental or thinking models may not accept response_schema, retry with free-form
+                logger.warning(f"Gemini client structured call failed ({client_err}), retrying with standard prompt...")
+                response = self._client.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt + "\n\nCRITICAL: Respond ONLY with a valid JSON object matching the requested schema. No code fences, no extra commentary.",
+                )
+                raw_text = response.text
         else:
             # Fallback direct REST
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
@@ -407,7 +435,7 @@ Produce a JSON object strictly matching this schema:
             data = res.json()
             raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
 
-        parsed = json.loads(raw_text)
+        parsed = self._clean_and_parse_json(raw_text)
         return GeminiTailorResponse(**parsed)
 
     def _call_openai_api(self, job: Dict[str, Any], profile: Dict[str, Any]) -> GeminiTailorResponse:

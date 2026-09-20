@@ -8,6 +8,15 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$PROJECT_DIR"
 
+# Load environment variables if .env exists
+if [ -f "$PROJECT_DIR/.env" ]; then
+  set -a
+  source "$PROJECT_DIR/.env"
+  set +a
+fi
+
+SCRAPER_PORT="${SCRAPER_PORT:-8003}"
+
 # Ensure host mount directories exist before Docker creates them as root
 mkdir -p "$PROJECT_DIR/data/cvs" "$PROJECT_DIR/logs"
 
@@ -29,7 +38,7 @@ print_banner() {
   echo "  ██║     ██║██║ ╚████║██████╔╝██║ ╚═╝ ██║   ██║   ██████╔╝╚██████╔╝███████║███████║"
   echo "  ╚═╝     ╚═╝╚═╝  ╚═══╝╚═════╝ ╚═╝     ╚═╝   ╚═╝   ╚═════╝  ╚═════╝ ╚══════╝╚══════╝"
   echo -e "${NC}"
-  echo -e "  ${YELLOW}Microservices Stack: web (8000) | renderer (8001) | scraper (8002)${NC}"
+  echo -e "  ${YELLOW}Microservices Stack: web (8000) | renderer (8001) | scraper (${SCRAPER_PORT})${NC}"
   echo ""
 }
 
@@ -44,7 +53,7 @@ case "$COMMAND" in
     echo -e ""
     echo -e "  🌐 Web Studio:       http://localhost:8000"
     echo -e "  📄 LaTeX Renderer:   http://localhost:8001/health"
-    echo -e "  🕷️  Job Scraper:      http://localhost:8002/health"
+    echo -e "  🕷️  Job Scraper:      http://localhost:${SCRAPER_PORT}/health"
     echo -e "==========================================================${NC}"
     docker compose ps
     ;;
@@ -79,8 +88,8 @@ case "$COMMAND" in
     docker compose ps
     echo ""
     echo -e "${CYAN}🔍 Health Checks:${NC}"
-    for port in 8000 8001 8002; do
-      svc="web"; [ "$port" -eq 8001 ] && svc="renderer"; [ "$port" -eq 8002 ] && svc="scraper"
+    for port in 8000 8001 "$SCRAPER_PORT"; do
+      svc="web"; [ "$port" -eq 8001 ] && svc="renderer"; [ "$port" -eq "$SCRAPER_PORT" ] && svc="scraper"
       if curl -sf "http://localhost:${port}/health" > /dev/null 2>&1 || \
          curl -sf "http://localhost:${port}/api/stats" > /dev/null 2>&1; then
         echo -e "  ${GREEN}✅ ${svc} (port ${port}): healthy${NC}"
@@ -104,7 +113,7 @@ case "$COMMAND" in
   scrape)
     echo -e "${CYAN}🕷️  Triggering on-demand job scrape via API...${NC}"
     curl -s -X POST http://localhost:8000/api/scraper/run | python3 -m json.tool || \
-    curl -s -X POST http://localhost:8002/api/scrape | python3 -m json.tool
+    curl -s -X POST "http://localhost:${SCRAPER_PORT}/api/scrape" | python3 -m json.tool
     ;;
 
   scrape-status)

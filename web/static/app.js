@@ -31,11 +31,17 @@ const FALLBACK_MODEL_CATALOG = {
     placeholder: 'Dán mã API Key của bạn (bắt đầu bằng AIzaSy...)',
     hint: 'Lấy API Key miễn phí tại Google AI Studio (aistudio.google.com). Nếu để trống, hệ thống sẽ chạy ở Chế độ Mô phỏng Thông minh.',
     models: [
-      { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', desc: 'Khuyên dùng - Nhanh, chuẩn xác nhất, tối ưu CV vượt trội', tag: 'Khuyên dùng' },
-      { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', desc: 'Tốc độ phản hồi cực nhanh, độ trễ thấp', tag: 'Tốc độ' },
-      { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', desc: 'Cửa sổ ngữ cảnh lớn, lý luận sâu cho hồ sơ phức tạp', tag: 'Lý luận sâu' },
-      { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', desc: 'Gọn nhẹ, tiết kiệm tài nguyên', tag: 'Tiết kiệm' },
-      { id: 'custom', name: 'Tùy chỉnh mã model khác...', desc: 'Nhập mã model Gemini theo ý bạn', tag: 'Tùy biến' }
+      { id: 'gemini-3.8-flash', name: 'Gemini 3.8 Flash (High)', desc: 'Mô hình Gemini 3.8 Flash thế hệ mới - Siêu tốc độ, suy luận logic vượt trội', tag: 'Mới nhất 3.8' },
+      { id: 'gemini-3.0-pro', name: 'Gemini 3.0 Pro', desc: 'Mô hình Gemini 3.0 Pro Flagship - Tư duy chiều sâu, giải quyết vấn đề phức tạp', tag: 'Flagship 3.0' },
+      { id: 'gemini-3.0-flash', name: 'Gemini 3.0 Flash', desc: 'Mô hình Gemini 3.0 Flash - Cân bằng hoàn hảo tốc độ và độ chính xác', tag: 'Mới nhất 3.0' },
+      { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', desc: 'Khuyên dùng - Cực nhanh, thông minh & chuẩn xác nhất', tag: 'Khuyên dùng' },
+      { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', desc: 'Lập luận sâu, phân tích JD học thuật & tối ưu CV toàn diện', tag: 'Lý luận sâu' },
+      { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', desc: 'Tốc độ cao thế hệ mới, đa phương thức tối ưu', tag: 'Tốc độ cao' },
+      { id: 'gemini-2.0-flash-thinking-exp-01-21', name: 'Gemini 2.0 Flash Thinking', desc: 'Suy luận logic từng bước, tối ưu từ khóa ATS chuyên sâu', tag: 'Tư duy AI' },
+      { id: 'gemini-2.0-pro-exp-02-05', name: 'Gemini 2.0 Pro Experimental', desc: 'Mô hình lập trình & coding mạnh mẽ nhất của Google', tag: 'Chuyên gia Tech' },
+      { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', desc: 'Cửa sổ ngữ cảnh 2M token siêu lớn cho JD dài', tag: 'Ngữ cảnh lớn' },
+      { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', desc: 'Tiết kiệm token & phản hồi nhanh', tag: 'Tiết kiệm' },
+      { id: 'custom', name: 'Mô hình Gemini tùy chỉnh...', desc: 'Tự nhập ID mô hình (VD: gemini-3.0-ultra, preview...)', tag: 'Tùy biến' }
     ]
   },
   openai: {
@@ -124,9 +130,15 @@ const elements = {
   tabPanes: document.querySelectorAll('.tab-pane'),
 
   // Tab 1: JD
-  jdRequirements: document.getElementById('jdRequirements'),
-  jdFullRaw: document.getElementById('jdFullRaw'),
+  jdSkillsCard: document.getElementById('jdSkillsCard'),
   jdSkillsRow: document.getElementById('jdSkillsRow'),
+  jdDescriptionCard: document.getElementById('jdDescriptionCard'),
+  jdDescription: document.getElementById('jdDescription'),
+  jdRequirementsCard: document.getElementById('jdRequirementsCard'),
+  jdRequirements: document.getElementById('jdRequirements'),
+  jdBenefitsCard: document.getElementById('jdBenefitsCard'),
+  jdBenefits: document.getElementById('jdBenefits'),
+  jdFullRaw: document.getElementById('jdFullRaw'),
 
   // Tab 2: AI CV Studio
   aiMatchScore: document.getElementById('aiMatchScore'),
@@ -159,6 +171,25 @@ const elements = {
   btnSaveSettings: document.getElementById('btnSaveSettings'),
   modalTabButtons: document.querySelectorAll('.modal-tab-btn'),
   modalTabPanes: document.querySelectorAll('.modal-tab-pane'),
+
+  // Quick Scrape Modal & Live Status
+  btnQuickScrape: document.getElementById('btnQuickScrape'),
+  scrapeModal: document.getElementById('scrapeModal'),
+  btnCloseScrapeModal: document.getElementById('btnCloseScrapeModal'),
+  btnCancelScrapeModal: document.getElementById('btnCancelScrapeModal'),
+  btnStartScrape: document.getElementById('btnStartScrape'),
+  btnStartScrapeSpinner: document.getElementById('btnStartScrapeSpinner'),
+  btnStartScrapeText: document.getElementById('btnStartScrapeText'),
+  btnSelectAllPortals: document.getElementById('btnSelectAllPortals'),
+  btnDeselectAllPortals: document.getElementById('btnDeselectAllPortals'),
+  scrapeModalStatusBox: document.getElementById('scrapeModalStatusBox'),
+  scrapeModalStatusTitle: document.getElementById('scrapeModalStatusTitle'),
+  scrapeModalStatusDetail: document.getElementById('scrapeModalStatusDetail'),
+  scrapeModalTimer: document.getElementById('scrapeModalTimer'),
+  scraperStatusPill: document.getElementById('scraperStatusPill'),
+  scraperStatusText: document.getElementById('scraperStatusText'),
+  quickScrapeToday: document.getElementById('quickScrapeToday'),
+  quickScrapeMaxPages: document.getElementById('quickScrapeMaxPages'),
 
   // Settings Tab 1: AI Model & API Key
   settingAiProvider: document.getElementById('settingAiProvider'),
@@ -234,6 +265,7 @@ async function initApp() {
   await loadJobs();
   await loadProfileData();
   await loadScraperConfig();
+  checkScraperStatus();
 }
 
 function restoreSavedUiState() {
@@ -426,6 +458,35 @@ function setupEventListeners() {
   if (elements.settingsModal) {
     elements.settingsModal.addEventListener('click', (e) => {
       if (e.target === elements.settingsModal) closeSettingsModal();
+    });
+  }
+
+  // Quick Scrape Modal Handlers
+  if (elements.btnQuickScrape) {
+    elements.btnQuickScrape.addEventListener('click', openScrapeModal);
+  }
+  if (elements.btnCloseScrapeModal) {
+    elements.btnCloseScrapeModal.addEventListener('click', closeScrapeModal);
+  }
+  if (elements.btnCancelScrapeModal) {
+    elements.btnCancelScrapeModal.addEventListener('click', closeScrapeModal);
+  }
+  if (elements.scrapeModal) {
+    elements.scrapeModal.addEventListener('click', (e) => {
+      if (e.target === elements.scrapeModal) closeScrapeModal();
+    });
+  }
+  if (elements.btnStartScrape) {
+    elements.btnStartScrape.addEventListener('click', startQuickScrape);
+  }
+  if (elements.btnSelectAllPortals) {
+    elements.btnSelectAllPortals.addEventListener('click', () => {
+      document.querySelectorAll('.portal-checkbox-grid input[type="checkbox"]').forEach((cb) => (cb.checked = true));
+    });
+  }
+  if (elements.btnDeselectAllPortals) {
+    elements.btnDeselectAllPortals.addEventListener('click', () => {
+      document.querySelectorAll('.portal-checkbox-grid input[type="checkbox"]').forEach((cb) => (cb.checked = false));
     });
   }
 
@@ -955,6 +1016,58 @@ async function loadJobs() {
   }
 }
 
+// Helper for formatting timestamps
+function formatScrapedDate(dateStr) {
+  if (!dateStr || dateStr === 'N/A') return 'Chưa rõ';
+  try {
+    let d = new Date(dateStr);
+    if (isNaN(d.getTime()) && typeof dateStr === 'string') {
+      d = new Date(dateStr.replace(' ', 'T') + 'Z');
+    }
+    if (isNaN(d.getTime())) return String(dateStr);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+  } catch (e) {
+    return String(dateStr);
+  }
+}
+
+function getRelativeTime(dateStr) {
+  if (!dateStr || dateStr === 'N/A') return 'Chưa rõ';
+  try {
+    let d = new Date(dateStr);
+    if (isNaN(d.getTime()) && typeof dateStr === 'string') {
+      d = new Date(dateStr.replace(' ', 'T') + 'Z');
+    }
+    if (isNaN(d.getTime())) return String(dateStr);
+
+    const now = new Date();
+    const diffMs = now.getTime() - d.getTime();
+    if (diffMs < 0) return 'Vừa xong';
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+
+    if (diffSec < 60) return 'Vừa xong';
+    if (diffMin < 60) return `${diffMin} phút trước`;
+    if (diffHour < 24) return `${diffHour} giờ trước`;
+    if (diffDay === 1) return 'Hôm qua';
+    if (diffDay < 7) return `${diffDay} ngày trước`;
+
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  } catch (e) {
+    return String(dateStr);
+  }
+}
+
 function renderJobsList(jobs) {
   elements.jobsList.innerHTML = '';
   if (jobs.length === 0) {
@@ -980,6 +1093,10 @@ function renderJobsList(jobs) {
     const statusVal = job.status || 'saved';
     const statusLabel = STATUS_LABELS[statusVal] || 'Chưa nộp';
 
+    const rawDate = job.time || job.created_at;
+    const exactDate = formatScrapedDate(rawDate);
+    const relDate = getRelativeTime(rawDate);
+
     card.innerHTML = `
       <div class="job-card-header">
         <div class="job-card-title">${escapeHtml(job.title)}</div>
@@ -990,6 +1107,7 @@ function renderJobsList(jobs) {
         <div class="job-meta-row">
           <span class="meta-chip salary">${escapeHtml(job.salary || 'Deal')}</span>
           <span class="meta-chip">${escapeHtml(job.address || 'Hồ Chí Minh')}</span>
+          ${rawDate ? `<span class="meta-chip meta-date" title="Thời gian cào: ${escapeHtml(exactDate)}">🕒 Cào: ${escapeHtml(relDate)}</span>` : ''}
           ${hasCv ? `<span class="meta-chip has-cv">CV Ready (${job.match_score || 80}%)</span>` : ''}
         </div>
         ${skillsHtml ? `<div class="skills-row">${skillsHtml}</div>` : ''}
@@ -1036,17 +1154,57 @@ async function selectJob(jobId, shouldScroll = true) {
     elements.detailJobAddress.textContent = job.address || 'Hồ Chí Minh';
     elements.detailJobLink.href = job.link || '#';
 
+    // Scraped and posted date badges
+    const rawDate = job.time || job.created_at;
+    const exactDate = formatScrapedDate(rawDate);
+    const detailScrapedEl = document.getElementById('detailScrapedAtText');
+    if (detailScrapedEl) {
+      detailScrapedEl.textContent = exactDate || 'Chưa rõ';
+    }
+    const detailPostedEl = document.getElementById('detailPostedDateText');
+    if (detailPostedEl) {
+      detailPostedEl.textContent = job.posted_date || 'N/A';
+    }
+
     // Populate Status Selector
     if (elements.detailJobStatusSelect) {
       elements.detailJobStatusSelect.value = job.status || 'saved';
     }
 
-    // Populate Tab 1: JD
-    elements.jdSkillsRow.innerHTML = (job.skills || [])
-      .map((s) => `<span class="skill-tag">${escapeHtml(s)}</span>`)
-      .join('');
-    elements.jdRequirements.textContent = job.requirements || 'Xem chi tiết trong Full JD bên dưới.';
-    elements.jdFullRaw.textContent = job.full_jd_raw || job.description || 'N/A';
+    // Populate Tab 1: JD (Toàn bộ nội dung cào được gom vào Mô tả công việc)
+    let fullDescription = [];
+    if (job.description && job.description.trim()) {
+      fullDescription.push(job.description.trim());
+    }
+    if (job.requirements && job.requirements.trim()) {
+      const reqSnippet = job.requirements.trim().slice(0, 50);
+      if (!job.description || !job.description.includes(reqSnippet)) {
+        fullDescription.push('### YÊU CẦU ỨNG VIÊN:\n' + job.requirements.trim());
+      }
+    }
+    if (job.benefits && job.benefits.trim()) {
+      const benSnippet = job.benefits.trim().slice(0, 50);
+      if (!job.description || !job.description.includes(benSnippet)) {
+        fullDescription.push('### QUYỀN LỢI ĐƯỢC HƯỞNG:\n' + job.benefits.trim());
+      }
+    }
+
+    const finalDesc = fullDescription.length > 0
+      ? fullDescription.join('\n\n')
+      : (job.full_jd_raw || 'Chưa có thông tin mô tả chi tiết công việc.');
+
+    if (elements.jdDescription) {
+      elements.jdDescription.textContent = finalDesc;
+    }
+    if (elements.jdRequirements) {
+      elements.jdRequirements.textContent = job.requirements || '';
+    }
+    if (elements.jdBenefits) {
+      elements.jdBenefits.textContent = job.benefits || '';
+    }
+    if (elements.jdFullRaw) {
+      elements.jdFullRaw.textContent = job.full_jd_raw || job.description || 'N/A';
+    }
 
     // Populate Tab 2 & 3: CV Info & Overleaf Studio
     if (job.cv_id) {
@@ -1357,6 +1515,173 @@ async function saveScraperConfig(triggerCrawl = false, showAlert = true) {
     }
   } catch (err) {
     if (showAlert) alert('Lỗi lưu cấu hình: ' + err.message);
+  }
+}
+
+// -------------------------------------------------------------
+// Quick Scraper Manager
+// -------------------------------------------------------------
+let scraperPollInterval = null;
+let scraperStartTime = null;
+let scraperTimerInterval = null;
+
+function openScrapeModal() {
+  if (elements.scrapeModal) {
+    elements.scrapeModal.style.display = 'flex';
+    checkScraperStatus();
+  }
+}
+
+function closeScrapeModal() {
+  if (elements.scrapeModal) {
+    elements.scrapeModal.style.display = 'none';
+  }
+}
+
+function updateScrapeTimer() {
+  if (!scraperStartTime || !elements.scrapeModalTimer) return;
+  const elapsed = Math.floor((Date.now() - scraperStartTime) / 1000);
+  const min = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const sec = String(elapsed % 60).padStart(2, '0');
+  elements.scrapeModalTimer.textContent = `${min}:${sec}`;
+}
+
+async function checkScraperStatus() {
+  try {
+    const res = await fetch('/api/scraper/status');
+    if (!res.ok) return;
+    const data = await res.json();
+    updateScraperUI(data);
+  } catch (err) {
+    console.warn('Scraper status check failed:', err);
+  }
+}
+
+function updateScraperUI(data) {
+  const isRunning = !!data.is_running;
+
+  // Header Status Pill
+  if (elements.scraperStatusPill) {
+    if (isRunning) {
+      elements.scraperStatusPill.style.display = 'inline-flex';
+      if (elements.scraperStatusText) {
+        elements.scraperStatusText.textContent = data.current_stage || 'Đang cào dữ liệu...';
+      }
+    } else {
+      elements.scraperStatusPill.style.display = 'none';
+    }
+  }
+
+  // Modal Status Box
+  if (elements.scrapeModalStatusBox) {
+    if (isRunning) {
+      elements.scrapeModalStatusBox.style.display = 'block';
+      if (elements.scrapeModalStatusTitle) {
+        elements.scrapeModalStatusTitle.textContent = data.current_portal
+          ? `Đang cào ${data.current_portal.toUpperCase()}...`
+          : 'Đang cào dữ liệu từ các cổng...';
+      }
+      if (elements.scrapeModalStatusDetail) {
+        elements.scrapeModalStatusDetail.textContent = data.current_stage || 'Đang chạy Playwright headless worker...';
+      }
+      if (elements.btnStartScrape) {
+        elements.btnStartScrape.disabled = true;
+      }
+      if (elements.btnStartScrapeSpinner) {
+        elements.btnStartScrapeSpinner.style.display = 'inline-block';
+      }
+      if (elements.btnStartScrapeText) {
+        elements.btnStartScrapeText.textContent = 'Đang cào dữ liệu...';
+      }
+
+      if (!scraperPollInterval) {
+        if (!scraperStartTime) scraperStartTime = Date.now();
+        scraperTimerInterval = setInterval(updateScrapeTimer, 1000);
+        scraperPollInterval = setInterval(checkScraperStatus, 2000);
+      }
+    } else {
+      // Not running
+      if (scraperPollInterval) {
+        clearInterval(scraperPollInterval);
+        scraperPollInterval = null;
+      }
+      if (scraperTimerInterval) {
+        clearInterval(scraperTimerInterval);
+        scraperTimerInterval = null;
+      }
+      scraperStartTime = null;
+
+      if (elements.btnStartScrape) {
+        elements.btnStartScrape.disabled = false;
+      }
+      if (elements.btnStartScrapeSpinner) {
+        elements.btnStartScrapeSpinner.style.display = 'none';
+      }
+      if (elements.btnStartScrapeText) {
+        elements.btnStartScrapeText.textContent = '🚀 Bắt Đầu Cào Ngay';
+      }
+
+      if (data.last_run && elements.scrapeModalStatusBox.style.display === 'block') {
+        if (elements.scrapeModalStatusTitle) {
+          elements.scrapeModalStatusTitle.textContent = '✅ Đã cào dữ liệu thành công!';
+        }
+        if (elements.scrapeModalStatusDetail) {
+          elements.scrapeModalStatusDetail.textContent = `Lần cào gần nhất: ${data.last_run} (thu được ${data.total_scraped_last_run || 0} việc, trong ${data.last_duration_seconds || 0}s). Tổng việc trong DB: ${data.total_jobs_in_db || 0}`;
+        }
+        // Auto refresh jobs & stats
+        loadJobs();
+        loadStats();
+      }
+    }
+  }
+}
+
+async function startQuickScrape() {
+  const portalCheckboxes = document.querySelectorAll('.portal-checkbox-grid input[type="checkbox"]:checked');
+  const selectedPortals = Array.from(portalCheckboxes).map((cb) => cb.value);
+
+  if (selectedPortals.length === 0) {
+    alert('Vui lòng chọn ít nhất một cổng tuyển dụng để cào.');
+    return;
+  }
+
+  const todayOnly = elements.quickScrapeToday ? elements.quickScrapeToday.value === 'true' : false;
+  const maxPages = elements.quickScrapeMaxPages ? parseInt(elements.quickScrapeMaxPages.value, 10) || 2 : 2;
+
+  const payload = {
+    portals: selectedPortals,
+    today_only: todayOnly,
+    max_pages: maxPages,
+  };
+
+  if (elements.btnStartScrape) elements.btnStartScrape.disabled = true;
+  if (elements.btnStartScrapeSpinner) elements.btnStartScrapeSpinner.style.display = 'inline-block';
+  if (elements.btnStartScrapeText) elements.btnStartScrapeText.textContent = 'Đang khởi động...';
+  if (elements.scrapeModalStatusBox) elements.scrapeModalStatusBox.style.display = 'block';
+  if (elements.scrapeModalStatusTitle) elements.scrapeModalStatusTitle.textContent = 'Đang kết nối worker scraper...';
+  if (elements.scrapeModalStatusDetail) elements.scrapeModalStatusDetail.textContent = 'Khởi tạo container Chromium Playwright...';
+
+  try {
+    const res = await fetch('/api/scraper/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!res.ok || data.success === false) {
+      throw new Error(data.message || 'Không thể kích hoạt scraper worker');
+    }
+
+    scraperStartTime = Date.now();
+    scraperTimerInterval = setInterval(updateScrapeTimer, 1000);
+    scraperPollInterval = setInterval(checkScraperStatus, 2000);
+    checkScraperStatus();
+  } catch (err) {
+    alert('Lỗi khởi chạy cào dữ liệu: ' + err.message);
+    if (elements.btnStartScrape) elements.btnStartScrape.disabled = false;
+    if (elements.btnStartScrapeSpinner) elements.btnStartScrapeSpinner.style.display = 'none';
+    if (elements.btnStartScrapeText) elements.btnStartScrapeText.textContent = '🚀 Bắt Đầu Cào Ngay';
   }
 }
 

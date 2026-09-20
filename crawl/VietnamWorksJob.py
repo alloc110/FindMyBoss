@@ -10,59 +10,102 @@ class VietnamWorksJob(JobScraper):
     """Scraper implementation for VietnamWorks platform."""
 
     SELECTORS = {
-        "state_indicators": ".view_job_item, .noResultWrapper",
+        "state_indicators": "a[href*='-jv'], .noResultWrapper",
         "no_result_wrapper": ".noResultWrapper",
-        "job_list_block": ".block-job-list",
-        "job_card": ".view_job_item",
-        "title_anchor": "h2 a",
-        "company_name": ".sc-cpgxJx",
-        "salary_text": ".sc-dauhQT",
-        "posted_date": ".sc-lccgLh",
-        "company_logo": ".img_job_card img",
-    }
-
-    EXP_MAPPING = {
-        "8": "Thực tập sinh/Sinh viên",
-        "1": "Mới tốt nghiệp",
-        "5": "Nhân viên",
+        "job_card_anchor": "a[href*='-jv']",
     }
 
     def __init__(self, page: Page, webhook_url: Optional[str] = None):
         super().__init__(page=page, webhook_url=webhook_url)
-        self.url: str = "https://www.vietnamworks.com/viec-lam?q="
+        self.url: str = "https://www.vietnamworks.com/viec-lam?q=IT"
         self.roles: Dict[str, str] = {
-            "Data Engineer": "data-engineer",
+            "IT": "IT",
         }
         self.unfind: tuple[str, ...] = config.unwanted_titles
+
+    async def parse_card_detail(self, card: Locator) -> Optional[Job]:
+        """Transforms a VietnamWorks job card element into a Job dataclass."""
+        try:
+            card_text = await card.inner_text()
+            lines = [l.strip() for l in card_text.splitlines() if l.strip() and l.strip() != "Urgent"]
+            if not lines:
+                return None
+
+            title = lines[0].replace("Mới", "").strip()
+            company = lines[1] if len(lines) > 1 else "Unknown Company"
+            salary = "Thỏa thuận"
+            address = "Hồ Chí Minh"
+            posted_date = "Available"
+
+            for line in lines[2:]:
+                if any(curr in line for curr in ["$", "₫", "Triệu", "triệu", "Thương lượng", "Thoả thuận"]):
+                    salary = line
+                elif any(city in line for city in ["Hồ Chí Minh", "Hà Nội", "Đà Nẵng", "Bình Dương", "Toàn quốc", "Remote"]):
+                    address = line
+                elif any(kw in line.lower() for kw in ["ngày", "giờ", "hôm nay", "cập nhật", "vừa"]):
+                    posted_date = line.replace("Cập nhật", "").replace(":", "").strip()
+
+            a = card.locator("a[href*='-jv']").first
+            href = await a.get_attribute("href") if await a.count() > 0 else ""
+            link = f"https://www.vietnamworks.com{href}" if href and href.startswith("/") else (href or "N/A")
+
+            return Job(
+                title=title,
+                company=company,
+                link=link,
+                address=address,
+                exp=None,
+                salary=salary,
+                posted_date=posted_date,
+                image="https://images.vietnamworks.com/img/company-default-logo.svg",
+                time=self.now_iso(),
+            )
+        except Exception as e:
+            self.logger.warning(f"⚠️ Failed to parse VietnamWorks card: {e}")
+            return None
 
     async def _execute_extraction_pipeline(self, enforce_today: bool = False) -> List[Job]:
         """Unified internal tracking processor executing extraction, deduplication, and time-frame filtering."""
         valid_jobs: List[Job] = []
         try:
-            await self.page.wait_for_selector(self.SELECTORS["state_indicators"], timeout=10000)
+            await self.page.wait_for_selector(self.SELECTORS["state_indicators"], timeout=12000)
         except Exception:
             self.logger.warning("⚠️ Target VietnamWorks page failed to respond in time.")
             return valid_jobs
 
-        if await self.page.locator(self.SELECTORS["no_result_wrapper"]).is_visible():
-            self.logger.info("🚫 No jobs matching search criteria on VietnamWorks layout.")
-            return valid_jobs
-
         try:
-            await self.page.wait_for_selector(self.SELECTORS["job_list_block"], timeout=5000)
-            cards = await self.page.locator(self.SELECTORS["job_card"]).all()
-            self.logger.info(f"🔍 Found {len(cards)} raw job cards on VietnamWorks.")
+            anchors = await self.page.locator(self.SELECTORS["job_card_anchor"]).all()
+            self.logger.info(f"🔍 Found {len(anchors)} potential job anchors on VietnamWorks.")
 
-            for card in cards:
+            seen_links = set()
+            for a in anchors:
+                href = await a.get_attribute("href") or ""
+                if not href or href in seen_links:
+                    continue
+                seen_links.add(href)
+                link = f"https://www.vietnamworks.com{href}" if href.startswith("/") else href
+
+                if link in self.scraped_links:
+                    continue
+
+                card = a.locator("xpath=ancestor::div[contains(@class, 'sc-')][3]")
+                if await card.count() == 0:
+                    continue
+
                 job = await self.parse_card_detail(card)
-                if not job or job.link == "N/A" or job.link in self.scraped_links:
+                if not job or job.link == "N/A":
                     continue
 
-                if enforce_today and "hôm nay" not in (job.posted_date or "").lower():
-                    continue
+                job.link = link
 
-                self.scraped_links.add(job.link)
+                if enforce_today:
+                    date_lower = (job.posted_date or "").lower()
+                    if not any(k in date_lower for k in ["hôm nay", "giờ", "phút", "vừa", "today"]):
+                        continue
+
+                self.scraped_links.add(link)
                 valid_jobs.append(job)
+
         except Exception as e:
             self.logger.error(f"❌ Error during VietnamWorks extraction: {str(e)}")
 
@@ -76,96 +119,29 @@ class VietnamWorksJob(JobScraper):
         """Scrapes records published within current business date sequence."""
         return await self._execute_extraction_pipeline(enforce_today=True)
 
-    async def parse_card_detail(self, card: Locator) -> Optional[Job]:
-        """Extracts card elements defensively into standardized Job model."""
-        timeout = config.element_timeout_ms
-
-        try:
-            title_anchor = card.locator(self.SELECTORS["title_anchor"]).first
-            title_raw = await title_anchor.inner_text(timeout=timeout)
-            title = title_raw.replace("Mới", "").strip()
-
-            raw_href = await title_anchor.get_attribute("href", timeout=timeout)
-            link = f"https://www.vietnamworks.com{raw_href}" if raw_href else "N/A"
-        except Exception as e:
-            self.logger.warning(f"⚠️ Failed to extract Title/Link from VietnamWorks card: {str(e)}")
-            return None
-
-        try:
-            company = await card.locator(self.SELECTORS["company_name"]).inner_text(timeout=timeout)
-            company = company.strip()
-        except Exception:
-            company = "Unknown Company"
-
-        try:
-            salary = await card.locator(self.SELECTORS["salary_text"]).inner_text(timeout=timeout)
-            salary = salary.strip()
-        except Exception:
-            salary = "Competitive / Deal"
-
-        try:
-            posted_date_raw = await card.locator(self.SELECTORS["posted_date"]).inner_text(timeout=timeout)
-            posted_date = posted_date_raw.replace("Cập nhật:", "").strip()
-        except Exception:
-            posted_date = "Available"
-
-        try:
-            image = await card.locator(self.SELECTORS["company_logo"]).get_attribute("src", timeout=timeout)
-            if not image or image.startswith("data:image/gif"):
-                image = "https://images.vietnamworks.com/img/company-default-logo.svg"
-        except Exception:
-            image = "https://images.vietnamworks.com/img/company-default-logo.svg"
-
-        return Job(
-            title=title,
-            company=company,
-            link=link,
-            address="Hồ Chí Minh",
-            exp=None,
-            salary=salary,
-            posted_date=posted_date,
-            image=image,
-            time=self.now_iso(),
-        )
-
     async def crawl_all_pages(self, today: bool = False) -> List[Job]:
-        """Executes full search engine permutation matrices over configured parameters."""
+        """Executes full search engine permutation matrices over VietnamWorks IT jobs."""
         all_jobs: List[Job] = []
 
-        for role, slug in self.roles.items():
-            for exp_key, name_exp in self.EXP_MAPPING.items():
-                self.logger.info(f"📂 Shifting VietnamWorks context: [{role}] | Level: [{name_exp}]")
-                target_url = f"{self.url}{slug}&l=29&level={exp_key}"
+        try:
+            self.logger.info(f"📂 Navigating VietnamWorks to target index: {self.url}")
+            await self.page.goto(self.url, wait_until="load", timeout=config.navigation_timeout_ms)
+            await self.page.wait_for_timeout(3000)
 
-                try:
-                    await self.page.goto(target_url, wait_until="load", timeout=config.navigation_timeout_ms)
-                    await self.page.wait_for_timeout(2000)
+            all_jobs = await self.scrape_current_role_pages(today)
+        except Exception as ex:
+            self.logger.error(f"💥 Critical routing failure on VietnamWorks [{self.url}]: {str(ex)}")
 
-                    role_jobs = await self.scrape_current_role_pages(today)
-
-                    for job in role_jobs:
-                        job.exp = name_exp
-
-                    all_jobs.extend(role_jobs)
-
-                    try:
-                        await self.page.wait_for_load_state("networkidle", timeout=5000)
-                    except Exception:
-                        pass
-                except Exception as ex:
-                    self.logger.error(f"💥 Critical routing failure on VietnamWorks [{target_url}]: {str(ex)}")
-                    continue
-
-        all_jobs = self.filter_unwanted_titles(all_jobs, self.unfind)
         return all_jobs
 
     async def scrape_current_role_pages(self, today: bool = False) -> List[Job]:
         """Manages step-by-step UI pagination loops via safe client-side JavaScript execution."""
         current_page: int = 1
         role_jobs: List[Job] = []
+        max_pages = 2
 
-        while True:
-            self.logger.info(f"Processing VietnamWorks batch at Page: {current_page}")
+        while current_page <= max_pages:
+            self.logger.info(f"Processing VietnamWorks batch at Page: {current_page}/{max_pages}")
             if today:
                 role_jobs.extend(await self.crawl_today())
             else:
@@ -179,7 +155,7 @@ class VietnamWorksJob(JobScraper):
 
                 try:
                     await self.page.wait_for_load_state("networkidle", timeout=5000)
-                    await self.page.wait_for_timeout(1000)
+                    await self.page.wait_for_timeout(2000)
                 except Exception:
                     pass
             else:

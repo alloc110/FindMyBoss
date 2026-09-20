@@ -29,23 +29,29 @@ class ITviecJob(JobScraper):
         self.un_find_level: List[str] = list(config.unwanted_titles)
 
         self.roles: Dict[str, str] = {
+            "Software Engineer": "software-engineer",
             "Data Analyst": "data-analyst",
-            "Big Data Engineer": "big-data-engineer",
             "Data Engineer": "data-engineer",
-            "DataOps / MLOps Engineer": "dataops-mlops-engineer",
-            "Database Engineer": "database-engineer",
+            "Frontend Developer": "frontend-developer",
+            "Backend Developer": "backend-developer",
         }
 
     def _filter_and_classify(self, job: Job, enforce_today: bool = False) -> Optional[Job]:
-        """Encapsulates location validation, temporal filtering, and experience classification."""
-        # 1. Location Validation
-        if "Hồ Chí Minh" not in job.address:
-            return None
+        """Encapsulates location normalization, temporal filtering, and experience classification."""
+        # 1. Location Normalization (Do not discard non-HCM jobs)
+        if not job.address or job.address == "N/A":
+            job.address = "Hồ Chí Minh / Toàn quốc"
+        elif any(k in job.address.lower() for k in ["ho chi minh", "hồ chí minh", "hcm"]):
+            job.address = "Hồ Chí Minh"
+        elif any(k in job.address.lower() for k in ["ha noi", "hà nội"]):
+            job.address = "Hà Nội"
+        elif any(k in job.address.lower() for k in ["da nang", "đà nẵng"]):
+            job.address = "Đà Nẵng"
 
-        # 2. Daily Filter
+        # 2. Daily Filter (Only enforce when user explicitly requested today)
         if enforce_today:
             date_lower = (job.posted_date or "").lower()
-            if not any(k in date_lower for k in ["hour", "minute", "giờ", "phút"]):
+            if not any(k in date_lower for k in ["hour", "minute", "giờ", "phút", "today", "hôm nay", "vừa"]):
                 return None
 
         job_title_upper = job.title.upper()
@@ -56,12 +62,12 @@ class ITviecJob(JobScraper):
                 job.exp = level
                 return job
 
-        # 4. Blacklisted Management/Senior Titles Exclusion
-        for level in self.un_find_level:
-            if level.upper() in job_title_upper:
-                return None
+        for level in ["SENIOR", "LEAD", "PRINCIPAL", "ARCHITECT", "MANAGER", "HEAD"]:
+            if level in job_title_upper:
+                job.exp = level.title()
+                return job
 
-        # 5. Default Fallback
+        # 4. Default Fallback
         job.exp = "Entry / Junior"
         return job
 
@@ -69,8 +75,11 @@ class ITviecJob(JobScraper):
         """Processes extraction across current canvas."""
         valid_jobs: List[Job] = []
         try:
-            container = self.page.locator(self.SELECTORS["job_list_container"]).first
-            cards = await container.locator(self.SELECTORS["job_card"]).all()
+            cards = await self.page.locator(self.SELECTORS["job_card"]).all()
+            if not cards:
+                container = self.page.locator(self.SELECTORS["job_list_container"]).first
+                if await container.count() > 0:
+                    cards = await container.locator(self.SELECTORS["job_card"]).all()
             self.logger.info(f"🔍 Found {len(cards)} raw job cards on current canvas.")
 
             for card in cards:
@@ -163,20 +172,34 @@ class ITviecJob(JobScraper):
             # 3. Full Job Description (About the team / Responsibilities)
             desc_pattern = r"(?:Job description|Mô tả công việc)[\s\n]+(.*?)(?=\n(?:Your skills and experience|Qualifications|Yêu cầu)|$)"
             desc_match = re.search(desc_pattern, body_text, re.DOTALL | re.IGNORECASE)
-            if desc_match:
-                job.description = desc_match.group(1).strip()
+            extracted_desc = desc_match.group(1).strip() if desc_match else ""
 
             # 4. Full Requirements
             req_pattern = r"(?:Your skills and experience|Qualifications|Yêu cầu công việc)[\s\n]+(.*?)(?=\n(?:Why you\'ll love working here|Top 3 reasons|Benefits|More jobs)|$)"
             req_match = re.search(req_pattern, body_text, re.DOTALL | re.IGNORECASE)
-            if req_match:
-                job.requirements = req_match.group(1).strip()
+            extracted_req = req_match.group(1).strip() if req_match else ""
 
             # 5. Full Benefits
             ben_pattern = r"(?:Top 3 reasons to join us|Why you\'ll love working here|Benefits)[\s\n]+(.*?)(?=\n(?:Job description|Company overview|More jobs)|$)"
             ben_match = re.search(ben_pattern, body_text, re.DOTALL | re.IGNORECASE)
-            if ben_match:
-                job.benefits = ben_match.group(1).strip()
+            extracted_ben = ben_match.group(1).strip() if ben_match else ""
+
+            job.requirements = extracted_req or None
+            job.benefits = extracted_ben or None
+
+            # Gom toàn bộ nội dung cào được vào Mô tả công việc (job.description)
+            full_parts = []
+            if extracted_desc:
+                full_parts.append(extracted_desc)
+            if extracted_req:
+                full_parts.append(f"### YÊU CẦU ỨNG VIÊN:\n{extracted_req}")
+            if extracted_ben:
+                full_parts.append(f"### QUYỀN LỢI ĐƯỢC HƯỞNG:\n{extracted_ben}")
+
+            if full_parts:
+                job.description = "\n\n".join(full_parts)
+            elif not job.description:
+                job.description = body_text.strip()
 
         except Exception as e:
             self.logger.warning(f"⚠️ Failed to deep scrape ITviec job {job.link}: {str(e)}")
@@ -208,8 +231,9 @@ class ITviecJob(JobScraper):
         current_page: int = 1
         role_jobs: List[Job] = []
 
-        while True:
-            self.logger.info(f"Batch processing extraction matrix index at Page: {current_page}")
+        max_pages = 2
+        while current_page <= max_pages:
+            self.logger.info(f"Batch processing extraction matrix index at Page: {current_page}/{max_pages}")
 
             if today:
                 role_jobs.extend(await self.crawl_today())

@@ -45,15 +45,14 @@ class TopDevJob(JobScraper):
                 if not job_data:
                     continue
 
-                if "Hồ Chí Minh" in job_data.address:
-                    if enforce_today:
-                        date_lower = (job_data.posted_date or "").lower()
-                        if not any(k in date_lower for k in ["hours", "hour", "minute", "giờ", "phút"]):
-                            continue
+                if enforce_today:
+                    date_lower = (job_data.posted_date or "").lower()
+                    if not any(k in date_lower for k in ["hours", "hour", "minute", "giờ", "phút", "today", "hôm nay", "vừa"]):
+                        continue
 
-                    if job_data.link not in self.scraped_links:
-                        valid_jobs.append(job_data)
-                        self.scraped_links.add(job_data.link)
+                if job_data.link not in self.scraped_links:
+                    valid_jobs.append(job_data)
+                    self.scraped_links.add(job_data.link)
         except Exception as e:
             self.logger.error(f"❌ Error during TopDev card extraction: {str(e)}")
 
@@ -149,20 +148,34 @@ class TopDevJob(JobScraper):
             # 4. Full Job Description (Roles & Responsibilities)
             desc_pattern = r"(?:Your role & responsibilities|Role & responsibilities|Job description|Mô tả công việc)[\s\n]+(.*?)(?=\n(?:Your skills & qualifications|Job requirements|Requirements|Yêu cầu)|$)"
             desc_match = re.search(desc_pattern, body_text, re.DOTALL | re.IGNORECASE)
-            if desc_match:
-                job.description = desc_match.group(1).strip()
+            extracted_desc = desc_match.group(1).strip() if desc_match else ""
 
             # 5. Full Requirements
             req_pattern = r"(?:Your skills & qualifications|Job requirements|Requirements|Yêu cầu ứng viên|Yêu cầu)[\s\n]+(.*?)(?=\n(?:Benefits|Quyền lợi|Why you|Company|Về công ty)|$)"
             req_match = re.search(req_pattern, body_text, re.DOTALL | re.IGNORECASE)
-            if req_match:
-                job.requirements = req_match.group(1).strip()
+            extracted_req = req_match.group(1).strip() if req_match else ""
 
             # 6. Full Benefits
             ben_pattern = r"(?:Benefits|Quyền lợi ứng viên|Quyền lợi|Why you\'ll love working here)[\s\n]+(.*?)(?=\n(?:Company|About us|Về công ty|Việc làm liên quan)|$)"
             ben_match = re.search(ben_pattern, body_text, re.DOTALL | re.IGNORECASE)
-            if ben_match:
-                job.benefits = ben_match.group(1).strip()
+            extracted_ben = ben_match.group(1).strip() if ben_match else ""
+
+            job.requirements = extracted_req or None
+            job.benefits = extracted_ben or None
+
+            # Gom toàn bộ nội dung cào được vào Mô tả công việc (job.description)
+            full_parts = []
+            if extracted_desc:
+                full_parts.append(extracted_desc)
+            if extracted_req:
+                full_parts.append(f"### YÊU CẦU ỨNG VIÊN:\n{extracted_req}")
+            if extracted_ben:
+                full_parts.append(f"### QUYỀN LỢI ĐƯỢC HƯỞNG:\n{extracted_ben}")
+
+            if full_parts:
+                job.description = "\n\n".join(full_parts)
+            elif not job.description:
+                job.description = body_text.strip()
 
         except Exception as e:
             self.logger.warning(f"⚠️ Failed to deep scrape TopDev job {job.link}: {str(e)}")
@@ -177,30 +190,38 @@ class TopDevJob(JobScraper):
         try:
             self.logger.info(f"🚀 Navigating TopDev to target index: {self.url}")
             await self.page.goto(self.url, wait_until="load", timeout=config.navigation_timeout_ms)
-
-            # Trigger dropdown
-            await self.page.get_by_role("button", name="All Categories").click()
-            await self.page.wait_for_timeout(1000)
-
-            it_span = self.page.locator(self.SELECTORS["it_category_span"]).filter(has_text="IT").first
-            self.logger.info("🎯 Selecting IT domain on TopDev...")
-            await it_span.dispatch_event("click")
-
-            for role in self.roles:
-                role_button = self.page.locator(self.SELECTORS["role_button_wrapper"]).filter(has_text=role)
-                if await role_button.count() > 0:
-                    await role_button.dispatch_event("click")
-
-            await self.page.get_by_role("button", name="Apply", exact=True).click()
-            await self.page.wait_for_load_state("networkidle")
             await self.page.wait_for_timeout(2000)
 
+            # Optional filter by IT domain (non-fatal if layout changed; search page already has IT jobs)
+            try:
+                cat_btn = self.page.get_by_role("button", name="All Categories")
+                if await cat_btn.count() > 0 and await cat_btn.is_visible():
+                    await cat_btn.click(timeout=3000)
+                    await self.page.wait_for_timeout(800)
+                    it_span = self.page.locator(self.SELECTORS["it_category_span"]).filter(has_text="IT").first
+                    if await it_span.count() > 0:
+                        self.logger.info("🎯 Selecting IT domain on TopDev...")
+                        await it_span.dispatch_event("click")
+
+                    for role in self.roles:
+                        role_button = self.page.locator(self.SELECTORS["role_button_wrapper"]).filter(has_text=role)
+                        if await role_button.count() > 0:
+                            await role_button.dispatch_event("click")
+
+                    apply_btn = self.page.get_by_role("button", name="Apply", exact=True)
+                    if await apply_btn.count() > 0:
+                        await apply_btn.click(timeout=3000)
+                        await self.page.wait_for_load_state("networkidle", timeout=3000)
+            except Exception as filter_err:
+                self.logger.info(f"ℹ️ Proceeding with TopDev general tech search results ({filter_err})")
+
         except Exception as e:
-            self.logger.error(f"💥 Critical layout configuration failure on TopDev: {str(e)}")
+            self.logger.error(f"💥 TopDev navigation failure: {str(e)}")
             return all_jobs
 
-        while True:
-            self.logger.info(f"Processing TopDev extraction on page: {current_page}")
+        max_pages = 2
+        while current_page <= max_pages:
+            self.logger.info(f"Processing TopDev extraction on page: {current_page}/{max_pages}")
 
             if today:
                 all_jobs.extend(await self.crawl_today())

@@ -50,7 +50,7 @@ class JobsGoJob(JobScraper):
                 # Apply real-time temporal validation if enforce_today is active
                 if enforce_today:
                     date_lower = (job.posted_date or "").lower()
-                    if not any(k in date_lower for k in ["phút", "giờ", "giây"]):
+                    if not any(k in date_lower for k in ["phút", "giờ", "giây", "hôm nay", "vừa", "today"]):
                         continue
 
                 self.scraped_links.add(job.link)
@@ -140,8 +140,9 @@ class JobsGoJob(JobScraper):
             self.logger.warning("📂 JobsGO 'Not Found' image state detected. Terminating pagination.")
             return role_jobs
 
-        while True:
-            self.logger.info(f"Processing JobsGO extraction page: {current_page}")
+        max_pages = 2
+        while current_page <= max_pages:
+            self.logger.info(f"Processing JobsGO extraction page: {current_page}/{max_pages}")
 
             if today:
                 role_jobs.extend(await self.crawl_today())

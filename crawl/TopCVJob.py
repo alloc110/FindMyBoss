@@ -123,7 +123,7 @@ class TopCVJob(JobScraper):
             return None
 
     async def crawl_job_detail(self, job: Job) -> Job:
-        """Navigates to TopCV job detail page to extract 100% full raw JD, requirements, and benefits."""
+        """Navigates to TopCV job detail page to cleanly extract description, requirements, benefits, and skills without clutter."""
         if not job.link or job.link == "N/A":
             return job
 
@@ -131,26 +131,103 @@ class TopCVJob(JobScraper):
             await self.page.goto(job.link, wait_until="load", timeout=config.navigation_timeout_ms)
             await self.page.wait_for_timeout(1500)
 
-            body_text = await self.page.locator("body").inner_text()
-            job.full_jd_raw = body_text.strip()
+            # Auto dismiss cookie banners if present
+            try:
+                cookie_btn = self.page.locator('button:has-text("Chấp nhận"), button:has-text("Accept"), .btn-accept-cookie')
+                if await cookie_btn.count() > 0:
+                    await cookie_btn.first.click(timeout=1000)
+            except Exception:
+                pass
 
-            # 1. Full Description (Mô tả công việc)
-            desc_pattern = r"(?:Mô tả công việc)[\s\n]+(.*?)(?=\n(?:Yêu cầu ứng viên|Yêu cầu|Quyền lợi)|$)"
-            desc_match = re.search(desc_pattern, body_text, re.DOTALL | re.IGNORECASE)
-            if desc_match:
-                job.description = desc_match.group(1).strip()
+            # Target only job detail boxes, ignoring footer, cookie dialogs, similar jobs and platform links
+            items = await self.page.locator(
+                '.job-detail__body .box-job-information-detail-item, '
+                '.job-detail__information-detail .job-description__item, '
+                '.job-description__item'
+            ).all()
 
-            # 2. Full Requirements (Yêu cầu ứng viên)
-            req_pattern = r"(?:Yêu cầu ứng viên|Yêu cầu công việc)[\s\n]+(.*?)(?=\n(?:Quyền lợi ứng viên|Quyền lợi|Địa điểm và thời gian|Địa điểm làm việc)|$)"
-            req_match = re.search(req_pattern, body_text, re.DOTALL | re.IGNORECASE)
-            if req_match:
-                job.requirements = req_match.group(1).strip()
+            for it in items:
+                header_elem = it.locator('.box-job-information-detail-item__title, h2, h3, h4, strong').first
+                if await header_elem.count() == 0:
+                    continue
+                h_text = (await header_elem.inner_text()).strip().lower()
 
-            # 3. Full Benefits (Quyền lợi)
-            ben_pattern = r"(?:Quyền lợi ứng viên|Quyền lợi)[\s\n]+(.*?)(?=\n(?:Địa điểm và thời gian|Địa điểm làm việc|Cách thức ứng tuyển|Việc làm liên quan)|$)"
-            ben_match = re.search(ben_pattern, body_text, re.DOTALL | re.IGNORECASE)
-            if ben_match:
-                job.benefits = ben_match.group(1).strip()
+                # Strictly ignore non-job sections (SEO, similar jobs, company general info, reporting)
+                if any(ign in h_text for ign in [
+                    'việc làm liên quan', 'việc làm cùng', 'thông tin chung', 
+                    'similar', 'details\ngửi', 'cách thức ứng tuyển', 'báo cáo tin'
+                ]):
+                    continue
+
+                txt = (await it.inner_text()).strip()
+                lines = txt.splitlines()
+                # Strip heading from content body
+                content = '\n'.join(lines[1:]).strip() if len(lines) > 1 else txt
+
+                # Filter out any lingering cookie or SEO promo phrases
+                filtered_lines = [
+                    l for l in content.splitlines() 
+                    if not any(bad in l.lower() for bad in ['trải nghiệm của bạn', 'cookie', 'nhân viên bán hàng là một nghề', 'bản mô tả công việc nhân viên bán hàng'])
+                ]
+                clean_content = '\n'.join(filtered_lines).strip()
+
+                if any(kw in h_text for kw in ['mô tả công việc', 'job description', 'nhiệm vụ']):
+                    if clean_content:
+                        job.description = clean_content
+                elif any(kw in h_text for kw in ['yêu cầu', 'requirements', 'kỹ năng']):
+                    if clean_content:
+                        job.requirements = clean_content
+                        # Extract skill tags if available
+                        skill_match = re.search(r'Kỹ năng cần có[\s\n]+(.*?)(?=\n(?:Kỹ năng nên có|Kiến thức ngành|$))', clean_content, re.DOTALL | re.IGNORECASE)
+                        if skill_match:
+                            raw_s = skill_match.group(1).replace('\n', ',')
+                            extracted_skills = [s.strip() for s in raw_s.split(',') if s.strip() and len(s.strip()) < 30]
+                            if extracted_skills:
+                                job.skills = list(dict.fromkeys(job.skills + extracted_skills))
+                elif any(kw in h_text for kw in ['quyền lợi', 'benefits', 'đãi ngộ']):
+                    if clean_content:
+                        job.benefits = clean_content
+                elif any(kw in h_text for kw in ['địa điểm', 'location', 'address']):
+                    loc_match = re.search(r'(?:Hồ Chí Minh|Hà Nội|Đà Nẵng|Bình Dương)[^\n]*', clean_content)
+                    if loc_match:
+                        job.address = loc_match.group(0).strip()
+
+            # If description or requirements are still empty, fall back to parsing strictly within .job-detail__body
+            if not job.description or not job.requirements:
+                body_elem = self.page.locator('.job-detail__body')
+                if await body_elem.count() > 0:
+                    body_text = await body_elem.inner_text()
+                    if not job.description:
+                        m = re.search(r'(?:Mô tả công việc|Job description)[\s\n]+(.*?)(?=\n(?:Yêu cầu ứng viên|Yêu cầu|Candidate Requirements|Quyền lợi)|$)', body_text, re.DOTALL | re.IGNORECASE)
+                        if m:
+                            job.description = m.group(1).strip()
+                    if not job.requirements:
+                        m = re.search(r'(?:Yêu cầu ứng viên|Candidate Requirements|Yêu cầu công việc)[\s\n]+(.*?)(?=\n(?:Quyền lợi ứng viên|Quyền lợi|Benefits|Địa điểm và thời gian|Địa điểm làm việc)|$)', body_text, re.DOTALL | re.IGNORECASE)
+                        if m:
+                            job.requirements = m.group(1).strip()
+                    if not job.benefits:
+                        m = re.search(r'(?:Quyền lợi ứng viên|Quyền lợi|Benefits)[\s\n]+(.*?)(?=\n(?:Địa điểm và thời gian|Địa điểm làm việc|Cách thức ứng tuyển|Việc làm liên quan)|$)', body_text, re.DOTALL | re.IGNORECASE)
+                        if m:
+                            job.benefits = m.group(1).strip()
+
+            # Construct clean, pure JD without any platform fluff
+            clean_sections = []
+            if job.description:
+                clean_sections.append(f"MÔ TẢ CÔNG VIỆC:\n{job.description}")
+            if job.requirements:
+                clean_sections.append(f"### YÊU CẦU ỨNG VIÊN:\n{job.requirements}")
+            if job.benefits:
+                clean_sections.append(f"### QUYỀN LỢI ĐƯỢC HƯỞNG:\n{job.benefits}")
+
+            if clean_sections:
+                job.description = "\n\n".join(clean_sections)
+                job.full_jd_raw = f"""VỊ TRÍ: {job.title}
+CÔNG TY: {job.company}
+MỨC LƯƠNG: {job.salary}
+ĐỊA ĐIỂM: {job.address}
+KỸ NĂNG: {', '.join(job.skills) if job.skills else 'Xem chi tiết'}
+
+""" + "\n\n".join(clean_sections)
 
         except Exception as e:
             self.logger.warning(f"⚠️ Failed to deep scrape TopCV job {job.link}: {str(e)}")
@@ -158,37 +235,17 @@ class TopCVJob(JobScraper):
         return job
 
     async def crawl_all_pages(self, today: bool = False) -> List[Job]:
-        """Executes full search matrix over configured parameters."""
+        """Executes full search matrix over TopCV IT listings."""
         all_jobs: List[Job] = []
 
-        for role, slug in self.roles.items():
-            for exp_key, name_exp in self.EXP_MAPPING.items():
-                self.logger.info(f"📂 TopCV shifting context: [{role}] | Level: [{name_exp}]")
+        try:
+            self.logger.info(f"📂 Navigating TopCV to target index: {self.url}")
+            await self.page.goto(self.url, wait_until="load", timeout=config.navigation_timeout_ms)
+            await self.page.wait_for_timeout(3000)
 
-                target_url = (
-                    f"{slug}-tai-ho-chi-minh-kl2cr257?exp=1&type_keyword={exp_key}"
-                    f"&sba=1&category_family=r257&locations=l2&saturday_status=0"
-                )
-
-                try:
-                    await self.page.goto(target_url, wait_until="load", timeout=config.navigation_timeout_ms)
-                    await self.page.wait_for_timeout(4000)
-
-                    role_jobs = await self.scrape_current_role_pages(today)
-
-                    # Annotate experience cleanly
-                    for job in role_jobs:
-                        job.exp = name_exp
-
-                    all_jobs.extend(role_jobs)
-
-                    try:
-                        await self.page.wait_for_load_state("networkidle", timeout=5000)
-                    except Exception:
-                        pass
-                except Exception as ex:
-                    self.logger.error(f"💥 Critical routing failure requesting TopCV [{target_url}]: {str(ex)}")
-                    continue
+            all_jobs = await self.scrape_current_role_pages(today)
+        except Exception as ex:
+            self.logger.error(f"💥 Critical routing failure requesting TopCV [{self.url}]: {str(ex)}")
 
         return all_jobs
 
@@ -196,9 +253,10 @@ class TopCVJob(JobScraper):
         """Manages step-by-step UI pagination loops via client-side JavaScript execution."""
         current_page: int = 1
         role_jobs: List[Job] = []
+        max_pages = 2
 
-        while True:
-            self.logger.info(f"Processing TopCV batch at Page: {current_page}")
+        while current_page <= max_pages:
+            self.logger.info(f"Processing TopCV batch at Page: {current_page}/{max_pages}")
 
             if today:
                 role_jobs.extend(await self.crawl_today())
@@ -213,7 +271,7 @@ class TopCVJob(JobScraper):
 
                 try:
                     await self.page.wait_for_load_state("networkidle", timeout=5000)
-                    await self.page.wait_for_timeout(1000)
+                    await self.page.wait_for_timeout(2000)
                 except Exception:
                     pass
             else:

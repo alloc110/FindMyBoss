@@ -59,7 +59,7 @@
 
 ### 1. Đa Nhà Cung Cấp AI & Kiểm Tra Kết Nối Trực Tiếp (Multi-Provider Catalog & Live Key Test)
 - **Hỗ trợ toàn diện 4 hệ sinh thái AI hàng đầu**:
-  - **Google Gemini**: `gemini-2.5-flash` (Khuyên dùng), `gemini-2.5-pro`, `gemini-2.0-flash`, `gemini-1.5-pro`, `gemini-1.5-flash`.
+  - **Google Gemini**: `gemini-3.8-flash` (Mới nhất 3.8), `gemini-3.0-pro` (Flagship 3.0), `gemini-3.0-flash` (Thế hệ 3.0), `gemini-2.5-flash` (Khuyên dùng), `gemini-2.5-pro`, `gemini-2.0-flash`, `gemini-1.5-pro`, `gemini-1.5-flash` cùng khả năng nhập custom model.
   - **OpenAI / ChatGPT**: `gpt-4o` (Flagship đa phương thức), `gpt-4o-mini` (Tối ưu chi phí), `gpt-3.5-turbo` (Kinh điển), `o1-mini` & `o3-mini` (Lập luận chuyên sâu Reasoning).
   - **Anthropic Claude**: `claude-3-7-sonnet-latest` (Hybrid Reasoning), `claude-3-5-sonnet` (Chuẩn mực viết CV ATS), `claude-3-5-haiku`, `claude-3-opus`.
   - **DeepSeek / OpenAI-Compatible (Local Ollama, vLLM, OpenRouter)**: `deepseek-chat`, `deepseek-reasoner`, `qwen-2.5-72b`, `llama-3.3-70b` với endpoint URL tùy biến (vd: `http://localhost:11434/v1`).
@@ -156,7 +156,7 @@
               |  - Settings & Stats Management                              |
               +-----------------------------------------------------------+
                           |                               |
-           HTTP /api/render (Port 8001)    HTTP /api/scrape (Port 8002)
+           HTTP /api/render (Port 8001)    HTTP /api/scrape (Port 8003)
                           v                               v
 +------------------------------------------+  +------------------------------------------+
 |    SERVICE 2: LATEX PDF RENDERER         |  |    SERVICE 3: JOB SCRAPER WORKER         |
@@ -179,7 +179,7 @@
 
 | Môi trường | `renderer` | `scraper` |
 |:---|:---|:---|
-| **Docker** | `web` → `http://renderer:8001/api/render` | `web` → `http://scraper:8002/api/scrape` |
+| **Docker** | `web` → `http://renderer:8001/api/render` | `web` → `http://scraper:8003/api/scrape` |
 | **Local dev** (no Docker) | Gọi trực tiếp `bin/tectonic` binary | Chạy `main_orchestrator()` trong process |
 
 ---
@@ -225,7 +225,7 @@
 │   ├── gemini_service.py     # Multi-provider AI client (Gemini, OpenAI, Claude, DeepSeek)
 │   ├── latex_engine.py       # Tectonic compiler + hybrid microservice fallback
 │   ├── renderer_microservice.py  # 🐳 FastAPI server for renderer container (port 8001)
-│   ├── scraper_microservice.py   # 🐳 FastAPI server for scraper container (port 8002)
+│   ├── scraper_microservice.py   # 🐳 FastAPI server for scraper container (port 8003)
 │   ├── notifier.py           # Async Discord client with HTTP 429 rate-limit backoff
 │   ├── storage.py            # SQLite storage with WAL mode, deduplication & queries
 │   └── cv_tailor.py          # Legacy dataset adapter & LLM prompt builder
@@ -282,7 +282,7 @@ Hệ thống sẽ tự động:
 - Build 3 Docker images chuyên biệt (web ~200MB, renderer ~130MB, scraper ~1GB)
 - Khởi chạy web Studio tại **[http://localhost:8000](http://localhost:8000)**
 - Renderer API tại **[http://localhost:8001/health](http://localhost:8001/health)**
-- Scraper API tại **[http://localhost:8002/health](http://localhost:8002/health)**
+- Scraper API tại **[http://localhost:8003/health](http://localhost:8003/health)**
 
 ```bash
 # Quản lý containers:
@@ -340,6 +340,8 @@ cp .env.example .env
 | `ANTHROPIC_API_KEY` | Không | Anthropic Claude API Key — lấy tại [console.anthropic.com](https://console.anthropic.com) |
 | `CUSTOM_AI_API_KEY` | Không | DeepSeek, Ollama, OpenRouter (OpenAI-compatible API) |
 | `DISCORD_WEBHOOK_URL` | Không | Discord Webhook URL để nhận thông báo job mới |
+| `SCRAPER_PORT` | Không | Cổng host cho Scraper Microservice (mặc định: `8003`, có thể tùy chỉnh nếu bị trùng cổng) |
+
 
 > [!NOTE]
 > Nếu không điền API Key nào, ứng dụng vẫn chạy bình thường ở **Chế độ Mô phỏng Thông minh (Heuristic Fallback)** — đối soát kỹ năng cơ bản và vẫn biên dịch PDF đầy đủ.

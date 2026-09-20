@@ -34,6 +34,13 @@
     </div>
 
     <div class="header-actions">
+      <div class="scraper-status-pill" id="scraperStatusPill" style="display: none;">
+        <span class="status-pulse"></span>
+        <span id="scraperStatusText">Đang cào dữ liệu...</span>
+      </div>
+      <button class="btn btn-accent btn-sm" id="btnQuickScrape" title="Kích hoạt cào tuyển dụng từ các cổng IT">
+        🕷️ Cào Việc Mới
+      </button>
       <button class="btn btn-primary btn-sm" id="btnOpenSettings" title="Cài đặt hệ thống, Mô hình AI, Giao diện & Hồ sơ">
         Cài đặt
       </button>
@@ -88,6 +95,12 @@
             <span id="detailJobCompany">Công ty</span>
             <span id="detailJobSalary">Deal</span>
             <span id="detailJobAddress">Hồ Chí Minh</span>
+            <span class="meta-badge-date" id="detailJobScrapedAt" title="Thời điểm crawler thu thập công việc này vào hệ thống">
+              🕒 Cào: <strong id="detailScrapedAtText">-</strong>
+            </span>
+            <span class="meta-badge-date" id="detailJobPostedDate" title="Thời gian nhà tuyển dụng đăng tin">
+              📅 Đăng: <strong id="detailPostedDateText">-</strong>
+            </span>
             <a id="detailJobLink" href="#" target="_blank" rel="noopener">Xem tin gốc</a>
           </div>
         </div>
@@ -125,19 +138,9 @@
         
         <!-- Tab 1: JD Content -->
         <div class="tab-pane active" id="tab-jd">
-          <div class="jd-content-card">
-            <h3>Tech Stack & Kỹ năng yêu cầu</h3>
-            <div class="skills-row" id="jdSkillsRow"></div>
-          </div>
-
-          <div class="jd-content-card">
-            <h3>Yêu cầu ứng viên</h3>
-            <div class="jd-body-text" id="jdRequirements"></div>
-          </div>
-
-          <div class="jd-content-card">
-            <h3>Raw Job Description</h3>
-            <div class="jd-body-text" id="jdFullRaw"></div>
+          <div class="jd-content-card" id="jdDescriptionCard">
+            <h3>Mô tả công việc</h3>
+            <div class="jd-body-text" id="jdDescription"></div>
           </div>
         </div>
 
@@ -616,6 +619,95 @@
       <div class="modal-footer">
         <button class="btn btn-secondary btn-sm" id="btnCancelSettings">Hủy</button>
         <button class="btn btn-primary btn-sm" id="btnSaveSettings">Lưu Cài Đặt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Scrape Modal -->
+  <div class="modal-overlay" id="scrapeModal" style="display: none;">
+    <div class="modal-container scrape-modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3 class="modal-title">🕷️ Cào Việc Làm Mới (Job Harvester)</h3>
+          <span class="modal-subtitle">Thu thập tự động tin tuyển dụng từ các nền tảng công nghệ hàng đầu</span>
+        </div>
+        <button class="modal-close" id="btnCloseScrapeModal" aria-label="Đóng">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Live Scraper Banner (Shown when running) -->
+        <div class="scrape-status-box" id="scrapeModalStatusBox" style="display: none;">
+          <div class="scrape-status-header">
+            <span class="status-pulse"></span>
+            <strong id="scrapeModalStatusTitle">Đang cào dữ liệu...</strong>
+            <span class="scrape-timer" id="scrapeModalTimer">00:00</span>
+          </div>
+          <div class="scrape-progress-bar-container">
+            <div class="scrape-progress-bar" id="scrapeModalProgressBar"></div>
+          </div>
+          <div class="scrape-status-detail" id="scrapeModalStatusDetail">Đang khởi tạo crawler...</div>
+        </div>
+
+        <div class="scrape-form" id="scrapeForm">
+          <div class="form-group">
+            <div class="form-group-header">
+              <label>Chọn các cổng tuyển dụng cần cào:</label>
+              <div class="portal-quick-actions">
+                <button type="button" class="link-btn" id="btnSelectAllPortals">Chọn tất cả</button>
+                <span>•</span>
+                <button type="button" class="link-btn" id="btnDeselectAllPortals">Bỏ chọn</button>
+              </div>
+            </div>
+            <div class="portal-checkbox-grid">
+              <label class="portal-chip">
+                <input type="checkbox" id="quickPortalTopdev" value="topdev" checked>
+                <span class="portal-chip-text">TopDev <small>(IT chuyên sâu)</small></span>
+              </label>
+              <label class="portal-chip">
+                <input type="checkbox" id="quickPortalVietnamworks" value="vietnamworks" checked>
+                <span class="portal-chip-text">VietnamWorks <small>(Hàng đầu VN)</small></span>
+              </label>
+              <label class="portal-chip">
+                <input type="checkbox" id="quickPortalItviec" value="itviec" checked>
+                <span class="portal-chip-text">ITviec <small>(Chất lượng cao)</small></span>
+              </label>
+              <label class="portal-chip">
+                <input type="checkbox" id="quickPortalTopcv" value="topcv" checked>
+                <span class="portal-chip-text">TopCV <small>(Đa dạng vị trí)</small></span>
+              </label>
+              <label class="portal-chip">
+                <input type="checkbox" id="quickPortalJobsgo" value="jobsgo" checked>
+                <span class="portal-chip-text">JobsGO <small>(Việc làm nhanh)</small></span>
+              </label>
+              <label class="portal-chip">
+                <input type="checkbox" id="quickPortalIndeed" value="indeed" checked>
+                <span class="portal-chip-text">Indeed <small>(Toàn cầu)</small></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="quickScrapeToday">Phạm vi thời gian đăng:</label>
+              <select id="quickScrapeToday" class="form-select">
+                <option value="false">Mọi tin tuyển dụng mới nhất (Khuyên dùng)</option>
+                <option value="true">Chỉ tin đăng hôm nay (Today only)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="quickScrapeMaxPages">Số trang quét mỗi cổng:</label>
+              <input type="number" id="quickScrapeMaxPages" class="form-input" min="1" max="10" value="2">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="btnCancelScrapeModal">Đóng</button>
+        <button class="btn btn-accent btn-sm" id="btnStartScrape">
+          <span class="spinner" id="btnStartScrapeSpinner" style="display: none;"></span>
+          <span id="btnStartScrapeText">🚀 Bắt Đầu Cào Ngay</span>
+        </button>
       </div>
     </div>
   </div>

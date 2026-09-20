@@ -43,37 +43,53 @@ class JobScraper(abc.ABC):
 
             body_text = await self.page.locator("body").inner_text()
             if body_text:
+                # Safeguard against saving Cloudflare challenge / Turnstile error pages
+                if any(cf_kw in body_text.lower() for cf_kw in [
+                    "just a moment...", "attention required", "xác minh bạn là con người",
+                    "verify you are human", "khắc phục sự cố lỗi cloudflare"
+                ]):
+                    self.logger.warning(f"🛡️ Phát hiện Cloudflare Challenge tại {job.link}. Bỏ qua cào chi tiết để tránh lưu dữ liệu rác.")
+                    return job
+
                 job.full_jd_raw = body_text.strip()
 
-                # Extract description if missing
-                if not job.description:
-                    desc_match = re.search(
-                        r"(?:Mô tả công việc|Job description|Job Description|Chi tiết công việc)[\s\n]+(.*?)(?=\n(?:Yêu cầu|Requirements|Qualifications|Quyền lợi|Benefits)|$)",
-                        body_text,
-                        re.DOTALL | re.IGNORECASE,
-                    )
-                    if desc_match:
-                        job.description = desc_match.group(1).strip()
+                # Extract description, requirements, benefits
+                desc_match = re.search(
+                    r"(?:Mô tả công việc|Job description|Job Description|Chi tiết công việc)[\s\n]+(.*?)(?=\n(?:Yêu cầu|Requirements|Qualifications|Quyền lợi|Benefits)|$)",
+                    body_text,
+                    re.DOTALL | re.IGNORECASE,
+                )
+                req_match = re.search(
+                    r"(?:Yêu cầu ứng viên|Yêu cầu công việc|Yêu cầu|Requirements|Job requirements|Qualifications)[\s\n]+(.*?)(?=\n(?:Quyền lợi|Benefits|Why you|Về công ty|About company)|$)",
+                    body_text,
+                    re.DOTALL | re.IGNORECASE,
+                )
+                ben_match = re.search(
+                    r"(?:Quyền lợi ứng viên|Quyền lợi|Benefits|Chế độ đãi ngộ)[\s\n]+(.*?)(?=\n(?:Địa điểm|Địa chỉ|Về công ty|Thông tin khác)|$)",
+                    body_text,
+                    re.DOTALL | re.IGNORECASE,
+                )
 
-                # Extract requirements if missing
-                if not job.requirements:
-                    req_match = re.search(
-                        r"(?:Yêu cầu ứng viên|Yêu cầu công việc|Yêu cầu|Requirements|Job requirements|Qualifications)[\s\n]+(.*?)(?=\n(?:Quyền lợi|Benefits|Why you|Về công ty|About company)|$)",
-                        body_text,
-                        re.DOTALL | re.IGNORECASE,
-                    )
-                    if req_match:
-                        job.requirements = req_match.group(1).strip()
+                extracted_desc = desc_match.group(1).strip() if desc_match else (job.description or "")
+                extracted_req = req_match.group(1).strip() if req_match else (job.requirements or "")
+                extracted_ben = ben_match.group(1).strip() if ben_match else (job.benefits or "")
 
-                # Extract benefits if missing
-                if not job.benefits:
-                    ben_match = re.search(
-                        r"(?:Quyền lợi ứng viên|Quyền lợi|Benefits|Chế độ đãi ngộ)[\s\n]+(.*?)(?=\n(?:Địa điểm|Địa chỉ|Về công ty|Thông tin khác)|$)",
-                        body_text,
-                        re.DOTALL | re.IGNORECASE,
-                    )
-                    if ben_match:
-                        job.benefits = ben_match.group(1).strip()
+                job.requirements = extracted_req or None
+                job.benefits = extracted_ben or None
+
+                # Gom toàn bộ nội dung cào được vào Mô tả công việc (job.description)
+                full_parts = []
+                if extracted_desc:
+                    full_parts.append(extracted_desc)
+                if extracted_req:
+                    full_parts.append(f"### YÊU CẦU ỨNG VIÊN:\n{extracted_req}")
+                if extracted_ben:
+                    full_parts.append(f"### QUYỀN LỢI ĐƯỢC HƯỞNG:\n{extracted_ben}")
+
+                if full_parts:
+                    job.description = "\n\n".join(full_parts)
+                elif not job.description:
+                    job.description = body_text.strip()
 
         except Exception as e:
             self.logger.warning(f"⚠️ Generic detail scraper failed for {job.link}: {str(e)}")
