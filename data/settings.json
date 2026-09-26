@@ -7,5 +7,5 @@
   "ai_model": "gemini-1.5-pro",
   "gemini_model": "gemini-1.5-pro",
   "custom_base_url": "https://api.deepseek.com/v1",
-  "theme": "dark"
+  "theme": "light"
 }

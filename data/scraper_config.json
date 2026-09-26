@@ -17,7 +17,13 @@
     "react",
     "golang",
     "ai",
-    "data analyst"
+    "data analyst",
+    "Golang",
+    "Golang",
+    "Golang",
+    "Golang",
+    "Golang",
+    "Golang"
   ],
   "levels": [
     "Intern",
@@ -50,5 +56,35 @@
     "khóa học"
   ],
   "max_pages_per_portal": 3,
-  "delay_seconds": 2
+  "delay_seconds": 2,
+  "target_levels": [
+    "Intern",
+    "Fresher",
+    "Junior"
+  ],
+  "target_cities": [
+    "Hồ Chí Minh",
+    "Hà Nội",
+    "Remote"
+  ],
+  "unwanted_titles": [
+    "senior",
+    "lead",
+    "middle",
+    "mid",
+    "sr",
+    "supervisor",
+    "manager",
+    "director",
+    "head",
+    "chief",
+    "trưởng",
+    "phó",
+    "giám đốc",
+    "quản lý",
+    "trưởng phòng",
+    "phó phòng",
+    "tuyển sinh",
+    "khóa học"
+  ]
 }

@@ -1,9 +1,8 @@
 import contextlib
 import json
-import os
 import sqlite3
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from config import get_logger
 from models.Job import Job
@@ -154,6 +153,32 @@ class JobStorage:
         except Exception as e:
             logger.warning(f"Failed to auto-migrate legacy JSONL: {e}")
 
+    @staticmethod
+    def _deserialize_json_field(raw_val: Any, default: Any = None) -> Any:
+        """Safely deserializes JSON text from database column."""
+        if not raw_val:
+            return default
+        if isinstance(raw_val, (list, dict)):
+            return raw_val
+        try:
+            return json.loads(raw_val)
+        except Exception:
+            return default
+
+    @classmethod
+    def _row_to_job_dict(cls, row: sqlite3.Row, parse_cv_details: bool = True) -> Dict[str, Any]:
+        """Converts an SQLite row into a clean dictionary with deserialized JSON fields."""
+        item = dict(row)
+        item["skills"] = cls._deserialize_json_field(item.get("skills"), default=[])
+
+        if parse_cv_details:
+            if "missing_skills" in item:
+                item["missing_skills"] = cls._deserialize_json_field(item.get("missing_skills"), default=[])
+            if "tailored_bullets" in item:
+                item["tailored_bullets"] = cls._deserialize_json_field(item.get("tailored_bullets"), default=[])
+
+        return item
+
     def save_jobs(self, jobs: List[Job]) -> int:
         """
         Inserts new jobs into the SQLite database with automatic deduplication via UNIQUE(link).
@@ -278,15 +303,7 @@ class JobStorage:
             cursor = conn.execute(select_sql, fetch_params)
             rows = cursor.fetchall()
 
-            jobs_list = []
-            for row in rows:
-                item = dict(row)
-                try:
-                    item["skills"] = json.loads(item["skills"]) if item["skills"] else []
-                except Exception:
-                    item["skills"] = []
-                jobs_list.append(item)
-
+            jobs_list = [self._row_to_job_dict(row, parse_cv_details=False) for row in rows]
             return jobs_list, total
 
     def get_job_by_id(self, job_id: int) -> Optional[Dict[str, Any]]:
@@ -311,26 +328,7 @@ class JobStorage:
             row = conn.execute(sql, (job_id,)).fetchone()
             if not row:
                 return None
-
-            item = dict(row)
-            try:
-                item["skills"] = json.loads(item["skills"]) if item["skills"] else []
-            except Exception:
-                item["skills"] = []
-
-            if item.get("missing_skills"):
-                try:
-                    item["missing_skills"] = json.loads(item["missing_skills"])
-                except Exception:
-                    pass
-
-            if item.get("tailored_bullets"):
-                try:
-                    item["tailored_bullets"] = json.loads(item["tailored_bullets"])
-                except Exception:
-                    pass
-
-            return item
+            return self._row_to_job_dict(row, parse_cv_details=True)
 
     def update_job_status(self, job_id: int, status: str) -> bool:
         """Updates the tracking status (saved, applied, interviewing, offered, rejected) for a job."""
@@ -349,7 +347,6 @@ class JobStorage:
         Also deletes generated PDF files if they exist.
         """
         with self._get_connection() as conn:
-            # Check for PDF file to unlink
             row = conn.execute("SELECT pdf_path FROM tailored_cvs WHERE job_id = ?", (job_id,)).fetchone()
             if row and row["pdf_path"]:
                 pdf_file = Path(row["pdf_path"])

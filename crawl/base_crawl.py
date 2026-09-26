@@ -1,8 +1,12 @@
 import abc
 import re
 from datetime import datetime
-from typing import List, Optional, Set
-from playwright.async_api import Page
+from typing import Any, List, Optional, Set
+
+try:
+    from playwright.async_api import Page
+except ImportError:
+    Page = Any  # type: ignore
 
 from config import VN_TIMEZONE, config, get_logger
 from models.Job import Job

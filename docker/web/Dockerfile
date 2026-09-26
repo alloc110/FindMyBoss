@@ -29,6 +29,8 @@ COPY services/ /app/services/
 COPY templates/ /app/templates/
 COPY config.py /app/config.py
 COPY models/ /app/models/
+COPY crawl/ /app/crawl/
+COPY main.py /app/main.py
 
 # Ensure data and logs directories exist (actual content comes from volumes)
 RUN mkdir -p /app/data /app/data/cvs /app/logs
