@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # =========================================================
 # FindMyBoss — Docker Microservices Management CLI
-# Usage: ./run-docker.sh [COMMAND] [OPTIONS]
+# Usage: ./scripts/run-docker.sh [COMMAND] [OPTIONS] or make [command]
 # =========================================================
 set -euo pipefail
 
-PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Navigate to the project root directory (parent of scripts/)
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_DIR"
 
 # Load environment variables if .env exists

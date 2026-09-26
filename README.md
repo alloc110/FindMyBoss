@@ -193,10 +193,12 @@
 ├── docker-compose.yml        # Compose config with scraper and web services
 ├── main.py                   # Global crawler orchestrator
 ├── requirements.txt          # Full dependencies (local dev / testing)
-├── run-web.sh                # Single-command launcher for Web Studio (port 8000)
-├── run-scraper.sh            # Local scraper runner
-├── run-docker.sh             # 🐳 Docker microservices management CLI
-├── docker-compose.yml        # 🐳 3-service microservices stack definition
+├── Makefile                 # 🎯 Project automation CLI (make up, make web, make test, ...)
+├── scripts/                 # 📜 Automation & runner shell scripts
+│   ├── run-docker.sh        # 🐳 Docker microservices management CLI
+│   ├── run-web.sh           # Web Studio local launcher
+│   └── run-scraper.sh       # Local scraper runner
+├── docker-compose.yml       # 🐳 3-service microservices stack definition
 │
 ├── docker/                   # 🐳 Per-service Dockerfile & requirements
 │   ├── web/
@@ -274,8 +276,8 @@ cp .env.example .env
 # Chỉnh sửa .env và điền GEMINI_API_KEY hoặc OPENAI_API_KEY...
 
 # Khởi chạy toàn bộ 3 microservices bằng 1 lệnh:
-./run-docker.sh up
-# Hoặc: docker compose up -d --build
+make up
+# Hoặc: ./scripts/run-docker.sh up (hoặc docker compose up -d --build)
 ```
 
 Hệ thống sẽ tự động:
@@ -286,12 +288,12 @@ Hệ thống sẽ tự động:
 
 ```bash
 # Quản lý containers:
-./run-docker.sh status        # Xem trạng thái + health check
-./run-docker.sh logs web      # Xem logs Web Studio
-./run-docker.sh logs renderer # Xem logs LaTeX Renderer
-./run-docker.sh logs scraper  # Xem logs Job Scraper
-./run-docker.sh scrape        # Kích hoạt cào việc làm ngay
-./run-docker.sh down          # Dừng tất cả (data được giữ nguyên)
+make status          # Xem trạng thái + health check (hoặc ./scripts/run-docker.sh status)
+make logs s=web      # Xem logs Web Studio
+make logs s=renderer # Xem logs LaTeX Renderer
+make logs s=scraper  # Xem logs Job Scraper
+make scrape-docker   # Kích hoạt cào việc làm ngay trong Docker
+make down            # Dừng tất cả (data được giữ nguyên)
 ```
 
 ### Option B: Local Development (Không cần Docker)
@@ -308,19 +310,20 @@ playwright install chromium
 
 Khởi động Web Studio:
 ```bash
-./run-web.sh
+make web
+# Hoặc: ./scripts/run-web.sh
 ```
 Trình duyệt sẽ mở tại: **[http://localhost:8000](http://localhost:8000)**.
-*(Script sẽ tự động tải binary Tectonic ~30MB vào thư mục `bin/` nếu máy bạn chưa có).*
 
 ### Option C: Chạy Crawler cục bộ
 
 ```bash
 # Chạy trực tiếp bằng Python (cần venv activated)
-./run-scraper.sh
+make scrape
+# Hoặc: ./scripts/run-scraper.sh
 
 # Hoặc kích hoạt qua API khi Docker đang chạy
-./run-docker.sh scrape
+make scrape-docker
 ```
 
 ---
