@@ -4,6 +4,8 @@ from typing import Any, Dict, List, Optional
 
 @dataclass
 class Job:
+    """Represents a job opportunity scraped from Vietnamese tech job portals."""
+
     title: str
     company: str
     link: str
@@ -14,7 +16,7 @@ class Job:
     image: Optional[str] = None
     time: Optional[str] = None
 
-    # Full data fields for future AI / CV tailoring
+    # Full data fields for AI ATS analysis & CV tailoring
     skills: List[str] = field(default_factory=list)
     description: Optional[str] = None       # Full job role & responsibilities
     requirements: Optional[str] = None      # Full candidate requirements
@@ -28,7 +30,7 @@ class Job:
     def to_discord_embed(self) -> Dict[str, Any]:
         """
         Formats a clean, lightweight Discord Embed notification.
-        Does NOT include bulky JD text (as requested), keeping only quick-glance info.
+        Does NOT include bulky JD text, keeping only quick-glance info.
         """
         desc_lines = [
             f"🏢 **Công ty:** {self.company}",
