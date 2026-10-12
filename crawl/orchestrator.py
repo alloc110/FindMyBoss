@@ -1,15 +1,23 @@
+import argparse
 import asyncio
 import json
 import random
 import re
+import sys
 import time
+
+# Reconfigure stdout/stderr for Windows UTF-8 console output
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type
 
 from playwright.async_api import Browser, BrowserContext, Page, async_playwright
 from playwright_stealth import Stealth
 
-from config import config, get_logger
+from core.config import config, get_logger
 from crawl.base_crawl import JobScraper
 from crawl.IndeedJob import IndeedJob
 from crawl.ITviecJob import ITviecJob
@@ -17,6 +25,7 @@ from crawl.JobsGoJob import JobsGoJob
 from crawl.TopCVJob import TopCVJob
 from crawl.TopDevJob import TopDevJob
 from crawl.VietnamWorksJob import VietnamWorksJob
+from crawl.filters import filter_jobs_by_web_config
 from models.Job import Job
 from services.notifier import DiscordNotifier
 from services.storage import JobStorage
@@ -31,9 +40,6 @@ CRAWLER_REGISTRY: Dict[str, Type[JobScraper]] = {
     "jobsgo": JobsGoJob,
     "indeed": IndeedJob,
 }
-
-
-from crawl.filters import filter_jobs_by_web_config
 
 
 async def execute_crawler(
@@ -73,7 +79,11 @@ async def execute_crawler(
         scraper = crawler_class(page=page, webhook_url=config.discord_webhook_url)
 
         # Phase 1: Fast listing discovery across pagination
-        scraped_jobs = await scraper.crawl_all_pages(today=today)
+        target_roles = (scraper_cfg or {}).get("roles") or []
+        try:
+            scraped_jobs = await scraper.crawl_all_pages(today=today, roles=target_roles)
+        except TypeError:
+            scraped_jobs = await scraper.crawl_all_pages(today=today)
         logger.info(
             f"Phase 1 complete: Harvested {len(scraped_jobs)} candidate jobs from {crawler_class.__name__}"
         )
@@ -131,15 +141,19 @@ async def execute_crawler(
         )
 
     finally:
-        await context.close()
+        try:
+            await context.close()
+        except Exception:
+            pass
 
     return []
 
 
 async def main_orchestrator(
     selected_portals: Optional[List[str]] = None,
-    today_only: bool = False,
+    today_only: Optional[bool] = None,
     progress_callback: Optional[Callable] = None,
+    scraper_cfg_override: Optional[Dict[str, Any]] = None,
 ) -> List[Job]:
     """Main Orchestrator handling dynamic portal execution, browser lifecycle, and progress callbacks."""
     # Load full web scraper configuration
@@ -150,6 +164,25 @@ async def main_orchestrator(
             scraper_cfg = json.loads(cfg_file.read_text(encoding="utf-8"))
         except Exception as e:
             logger.warning(f"Could not load data/scraper_config.json: {e}")
+
+    # Merge dynamic overrides (e.g. from Quick Scrape modal or CLI)
+    if scraper_cfg_override:
+        scraper_cfg.update({k: v for k, v in scraper_cfg_override.items() if v is not None})
+
+    # Resolve today_only priority:
+    # 1. Parameter passed explicitly (True / False)
+    # 2. scraper_cfg_override ("today_only")
+    # 3. scraper_cfg ("today_only")
+    # 4. Default to False
+    if today_only is None:
+        if scraper_cfg_override and "today_only" in scraper_cfg_override and scraper_cfg_override["today_only"] is not None:
+            today_only = bool(scraper_cfg_override["today_only"])
+        else:
+            today_only = bool(scraper_cfg.get("today_only", False))
+
+    logger.info(
+        f"⏳ Chế độ cào: {'[CHỈ CÀO HÔM NAY (today_only=True)]' if today_only else '[CÀO TẤT CẢ MỚI NHẤT (today_only=False)]'}"
+    )
 
     # Determine which portals to crawl
     target_crawlers: Dict[str, Type[JobScraper]] = {}
@@ -184,6 +217,8 @@ async def main_orchestrator(
                 "--log-level=3",
                 "--no-sandbox",
                 "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--disable-software-rasterizer",
             ],
         )
         stealth_driver = Stealth(init_scripts_only=True)
@@ -198,10 +233,13 @@ async def main_orchestrator(
                 except Exception as cb_err:
                     logger.warning(f"Progress callback error: {cb_err}")
 
-            jobs = await execute_crawler(
-                browser, crawler_class, stealth_driver, notifier, storage, today=today_only, scraper_cfg=scraper_cfg
-            )
-            all_collected_jobs.extend(jobs)
+            try:
+                jobs = await execute_crawler(
+                    browser, crawler_class, stealth_driver, notifier, storage, today=today_only, scraper_cfg=scraper_cfg
+                )
+                all_collected_jobs.extend(jobs)
+            except Exception as portal_err:
+                logger.error(f"❌ Error during crawling {portal_name}: {portal_err}")
 
             # Throttling delay between sites
             await asyncio.sleep(config.throttle_delay_seconds)
@@ -209,7 +247,10 @@ async def main_orchestrator(
                 f"Cumulative tracking metric: {len(all_collected_jobs)} total jobs aggregated so far."
             )
 
-        await browser.close()
+        try:
+            await browser.close()
+        except Exception:
+            pass
 
     duration_seconds = time.perf_counter() - start_perf_time
 
@@ -222,5 +263,73 @@ async def main_orchestrator(
     return all_collected_jobs
 
 
+def parse_cli_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="FindMyBoss Scraper Orchestrator - Automated tech job harvester for Vietnam portals."
+    )
+    parser.add_argument(
+        "-t",
+        "--today",
+        action="store_true",
+        default=None,
+        help="Chỉ cào các tin tuyển dụng đăng trong ngày hôm nay (24 giờ gần nhất).",
+    )
+    parser.add_argument(
+        "--all",
+        action="store_true",
+        default=False,
+        help="Cào mọi tin tuyển dụng mới nhất (bỏ qua thiết lập today_only trong scraper_config.json).",
+    )
+    parser.add_argument(
+        "-p",
+        "--portals",
+        type=str,
+        default=None,
+        help="Danh sách các cổng tuyển dụng cách nhau bởi dấu phẩy (vd: itviec,topcv,topdev,vietnamworks,jobsgo,indeed).",
+    )
+    parser.add_argument(
+        "-r",
+        "--roles",
+        type=str,
+        default=None,
+        help="Danh sách chuyên môn (roles) cách nhau bởi dấu phẩy (vd: backend,frontend,da,de,ai_ml,mobile,tester,devops).",
+    )
+    parser.add_argument(
+        "-m",
+        "--max-pages",
+        type=int,
+        default=None,
+        help="Số trang tối đa mỗi cổng tuyển dụng (mặc định theo cấu hình).",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    asyncio.run(main_orchestrator())
+    cli_args = parse_cli_args()
+
+    # Determine today_only priority from CLI
+    target_today: Optional[bool] = None
+    if cli_args.today:
+        target_today = True
+    elif cli_args.all:
+        target_today = False
+
+    target_portals = (
+        [p.strip().lower() for p in cli_args.portals.split(",") if p.strip()]
+        if cli_args.portals
+        else None
+    )
+
+    cli_overrides: Dict[str, Any] = {}
+    if cli_args.roles:
+        cli_overrides["roles"] = [r.strip().lower() for r in cli_args.roles.split(",") if r.strip()]
+    if cli_args.max_pages:
+        cli_overrides["max_pages_per_portal"] = cli_args.max_pages
+
+    asyncio.run(
+        main_orchestrator(
+            selected_portals=target_portals,
+            today_only=target_today,
+            scraper_cfg_override=cli_overrides if cli_overrides else None,
+        )
+    )

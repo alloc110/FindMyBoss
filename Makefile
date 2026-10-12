@@ -18,7 +18,7 @@ help:
 	@echo ""
 	@echo "Local Development Commands:"
 	@echo "  make web             Run FastAPI Web Studio locally"
-	@echo "  make scrape          Run Scraper locally via main.py"
+	@echo "  make scrape          Run Scraper locally via crawl/orchestrator.py"
 	@echo "  make test            Run test suite with pytest"
 	@echo "  make clean           Remove temporary cache and build files"
 	@echo "======================================================================"
@@ -45,7 +45,7 @@ scrape-docker:
 	@bash $(SCRIPTS_DIR)/run-docker.sh scrape
 
 web:
-	@bash $(SCRIPTS_DIR)/run-web.sh
+	@uvicorn web.app:app --host 0.0.0.0 --port 8000 --reload
 
 scrape:
 	@bash $(SCRIPTS_DIR)/run-scraper.sh

@@ -20,7 +20,7 @@ services:
     container_name: findmyboss_web
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "${WEB_PORT:-8080}:8000"
     env_file:
       - .env
     environment:
@@ -31,6 +31,10 @@ services:
     volumes:
       - ./data:/app/data          # SQLite DB, PDFs, settings, rules
       - ./logs:/app/logs          # Application logs
+      - ./web:/app/web            # Hot reload templates & static assets
+      - ./core:/app/core          # Core config
+      - ./crawl:/app/crawl        # Hot reload filters and models
+      - ./services:/app/services  # Hot reload microservices & storage
     depends_on:
       renderer:
         condition: service_healthy
@@ -98,6 +102,9 @@ services:
     volumes:
       - ./data:/app/data          # SQLite DB (jobs.db) and scraper config
       - ./logs:/app/logs          # Scrape logs
+      - ./crawl:/app/crawl        # Crawler scripts & filters hot-reload
+      - ./services:/app/services  # Scraper service worker
+      - ./core:/app/core
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
       interval: 20s

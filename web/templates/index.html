@@ -136,11 +136,24 @@
       <!-- Tab Content Area (Scrolls vertically) -->
       <div class="tab-content-area" id="tabContentArea">
         
-        <!-- Tab 1: JD Content -->
+        <!-- Tab 1: JD Content (Chia rõ từng phần: Mô tả, Yêu cầu, Quyền lợi) -->
         <div class="tab-pane active" id="tab-jd">
+          <!-- Card 1: Mô tả công việc -->
           <div class="jd-content-card" id="jdDescriptionCard">
-            <h3>Mô tả công việc</h3>
+            <h3>📋 Mô tả công việc (Job Description)</h3>
             <div class="jd-body-text" id="jdDescription"></div>
+          </div>
+
+          <!-- Card 2: Yêu cầu ứng viên -->
+          <div class="jd-content-card" id="jdRequirementsCard" style="display: none;">
+            <h3 class="requirements-header">🎯 Yêu cầu ứng viên (Requirements & Skills)</h3>
+            <div class="jd-body-text" id="jdRequirements"></div>
+          </div>
+
+          <!-- Card 3: Quyền lợi được hưởng -->
+          <div class="jd-content-card" id="jdBenefitsCard" style="display: none;">
+            <h3 class="benefits-header">🎁 Quyền lợi & Chế độ đãi ngộ (Benefits)</h3>
+            <div class="jd-body-text" id="jdBenefits"></div>
           </div>
         </div>
 
@@ -625,7 +638,7 @@
 
   <!-- Quick Scrape Modal -->
   <div class="modal-overlay" id="scrapeModal" style="display: none;">
-    <div class="modal-container scrape-modal-card">
+    <div class="modal-card scrape-modal-card">
       <div class="modal-header">
         <div class="modal-title-group">
           <h3 class="modal-title">🕷️ Cào Việc Làm Mới (Job Harvester)</h3>
@@ -649,9 +662,10 @@
         </div>
 
         <div class="scrape-form" id="scrapeForm">
+          <!-- 1. Cổng tuyển dụng -->
           <div class="form-group">
             <div class="form-group-header">
-              <label>Chọn các cổng tuyển dụng cần cào:</label>
+              <label>🌐 Chọn các cổng tuyển dụng cần cào:</label>
               <div class="portal-quick-actions">
                 <button type="button" class="link-btn" id="btnSelectAllPortals">Chọn tất cả</button>
                 <span>•</span>
@@ -686,19 +700,161 @@
             </div>
           </div>
 
-          <div class="form-row-2">
+          <!-- 2. Vị trí / Lĩnh vực chuyên môn (Target Roles) -->
+          <div class="form-group" style="margin-top: 14px;">
+            <div class="form-group-header">
+              <label>💼 Vị trí chuyên môn cần cào (Role):</label>
+              <div class="portal-quick-actions">
+                <button type="button" class="link-btn" id="btnRoleAll">Tất cả IT</button>
+                <span>•</span>
+                <button type="button" class="link-btn" id="btnRoleData">Nhóm Data (DA / DE / AI)</button>
+                <span>•</span>
+                <button type="button" class="link-btn" id="btnRoleDev">Nhóm Dev (BE / FE)</button>
+              </div>
+            </div>
+            <div class="chip-checkbox-group" id="quickRoleGroup">
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="backend" class="quick-role-chk">
+                💻 Backend Developer
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="frontend" class="quick-role-chk">
+                🎨 Frontend Developer
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="fullstack" class="quick-role-chk">
+                ⚡ Fullstack Developer
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="da" class="quick-role-chk">
+                📊 Data Analyst (DA)
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="de" class="quick-role-chk">
+                🛠️ Data Engineer (DE)
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="ai_ml" class="quick-role-chk">
+                🤖 AI / Machine Learning
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="mobile" class="quick-role-chk">
+                📱 Mobile Developer
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="tester" class="quick-role-chk">
+                🧪 QA / QC / Tester
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="devops" class="quick-role-chk">
+                ☁️ DevOps / Cloud
+              </label>
+            </div>
+            <span class="form-hint">Chọn role mục tiêu (ví dụ: chỉ cào Backend, hoặc chỉ DA/DE). Nếu để trống sẽ cào chung các vị trí IT.</span>
+          </div>
+
+          <!-- 3. Cấp bậc kinh nghiệm mục tiêu (Target Levels) -->
+          <div class="form-group" style="margin-top: 14px;">
+            <div class="form-group-header">
+              <label>🎯 Cấp bậc kinh nghiệm cần cào:</label>
+              <div class="portal-quick-actions">
+                <button type="button" class="link-btn" id="btnPresetInternFresher">Chỉ Intern/Fresher</button>
+                <span>•</span>
+                <button type="button" class="link-btn" id="btnPresetJunior">Intern - Junior</button>
+                <span>•</span>
+                <button type="button" class="link-btn" id="btnPresetAllLevels">Tất cả</button>
+              </div>
+            </div>
+            <div class="chip-checkbox-group" id="quickLevelGroup">
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Intern" class="quick-level-chk" checked>
+                🎓 Intern (Thực tập)
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Fresher" class="quick-level-chk" checked>
+                🌱 Fresher (Mới ra trường)
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Junior" class="quick-level-chk" checked>
+                ⚡ Junior (1-3 năm)
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Middle" class="quick-level-chk">
+                🚀 Middle (3-5 năm)
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Senior" class="quick-level-chk">
+                👑 Senior / Lead (5+ năm)
+              </label>
+            </div>
+            <span class="form-hint">Hệ thống sẽ tự động lọc và chỉ lưu công việc phù hợp với cấp bậc được chọn.</span>
+          </div>
+
+          <!-- 3. Từ khóa công việc & Vị trí ứng tuyển (Keywords) -->
+          <div class="form-group" style="margin-top: 12px;">
+            <label for="quickScrapeKeywords">🔍 Từ khóa chuyên môn & công nghệ (cách nhau bằng dấu phẩy):</label>
+            <input
+              type="text"
+              id="quickScrapeKeywords"
+              class="form-input"
+              placeholder="Python, React, Node.js, Golang, Data Analyst, Machine Learning, AI, Backend..."
+            >
+            <span class="form-hint">Nhập các kỹ năng hoặc chức danh bạn quan tâm (để trống nếu muốn quét rộng).</span>
+          </div>
+
+          <!-- 4. Địa điểm làm việc (Locations) -->
+          <div class="form-group" style="margin-top: 12px;">
+            <label>📍 Địa điểm ưu tiên:</label>
+            <div class="chip-checkbox-group" id="quickLocationGroup">
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Hồ Chí Minh" class="quick-city-chk" checked>
+                TP. Hồ Chí Minh
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Hà Nội" class="quick-city-chk" checked>
+                Hà Nội
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Đà Nẵng" class="quick-city-chk" checked>
+                Đà Nẵng
+              </label>
+              <label class="chip-checkbox-label">
+                <input type="checkbox" value="Remote" class="quick-city-chk" checked>
+                Remote / Toàn quốc
+              </label>
+            </div>
+          </div>
+
+          <!-- 5. Thời gian đăng & Số trang -->
+          <div class="form-row-2" style="margin-top: 12px;">
             <div class="form-group">
-              <label for="quickScrapeToday">Phạm vi thời gian đăng:</label>
+              <label for="quickScrapeToday">⏳ Phạm vi thời gian đăng:</label>
               <select id="quickScrapeToday" class="form-select">
                 <option value="false">Mọi tin tuyển dụng mới nhất (Khuyên dùng)</option>
                 <option value="true">Chỉ tin đăng hôm nay (Today only)</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="quickScrapeMaxPages">Số trang quét mỗi cổng:</label>
+              <label for="quickScrapeMaxPages">📄 Số trang quét mỗi cổng:</label>
               <input type="number" id="quickScrapeMaxPages" class="form-input" min="1" max="10" value="2">
             </div>
           </div>
+
+          <!-- 6. Bộ lọc nâng cao: Từ khóa loại trừ (Blacklist) -->
+          <details class="scrape-advanced-details" style="margin-top: 12px;">
+            <summary style="font-size: 12px; color: var(--accent-cyan); cursor: pointer; font-weight: 600;">
+              ⚙️ Bộ lọc loại trừ (Blacklist keywords)
+            </summary>
+            <div class="form-group" style="margin-top: 8px;">
+              <input
+                type="text"
+                id="quickScrapeBlacklist"
+                class="form-input"
+                placeholder="Senior, Lead, Trưởng phòng, Manager, Tuyển sinh, Khóa học, Không lương"
+              >
+              <span class="form-hint">Tự động bỏ qua các bài đăng chứa từ khóa này để tránh tin rác hoặc thu học phí.</span>
+            </div>
+          </details>
         </div>
       </div>
 
@@ -712,6 +868,6 @@
     </div>
   </div>
 
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js?v=1.1.0"></script>
 </body>
 </html>

@@ -3,8 +3,15 @@ Services package for FindMyBoss.
 Gracefully handles modular microservice environments where only a subset
 of optional dependencies (e.g. AI SDKs or PDF parsers) are installed.
 """
-from services.notifier import DiscordNotifier
-from services.storage import JobStorage
+try:
+    from services.notifier import DiscordNotifier
+except ImportError:
+    DiscordNotifier = None  # type: ignore
+
+try:
+    from services.storage import JobStorage
+except ImportError:
+    JobStorage = None  # type: ignore
 
 try:
     from services.ai.service import GeminiService, MultiProviderAIService

@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
 
-from config import get_logger
+from core.config import get_logger
 from models.schemas import JobStatusRequest, RecompileRequest, VALID_JOB_STATUSES
 from web.dependencies import CVS_DIR, gemini_service, latex_engine, profile_service, storage
 

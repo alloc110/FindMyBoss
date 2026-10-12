@@ -1,7 +1,7 @@
 import os
 from typing import Any, Dict, Optional
 
-from config import get_logger
+from core.config import get_logger
 from models.schemas import GeminiTailorResponse
 from services.ai.base import BaseAIProvider
 from services.ai.claude_provider import ClaudeProvider

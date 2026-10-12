@@ -15,6 +15,6 @@ data/cvs/
 data/master_cv.pdf
 data/master_cv_text.txt
 !assets/*
-data/
+data/*
 *.log 
 crawl_log.txt

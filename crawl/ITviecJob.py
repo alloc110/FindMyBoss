@@ -2,7 +2,7 @@ import re
 from typing import Dict, List, Optional
 from playwright.async_api import Locator, Page
 
-from config import config
+from core.config import config
 from crawl.base_crawl import JobScraper
 from models.Job import Job
 
@@ -206,11 +206,33 @@ class ITviecJob(JobScraper):
 
         return job
 
-    async def crawl_all_pages(self, today: bool = False) -> List[Job]:
+    ROLE_MAP: Dict[str, List[tuple[str, str]]] = {
+        "backend": [("Backend Developer", "backend-developer")],
+        "frontend": [("Frontend Developer", "frontend-developer")],
+        "fullstack": [("Fullstack Developer", "full-stack-developer")],
+        "da": [("Data Analyst", "data-analyst")],
+        "de": [("Data Engineer", "data-engineer")],
+        "ai_ml": [("AI Engineer", "ai-engineer"), ("Data Scientist", "data-scientist")],
+        "mobile": [("Mobile Developer", "mobile-developer")],
+        "tester": [("QA/QC Tester", "qa-qc")],
+        "devops": [("DevOps Engineer", "devops")],
+    }
+
+    async def crawl_all_pages(self, today: bool = False, roles: Optional[List[str]] = None, **kwargs) -> List[Job]:
         """Iterates through defined technical target domains and pages."""
         all_jobs: List[Job] = []
 
-        for role, slug in self.roles.items():
+        target_roles: List[tuple[str, str]] = []
+        if roles and "all" not in [r.lower() for r in roles]:
+            for r in roles:
+                r_key = r.strip().lower()
+                if r_key in self.ROLE_MAP:
+                    target_roles.extend(self.ROLE_MAP[r_key])
+
+        if not target_roles:
+            target_roles = list(self.roles.items())
+
+        for role, slug in target_roles:
             self.logger.info(f"📂 Navigating execution context to specialization: [{role}]")
             target_url = f"https://itviec.com/it-jobs/{slug}"
 

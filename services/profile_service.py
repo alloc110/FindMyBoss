@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 import pypdf
 
-from config import get_logger
+from core.config import get_logger
 
 logger = get_logger("ProfileService")
 

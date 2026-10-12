@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from playwright.async_api import Locator, Page
 
-from config import config
+from core.config import config
 from crawl.base_crawl import JobScraper
 from models.Job import Job
 
@@ -97,12 +97,34 @@ class IndeedJob(JobScraper):
             self.logger.warning(f"⚠️ Failed to parse Indeed job card: {str(e)}")
             return None
 
-    async def crawl_all_pages(self, today: bool = False) -> List[Job]:
-        """Runs search queries directly via target URL parameters."""
+    ROLE_MAP: Dict[str, str] = {
+        "backend": "backend developer",
+        "frontend": "frontend developer",
+        "fullstack": "fullstack developer",
+        "da": "data analyst",
+        "de": "data engineer",
+        "ai_ml": "ai engineer",
+        "mobile": "mobile developer",
+        "tester": "qa tester",
+        "devops": "devops",
+    }
+
+    async def crawl_all_pages(self, today: bool = False, roles: Optional[List[str]] = None, **kwargs) -> List[Job]:
+        """Runs search queries directly via target URL parameters for selected roles."""
         all_jobs: List[Job] = []
 
+        target_roles: Dict[str, str] = {}
+        if roles and "all" not in [r.lower() for r in roles]:
+            for r in roles:
+                r_key = r.strip().lower()
+                if r_key in self.ROLE_MAP:
+                    target_roles[self.ROLE_MAP[r_key]] = self.ROLE_MAP[r_key]
+
+        if not target_roles:
+            target_roles = self.roles
+
         try:
-            for role, slug_name in self.roles.items():
+            for role, slug_name in target_roles.items():
                 await self.page.wait_for_timeout(random.randint(1000, 3000))
 
                 query_parameters = {
@@ -113,7 +135,7 @@ class IndeedJob(JobScraper):
                     query_parameters["fromage"] = "1"  # 24-hour filter parameter
                 target_url = self._inject_query_param(self.base_search_url, query_parameters)
 
-                self.logger.info(f"🚀 Routing to Indeed target endpoint: {target_url}")
+                self.logger.info(f"🚀 Routing to Indeed target endpoint [{role}]: {target_url}")
                 await self.page.goto(target_url, wait_until="load", timeout=config.navigation_timeout_ms)
                 await self.page.wait_for_timeout(3000)
 

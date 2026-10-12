@@ -16,6 +16,7 @@ if [ -f "$PROJECT_DIR/.env" ]; then
   set +a
 fi
 
+WEB_PORT="${WEB_PORT:-8080}"
 SCRAPER_PORT="${SCRAPER_PORT:-8003}"
 
 # Ensure host mount directories exist before Docker creates them as root
@@ -39,7 +40,7 @@ print_banner() {
   echo "  ██║     ██║██║ ╚████║██████╔╝██║ ╚═╝ ██║   ██║   ██████╔╝╚██████╔╝███████║███████║"
   echo "  ╚═╝     ╚═╝╚═╝  ╚═══╝╚═════╝ ╚═╝     ╚═╝   ╚═╝   ╚═════╝  ╚═════╝ ╚══════╝╚══════╝"
   echo -e "${NC}"
-  echo -e "  ${YELLOW}Microservices Stack: web (8000) | renderer (8001) | scraper (${SCRAPER_PORT})${NC}"
+  echo -e "  ${YELLOW}Microservices Stack: web (${WEB_PORT}) | renderer (8001) | scraper (${SCRAPER_PORT})${NC}"
   echo ""
 }
 
@@ -52,7 +53,7 @@ case "$COMMAND" in
     echo -e "${GREEN}=========================================================="
     echo -e "  ✅ FindMyBoss Microservices System is Running!"
     echo -e ""
-    echo -e "  🌐 Web Studio:       http://localhost:8000"
+    echo -e "  🌐 Web Studio:       http://localhost:${WEB_PORT}"
     echo -e "  📄 LaTeX Renderer:   http://localhost:8001/health"
     echo -e "  🕷️  Job Scraper:      http://localhost:${SCRAPER_PORT}/health"
     echo -e "==========================================================${NC}"
@@ -89,7 +90,7 @@ case "$COMMAND" in
     docker compose ps
     echo ""
     echo -e "${CYAN}🔍 Health Checks:${NC}"
-    for port in 8000 8001 "$SCRAPER_PORT"; do
+    for port in "$WEB_PORT" 8001 "$SCRAPER_PORT"; do
       svc="web"; [ "$port" -eq 8001 ] && svc="renderer"; [ "$port" -eq "$SCRAPER_PORT" ] && svc="scraper"
       if curl -sf "http://localhost:${port}/health" > /dev/null 2>&1 || \
          curl -sf "http://localhost:${port}/api/stats" > /dev/null 2>&1; then
@@ -113,13 +114,13 @@ case "$COMMAND" in
 
   scrape)
     echo -e "${CYAN}🕷️  Triggering on-demand job scrape via API...${NC}"
-    curl -s -X POST http://localhost:8000/api/scraper/run | python3 -m json.tool || \
+    curl -s -X POST "http://localhost:${WEB_PORT}/api/scraper/run" | python3 -m json.tool || \
     curl -s -X POST "http://localhost:${SCRAPER_PORT}/api/scrape" | python3 -m json.tool
     ;;
 
   scrape-status)
     echo -e "${CYAN}📊 Scraper Status:${NC}"
-    curl -s http://localhost:8000/api/scraper/status | python3 -m json.tool
+    curl -s "http://localhost:${WEB_PORT}/api/scraper/status" | python3 -m json.tool
     ;;
 
   shell)

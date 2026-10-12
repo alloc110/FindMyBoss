@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional
 
 import httpx
 
-from config import get_logger
+from core.config import get_logger
 from models.schemas import GeminiTailorResponse
 
 logger = get_logger("BaseAIProvider")

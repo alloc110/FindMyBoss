@@ -22,7 +22,7 @@ mkdir -p "$PROJECT_DIR/logs"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting job scraping pipeline with $PYTHON_BIN..." >> "$PROJECT_DIR/logs/crawl_log.txt"
 
 # Execute orchestrator
-"$PYTHON_BIN" main.py "$@"
+"$PYTHON_BIN" -m crawl.orchestrator "$@"
 
 # Log completion metrics
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Pipeline execution finished successfully." >> "$PROJECT_DIR/logs/crawl_log.txt"

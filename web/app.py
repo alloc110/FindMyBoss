@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
-from config import get_logger
+from core.config import get_logger
 from web.dependencies import (
     STATIC_DIR,
     TEMPLATES_DIR,

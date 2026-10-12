@@ -13,3 +13,4 @@ aiofiles>=24.1.0
 google-genai>=2.24.0
 pypdf>=6.0.0
 python-multipart>=0.0.20
+tzdata>=2025.1

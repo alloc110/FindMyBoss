@@ -38,8 +38,7 @@ COPY services/scraper_microservice.py /app/services/scraper_microservice.py
 COPY services/storage.py /app/services/storage.py
 COPY services/notifier.py /app/services/notifier.py
 COPY services/__init__.py /app/services/__init__.py
-COPY config.py /app/config.py
-COPY main.py /app/main.py
+COPY core/ /app/core/
 
 # Create runtime directories
 RUN mkdir -p /app/data /app/logs

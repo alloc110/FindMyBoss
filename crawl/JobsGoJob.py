@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 from playwright.async_api import Locator, Page
 
-from config import config
+from core.config import config
 from crawl.base_crawl import JobScraper
 from models.Job import Job
 
@@ -97,11 +97,33 @@ class JobsGoJob(JobScraper):
             self.logger.warning(f"⚠️ Structural mismatch on JobsGO card: {str(e)}")
             return None
 
-    async def crawl_all_pages(self, today: bool = False) -> List[Job]:
+    ROLE_MAP: Dict[str, List[tuple[str, str]]] = {
+        "backend": [("Backend Developer", "https://jobsgo.vn/viec-lam-backend-developer-tai-ho-chi-minh.html?sort=created")],
+        "frontend": [("Frontend Developer", "https://jobsgo.vn/viec-lam-frontend-developer-tai-ho-chi-minh.html?sort=created")],
+        "fullstack": [("Fullstack Developer", "https://jobsgo.vn/viec-lam-fullstack-developer-tai-ho-chi-minh.html?sort=created")],
+        "da": [("Data Analyst", "https://jobsgo.vn/viec-lam-data-analyst-tai-ho-chi-minh.html?sort=created")],
+        "de": [("Data Engineer", "https://jobsgo.vn/viec-lam-data-engineer-tai-ho-chi-minh.html?sort=created")],
+        "ai_ml": [("AI / Machine Learning", "https://jobsgo.vn/viec-lam-ai-tai-ho-chi-minh.html?sort=created")],
+        "mobile": [("Mobile Developer", "https://jobsgo.vn/viec-lam-mobile-developer-tai-ho-chi-minh.html?sort=created")],
+        "tester": [("Tester / QA QC", "https://jobsgo.vn/viec-lam-tester-tai-ho-chi-minh.html?sort=created")],
+        "devops": [("DevOps", "https://jobsgo.vn/viec-lam-devops-tai-ho-chi-minh.html?sort=created")],
+    }
+
+    async def crawl_all_pages(self, today: bool = False, roles: Optional[List[str]] = None, **kwargs) -> List[Job]:
         """Coordinates execution matrix loops across designated Role paths and Experience thresholds."""
         all_jobs: List[Job] = []
 
-        for role, slug in self.roles.items():
+        target_roles: List[tuple[str, str]] = []
+        if roles and "all" not in [r.lower() for r in roles]:
+            for r in roles:
+                r_key = r.strip().lower()
+                if r_key in self.ROLE_MAP:
+                    target_roles.extend(self.ROLE_MAP[r_key])
+
+        if not target_roles:
+            target_roles = list(self.roles.items())
+
+        for role, slug in target_roles:
             for exp in self.exp:
                 self.logger.info(f"📂 Navigating execution context: [{role}] | Filter: [{exp}]")
                 target_url = f"{slug}&exp={exp}"

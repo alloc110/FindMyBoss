@@ -4,18 +4,19 @@
 
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![Google Gemini](https://img.shields.io/badge/Gemini_2.5_Flash-AI_ATS_Tailor-8E75C2?style=for-the-badge&logo=googlegemini&logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Gemini_2.5_&_3.8_Flash-AI_ATS_Tailor-8E75C2?style=for-the-badge&logo=googlegemini&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/OpenAI-ChatGPT_&_GPT--4o-412991?style=for-the-badge&logo=openai&logoColor=white)
 ![Anthropic](https://img.shields.io/badge/Claude-3.5_&_3.7_Sonnet-D97706?style=for-the-badge&logo=anthropic&logoColor=white)
 ![Tectonic](https://img.shields.io/badge/Tectonic-LaTeX_XeTeX_Engine-000000?style=for-the-badge&logo=latex&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-WAL_Mode-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-1.58.0-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)
-![Tests](https://img.shields.io/badge/Tests-24%2F24_Passing-success?style=for-the-badge&logo=pytest&logoColor=white)
+![Tests](https://img.shields.io/badge/Tests-27%2F27_Passing-success?style=for-the-badge&logo=pytest&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-3_Microservices-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Automation](https://img.shields.io/badge/Windows_Task_Scheduler-Daily_Automation-0078D6?style=for-the-badge&logo=windows&logoColor=white)
 
-**An intelligent, multi-portal Vietnamese tech job harvester, ATS gap analyzer, application tracker, and automated LaTeX CV tailoring studio powered by Multi-Provider AI (Google Gemini, OpenAI / ChatGPT, Anthropic Claude, DeepSeek/Local LLM) & Tectonic.**
+**Hệ sinh thái tự động hóa thu thập việc làm IT Việt Nam đa nền tảng, phân tích khoảng cách ATS bằng Multi-Provider AI (Google Gemini, OpenAI ChatGPT, Anthropic Claude, DeepSeek/Local LLM), theo dõi tiến độ ứng tuyển và Overleaf-Style Studio tối ưu CV LaTeX tự động với Tectonic.**
 
-[Live Demo](#-visual-showcase--demo) • [Key Features](#-key-features) • [Architecture](#️-system-architecture--docker-microservices) • [Quickstart Guide](#️-quickstart-guide) • [Configuration](#️-configuration--environment-variables) • [Testing](#-automated-testing)
+[Demo Giao Diện](#-visual-showcase--demo) • [Tính Năng Cốt Lõi](#-tính-năng-cốt-lõi-key-features) • [Kiến Trúc Hệ Thống](#️-kiến-trúc-hệ-thống--docker-microservices) • [Tự Động Hóa & CLI](#-tự-động-hóa-cào-việc--cli-orchestrator) • [Tài Liệu REST API](#-tài-liệu-rest-api) • [Hướng Dẫn Cài Đặt](#️-hướng-dẫn-khởi-chạy-quickstart) • [Kiểm Thử Tự Động](#-kiểm-thử-tự-động-automated-testing)
 
 </div>
 
@@ -23,30 +24,22 @@
 
 ## 🎬 Visual Showcase & Demo
 
-### 1. Trải nghiệm Hệ thống Toàn diện (Interactive Demo Video)
----
-
-### 2. Thư viện Ảnh Tính năng (Screenshots Gallery)
+### Thư viện Ảnh Tính năng (Screenshots Gallery)
 
 | Đa Nhà Cung Cấp AI & Kiểm Tra API Key Trực Tiếp | Overleaf-Style Side-by-Side LaTeX Studio |
 | :---: | :---: |
 | ![Settings Multi Model & Test Key](assets/settings_test_key_result.png) | ![Overleaf Studio](assets/overleaf_pdf_preview.png) |
-| *Hỗ trợ Gemini, ChatGPT (GPT-4o, 3.5), Claude, DeepSeek cùng nút test kết nối đo độ trễ ms* | *Code LaTeX trực tiếp 50% bên trái & Live PDF Preview 50% bên phải (Phím tắt `Ctrl + Enter`)* |
+| *Hỗ trợ Gemini, ChatGPT (GPT-4o, o3-mini), Claude, DeepSeek cùng nút test kết nối đo độ trễ ms* | *Code LaTeX trực tiếp 50% bên trái & Live PDF Preview 50% bên phải (Phím tắt `Ctrl + Enter`)* |
 
 | Quản lý Trạng thái Ứng tuyển & Xóa Job | Giao diện Tinh gọn & Theme Tối / Sáng |
 | :---: | :---: |
 | ![Hover Expand Job Card](assets/job_card_hover.png) | ![Dark Mode UI](assets/theme_amethyst.png) |
-| *Theo dõi tiến độ: Chưa nộp, Đã nộp, Phỏng vấn, Offer, Bị từ chối & Xóa job bị từ chối* | *Giao diện hiện đại không icon, chuyển đổi tức thì giữa Chế độ Tối và Chế độ Sáng* |
+| *Theo dõi tiến độ: Chưa nộp, Đã nộp, Phỏng vấn, Offer, Bị từ chối & Xóa job an toàn* | *Giao diện hiện đại không icon, chuyển đổi tức thì giữa Chế độ Tối và Chế độ Sáng* |
 
-| Quản lý Trạng thái Ứng tuyển & Xóa Job | Đánh giá ATS & Đề xuất AI theo Rules |
+| Đánh giá ATS & Đề xuất AI theo Rules | Tải lên Master CV PDF (Nguồn Sự Thật) |
 | :---: | :---: |
-| ![Hover Expand Job Card](assets/job_card_hover.png) | ![ATS Evaluation](assets/ats_evaluation.png) |
-| *Theo dõi tiến độ: Chưa nộp, Đã nộp, Phỏng vấn, Offer, Bị từ chối & Xóa job bị từ chối* | *Chấm điểm Match Score %, lọc từ khóa thiếu, nạp Master CV & Rules* |
-
-| Trình xem trước & Tải file PDF CV | Tải lên Master CV PDF (Nguồn Sự Thật) |
-| :---: | :---: |
-| ![PDF Preview](assets/pdf_preview.png) | ![Master CV Upload](assets/master_cv_upload.png) |
-| *Biên dịch LaTeX sang PDF trong 2.7s & chuyển đổi mẫu CV (Classic, Modern, Compact)* | *Tự động bóc tách text từ file PDF tổng hợp của bạn* |
+| ![ATS Evaluation](assets/ats_evaluation.png) | ![Master CV Upload](assets/master_cv_upload.png) |
+| *Chấm điểm Match Score %, lọc từ khóa thiếu, nạp Master CV & Rules* | *Tự động bóc tách text từ file PDF tổng hợp của bạn* |
 
 | Cấu hình Rules Đánh Giá ATS | Cấu hình Rules Viết & Tối Ưu CV |
 | :---: | :---: |
@@ -55,349 +48,314 @@
 
 ---
 
-## 🌟 Key Features
+## 🌟 Tính Năng Cốt Lõi (Key Features)
 
 ### 1. Đa Nhà Cung Cấp AI & Kiểm Tra Kết Nối Trực Tiếp (Multi-Provider Catalog & Live Key Test)
-- **Hỗ trợ toàn diện 4 hệ sinh thái AI hàng đầu**:
-  - **Google Gemini**: `gemini-3.8-flash` (Mới nhất 3.8), `gemini-3.0-pro` (Flagship 3.0), `gemini-3.0-flash` (Thế hệ 3.0), `gemini-2.5-flash` (Khuyên dùng), `gemini-2.5-pro`, `gemini-2.0-flash`, `gemini-1.5-pro`, `gemini-1.5-flash` cùng khả năng nhập custom model.
-  - **OpenAI / ChatGPT**: `gpt-4o` (Flagship đa phương thức), `gpt-4o-mini` (Tối ưu chi phí), `gpt-3.5-turbo` (Kinh điển), `o1-mini` & `o3-mini` (Lập luận chuyên sâu Reasoning).
-  - **Anthropic Claude**: `claude-3-7-sonnet-latest` (Hybrid Reasoning), `claude-3-5-sonnet` (Chuẩn mực viết CV ATS), `claude-3-5-haiku`, `claude-3-opus`.
-  - **DeepSeek / OpenAI-Compatible (Local Ollama, vLLM, OpenRouter)**: `deepseek-chat`, `deepseek-reasoner`, `qwen-2.5-72b`, `llama-3.3-70b` với endpoint URL tùy biến (vd: `http://localhost:11434/v1`).
-- **Nút "Kiểm tra kết nối" (⚡ Live Ping Test)**:
-  - Cho phép người dùng bấm kiểm tra API Key ngay trong modal Settings trước khi lưu.
-  - Đo lường và hiển thị **độ trễ mạng thực tế (Latency in ms)**, phản hồi mã lỗi chi tiết nếu sai khóa (401 Unauthorized), hết hạn mức (429 Quota) hoặc sai tên model (404 Not Found).
-- **Lưu trữ Cấu hình Bền vững (Disk Persistence)**:
-  - Toàn bộ cấu hình nhà cung cấp, model được chọn, API key riêng biệt cho từng provider, theme và quy chế đều được lưu tại `data/settings.json`, không bao giờ bị mất khi khởi động lại server.
+* **Hỗ trợ 4 hệ sinh thái AI hàng đầu**:
+  * **Google Gemini**: `gemini-3.8-flash` (Mới nhất 3.8), `gemini-3.0-pro` (Flagship), `gemini-2.5-flash` (Khuyên dùng), `gemini-2.5-pro`, `gemini-2.0-flash`, `gemini-1.5-pro`, `gemini-1.5-flash`.
+  * **OpenAI / ChatGPT**: `gpt-4o` (Flagship đa phương thức), `gpt-4o-mini` (Tối ưu chi phí), `gpt-3.5-turbo`, `o1-mini` & `o3-mini` (Reasoning).
+  * **Anthropic Claude**: `claude-3-7-sonnet-latest` (Hybrid Reasoning), `claude-3-5-sonnet` (Chuẩn mực viết CV ATS), `claude-3-5-haiku`, `claude-3-opus`.
+  * **DeepSeek / OpenAI-Compatible (Ollama, vLLM, OpenRouter)**: `deepseek-chat`, `deepseek-reasoner`, `qwen-2.5-72b`, `llama-3.3-70b` với endpoint URL tùy biến (vd: `http://localhost:11434/v1`).
+* **Nút "Kiểm tra kết nối" (⚡ Live Ping Test)**:
+  * Kiểm tra API Key ngay trong modal Settings trước khi lưu.
+  * Đo lường **độ trễ mạng thực tế (Latency ms)**, báo lỗi rõ ràng nếu sai khóa (`401`), hết quota (`429`) hoặc sai model (`404`).
+* **Cơ chế Fallback thông minh**: Nếu chưa có API key hoặc mạng gián đoạn, hệ thống tự động kích hoạt **Intelligent Heuristic Tailoring** đối soát kỹ năng và tạo CV hoàn chỉnh mà không làm gãy ứng dụng.
 
-### 2. Giao diện Tinh gọn (No-Icon Design) & Chuyển đổi Theme Tối / Sáng
-- **Loại bỏ hoàn toàn Icon & Emoji**: Thiết kế tối giản, sạch sẽ, chuyên nghiệp, tập trung 100% vào nội dung công việc và thông số ứng tuyển.
-- **Chế độ Tối / Sáng (Dark & Light Mode)**: Chuyển đổi nhanh chóng chỉ với 1 click (`Chế độ Sáng` / `Chế độ Tối`), tự động ghi nhớ tùy chọn vào `localStorage`.
+### 2. Thu Thập Dữ Liệu 6 Cổng Tuyển Dụng & Lọc Đa Tầng (Crawler Pipeline)
+* **Thu thập đồng thời 6 cổng thông tin**: **ITviec, TopDev, TopCV, VietnamWorks, JobsGO, Indeed VN**.
+* **Quy trình cào 3 giai đoạn (Two-Phase Harvester)**:
+  * **Phase 1 (Fast Discovery)**: Quét nhanh danh mục tìm kiếm theo vai trò chuyên môn (Role-based targeting).
+  * **Phase 2 (Deep Scrape)**: Truy cập chi tiết từng tin để bóc tách 100% full JD, yêu cầu kỹ thuật, chế độ đãi ngộ và lương thực tế.
+  * **Phase 3 (Multi-Filter & Clean)**: Lọc qua bộ lọc đa tầng thời gian thực trước khi lưu vào SQLite:
+    * **Lọc thời gian đăng (Today Only)**: Tùy chọn chỉ lấy tin đăng trong 24 giờ qua (`hôm nay`, `giờ`, `phút`, `fromage=1`).
+    * **Lọc cấp bậc (Experience Level)**: Nhận diện chính xác `Intern`, `Fresher`, `Junior`, `Middle`, `Senior`.
+    * **Lọc chuyên môn (Role Specialization)**: Phân loại tự động `Backend`, `Frontend`, `Fullstack`, `Data Analyst (DA)`, `Data Engineer (DE)`, `AI / ML`, `Mobile`, `Tester (QA/QC)`, `DevOps`.
+    * **Lọc địa điểm & Từ khóa loại trừ (Blacklist)**: Loại bỏ các tin tuyển dụng chứa từ khóa không mong muốn (*Lead, Manager, Trưởng phòng, Đào tạo, Tuyển sinh*).
 
-### 2. Quản lý Tiến độ Ứng tuyển (Job Status Tracking) & Xóa Job
-- **Vòng đời ứng tuyển toàn diện**:
-  - `saved`: Chưa nộp
-  - `applied`: Đã nộp CV
-  - `interviewing`: Đang phỏng vấn
-  - `offered`: Nhận Offer
-  - `rejected`: Bị từ chối
-- **Bộ lọc trạng thái**: Các chip lọc nhanh trên thanh bên giúp theo dõi sát sao từng giai đoạn tuyển dụng.
-- **Xóa Job bị từ chối**: Nút `Xóa Job` màu đỏ có xác nhận bảo vệ, tự động xóa việc làm và dọn dẹp các bản ghi CV cùng file PDF đã sinh.
+### 3. Tự Động Hóa Lịch Chạy Hàng Ngày (Windows Task Scheduler & Batch Runner)
+* **Lên lịch tự động 22:00 mỗi ngày**: Script PowerShell [scripts/schedule-task.ps1](scripts/schedule-task.ps1) đăng ký dịch vụ chạy ngầm với Task Scheduler.
+* **CLI Runner linh hoạt**: [scripts/run-scraper.bat](scripts/run-scraper.bat) và [crawl/orchestrator.py](crawl/orchestrator.py) hỗ trợ cờ lệnh dòng lệnh (`--today`, `--all`, `-p`, `-r`, `-m`).
 
-### 3. Overleaf-Style Side-by-Side LaTeX Studio
-- **Dual-Pane IDE trực quan**: Chia 50/50 chuẩn Overleaf. Cột trái là trình soạn thảo mã nguồn LaTeX với số dòng, đếm ký tự, phím tắt `Ctrl + Enter` hoặc `Cmd + Enter` để Recompile tức thì.
-- **Tùy chọn Theme Mẫu CV (LaTeX Templates)**: Lựa chọn nhanh giữa `Jake's ATS (Classic)`, `Modern Professional`, và `Compact 1-Page`.
-- **Live PDF Preview**: Xem trước kết quả PDF sắc nét ngay bên phải màn hình thông qua engine biên dịch Tectonic tốc độ cao (2.7s).
+### 4. Overleaf-Style LaTeX CV Studio & Biên Dịch Tectonic Tốc Độ Cao
+* **Dual-Pane IDE trực quan**: Chia đôi màn hình 50/50 chuẩn Overleaf. Cột trái chỉnh sửa mã nguồn LaTeX với số dòng, phím tắt `Ctrl + Enter` hoặc `Cmd + Enter` để Recompile tức thì.
+* **Live PDF Preview**: Xem trước kết quả PDF sắc nét ngay bên phải màn hình thông qua engine biên dịch Tectonic XeTeX tốc độ cao (2.7s).
+* **Mẫu CV ATS đa dạng**: Chuyển đổi nhanh giữa `Jake's Resume ATS (Classic)`, `Modern Professional`, và `Compact 1-Page`.
 
-### 4. Cấu hình Tùy chọn Cào Tuyển dụng (Scraper Options Modal)
-- Nút bấm `Cấu hình Cào` trực tiếp trên Header cho phép tùy biến:
-  - Chọn cổng thông tin cần cào: **ITviec, TopDev, TopCV, VietnamWorks, JobsGO, Indeed VN**.
-  - Nhập danh sách từ khóa tìm kiếm (ngăn cách bằng dấu phẩy).
-  - Chọn các cấp bậc ưu tiên: **Intern, Fresher, Junior, Middle, Senior**.
-  - Chọn địa điểm mong muốn: **Hồ Chí Minh, Hà Nội, Đà Nẵng, Remote / Toàn quốc**.
-  - Bộ lọc loại trừ (Blacklist từ khóa trong tiêu đề như *Tuyển sinh, Đào tạo, Khóa học*).
-  - Tùy chỉnh số trang tối đa và thời gian nghỉ (delay) giữa các request để chống bị chặn IP.
-
-### 5. Danh sách Thẻ Việc làm Tinh Gọn (Hover-to-Expand)
-- Ban đầu chỉ hiển thị **tiêu đề công việc** kèm huy hiệu trạng thái giúp danh sách gọn gàng, bao quát tối đa các cơ hội việc làm.
-- Khi người dùng rê chuột (hover) hoặc click chọn thẻ, thẻ sẽ **bung mượt mà (smooth CSS transition)** hiển thị đầy đủ tên công ty, mức lương, địa điểm, huy hiệu điểm CV Ready và các kỹ năng yêu cầu.
-
-### 6. Đồng bộ Nghiêm ngặt Master CV PDF & Bộ Quy tắc (Rules)
-- Mỗi khi nhấn "Tạo CV với Gemini", hệ thống tự động:
-  1. Đọc và xác thực nội dung trích xuất từ file PDF tổng hợp (`data/master_cv_text.txt`).
-  2. Nạp toàn bộ bộ quy tắc ATS (`ats_rules`) và quy tắc viết CV (`cv_rules`).
-  3. Gửi JD + Master CV + Rules tới Gemini 2.5 Flash để chọn lọc kinh nghiệm chuẩn xác nhất mà không bịa đặt.
-  4. Hiển thị thông báo minh bạch số từ Master CV và số quy tắc đã tuân thủ.
-- **Quản lý phiên bản CV**: Tự động liên kết bảng `tailored_cvs` lưu điểm số ATS, từ khóa thiếu, mã nguồn LaTeX và đường dẫn file PDF đã tạo.
-- **Tự động di chuyển dữ liệu (Auto-Migration)**: Tự động đọc và nạp toàn bộ dữ liệu từ file `data/jobs.jsonl` cũ vào SQLite khi khởi tạo lần đầu.
-
-### 3. 🖥️ Web Studio Hiện Đại & Cuộn Trang Mượt Mà (Split-View UI)
-- **Giao diện Obsidian Dark sang trọng**: Thiết kế chuẩn hệ thống màu cao cấp (Neon Emerald `#10b981`, Cyan Glow `#06b6d4`), phông chữ Google Plus Jakarta Sans.
-- **Bố cục chia màn hình (Split-View)**:
-  - **Cột trái (~42%)**: Tìm kiếm tức thì, bộ lọc chip kỹ năng (`Python`, `React`, `Intern`, `Fresher`), trạng thái job đã tạo CV chưa.
-  - **Cột phải (~58%)**: Xem JD đầy đủ, phân tích AI ATS, nhúng trực tiếp PDF Viewer và trình sửa code LaTeX có nút *Biên dịch lại*.
-- **Cuộn trang độc lập 100%**: Sửa triệt để lỗi cuộn flexbox, hai cột cuộn mượt mà không bao giờ bị tràn hoặc kẹt khung nhìn.
-
-### 4. 📄 Tải lên Master CV PDF (Source of Truth)
-- **Kéo & Thả file PDF tổng hợp**: Tải lên file PDF chứa tất cả kinh nghiệm, dự án và học vấn của bạn.
-- **Trích xuất Text tức thì bằng `pypdf`**: Không cần OCR hay thư viện C nặng nề, hiển thị ngay số trang, số từ và bản xem trước text.
-- **Chống bịa đặt kinh nghiệm**: Gemini sẽ chỉ sử dụng các thông tin có thật trong Master PDF này để chọn lọc kinh nghiệm phù hợp nhất với JD mục tiêu.
-
-### 5. 🎯 & 📝 Tùy biến Quy tắc AI (Custom Rules)
-- **Rules Đánh giá ATS**: Tự đặt tiêu chuẩn đánh giá cho AI (vd: *Chấm điểm khắt khe về backend; Yêu cầu bắt buộc Docker, FastAPI; Đánh giá tính phù hợp cấp bậc...*).
-- **Rules Tạo & Viết CV**: Định hình phong cách sinh nội dung (vd: *Viết gạch đầu dòng theo chuẩn Google XYZ: "Accomplished [X] as measured by [Y] by doing [Z]"; Mở đầu bằng Action Verbs; Viết tóm tắt nhắm thẳng vào công ty mục tiêu...*).
-
-### 6. 🔨 Tectonic LaTeX Engine (~2.7s Compile Time)
-- **Độc lập & Siêu nhẹ (~30MB)**: Engine XeTeX viết bằng Rust, tự động tải các package CTAN còn thiếu về cache mà **không cần cài đặt bộ TeXLive 4GB - 5GB**.
-- **Mẫu CV chuẩn ATS (Jake's Resume)**: Mẫu resume định dạng chuẩn quốc tế, bố cục 1 cột sạch sẽ, căn lề hoàn hảo, đạt 100% khả năng đọc hiểu của các hệ sinh thái ATS.
-
-### 7. 🤖 Mô hình Google Gemini 2.5 Flash
-- **Phân tích ngữ cảnh sâu**: Đọc hiểu toàn bộ JD dài hàng nghìn từ để đánh giá điểm số tương đồng thực tế (0 - 100%).
-- **Chế độ Ngoại tuyến Thông minh (Heuristic Fallback)**: Ngay cả khi chưa nhập `GEMINI_API_KEY`, ứng dụng vẫn tự động đối soát kỹ năng và biên dịch PDF bình thường giúp trải nghiệm không bao giờ bị gián đoạn.
-
-### 8. 🔔 Thông báo Discord Webhook
-- Gửi thẻ tóm tắt công việc thanh lịch đến Discord channel kèm theo badge Tech Stack và link ứng tuyển trực tiếp.
+### 5. Quản Lý Tiến Độ Ứng Tuyển & Đồng Bộ Master CV
+* **Vòng đời ứng tuyển toàn diện**: `Chưa nộp` (`saved`) ➔ `Đã nộp` (`applied`) ➔ `Phỏng vấn` (`interviewing`) ➔ `Offer` (`offered`) ➔ `Bị từ chối` (`rejected`).
+* **Kéo & Thả Master CV PDF (Source of Truth)**: Tải lên file PDF tổng hợp kinh nghiệm, hệ thống dùng `pypdf` trích xuất văn bản gốc để AI chỉ sử dụng dữ liệu có thật, **nghiêm cấm bịa đặt kinh nghiệm**.
+* **Lưu trữ chuẩn SQLite WAL Mode**: Đảm bảo tốc độ truy vấn cao, deduplication chống trùng lặp theo `UNIQUE(link)`.
 
 ---
 
-## 🏗️ System Architecture — Docker Microservices
+## 🏗️ Kiến Trúc Hệ Thống & Docker Microservices
 
-```
-                        +-----------------------------------------------+
-                        |               USER BROWSER                     |
-                        +-----------------------------------------------+
-                                             |
-                                      Port 8000 (HTTP)
-                                             v
-              +-----------------------------------------------------------+
-              |      SERVICE 1: WEB STUDIO & API GATEWAY                  |
-              |          (Container: findmyboss_web  ~200MB)               |
-              |  - UI Dashboard, Overleaf LaTeX Editor, Job Tracker        |
-              |  - AI ATS Tailoring (Gemini, OpenAI, Claude, DeepSeek)     |
-              |  - Settings & Stats Management                              |
-              +-----------------------------------------------------------+
-                          |                               |
-           HTTP /api/render (Port 8001)    HTTP /api/scrape (Port 8003)
-                          v                               v
-+------------------------------------------+  +------------------------------------------+
-|    SERVICE 2: LATEX PDF RENDERER         |  |    SERVICE 3: JOB SCRAPER WORKER         |
-|    (Container: findmyboss_renderer ~130MB)|  |    (Container: findmyboss_scraper ~1GB)  |
-| - Tectonic XeTeX engine (Rust binary)    |  | - Playwright Chromium Harvester          |
-| - CPU-isolated PDF compilation           |  | - ITviec, TopCV, VietnamWorks crawlers   |
-| - API: POST /api/render, GET /health     |  | - API: POST /api/scrape, GET /health     |
-| - Image: python:3.12-slim + Tectonic     |  | - shm_size: 2GB (Chromium crash guard)   |
-+------------------------------------------+  +------------------------------------------+
-                          \                               /
-                           v                             v
-              +-----------------------------------------------------------+
-              |              SHARED PERSISTENCE VOLUMES                    |
-              |  - ./data:/app/data  (SQLite jobs.db, PDFs, settings)      |
-              |  - ./logs:/app/logs  (Scrape & system logs)                |
-              +-----------------------------------------------------------+
+### 1. Sơ đồ Kiến trúc Microservices Stack
+
+```mermaid
+flowchart TB
+    User(["👤 Người dùng (Browser)"]) -->|"Cổng 8080 (HTTP)"| Web["🌐 Web Studio & API Gateway<br/><code>findmyboss_web</code> (~200MB)<br/>• FastAPI REST Routers<br/>• Multi-AI Orchestrator<br/>• Quản lý Profile & SQLite"]
+
+    subgraph Microservices ["Cụm 3 Microservices Độc lập"]
+        Web -->|"HTTP POST /api/render<br/>(Cổng 8001)"| Renderer["🖨️ LaTeX PDF Renderer Engine<br/><code>findmyboss_renderer</code> (~130MB)<br/>• Tectonic XeTeX engine (Rust)<br/>• Biên dịch .tex → .pdf cách ly"]
+        Web -->|"HTTP POST /api/scrape<br/>(Cổng 8003)"| Scraper["🕷️ Job Scraper Worker<br/><code>findmyboss_scraper</code> (~1GB)<br/>• Playwright Chromium Harvester<br/>• ITviec, TopCV, VietnamWorks, TopDev..."]
+    end
+
+    subgraph StorageLayer ["Lớp Dữ Liệu Bền Vững (Shared Volumes)"]
+        Web & Renderer & Scraper <-->|"Mount ./data"| DataVol[("💾 ./data<br/>• SQLite jobs.db<br/>• File CVs: data/cvs/<br/>• Settings: settings.json<br/>• Scraper config: scraper_config.json")]
+        Web & Scraper <-->|"Mount ./logs"| LogVol[("📋 ./logs<br/>• crawl_log.txt<br/>• system.log")]
+    end
+
+    subgraph External ["Dịch vụ Bên ngoài (Cloud Services)"]
+        Web <-->|"API REST (SSL)"| AI["🧠 Cloud AI Providers<br/>(Gemini, OpenAI, Claude, DeepSeek)"]
+        Scraper -->|"Webhook Alert"| Discord["🔔 Discord Channel"]
+    end
 ```
 
-### Cơ chế Giao tiếp & Fallback
+### 2. Luồng Xử Lý Cào Việc Làm & Lọc Đa Tầng
 
-| Môi trường | `renderer` | `scraper` |
-|:---|:---|:---|
-| **Docker** | `web` → `http://renderer:8001/api/render` | `web` → `http://scraper:8003/api/scrape` |
-| **Local dev** (no Docker) | Gọi trực tiếp `bin/tectonic` binary | Chạy `main_orchestrator()` trong process |
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as 👤 Người dùng
+    participant Web as 🌐 Web Dashboard (Port 8080)
+    participant ScraperSvc as 🕷️ Scraper Service / CLI
+    participant Orch as 🤖 crawl/orchestrator.py
+    participant Crawlers as 🔍 Crawler Modules (6 Portals)
+    participant Filter as 🛡️ crawl/filters.py
+    participant DB as 💾 SQLite DB (services/storage.py)
+    participant Discord as 🔔 Discord (services/notifier.py)
+
+    User->>Web: Bấm "Bắt đầu cào ngay" (hoặc Windows Task Scheduler kích hoạt)
+    Web->>ScraperSvc: Trigger crawl pipeline kèm tham số (today_only, roles, levels...)
+    ScraperSvc->>Orch: Khởi tạo Playwright Chromium headless
+    Orch->>Crawlers: Phase 1: Quét danh mục theo Role URL
+    Crawlers->>Crawlers: Phase 2: Deep scrape trích xuất 100% full JD & requirements
+    Crawlers-->>Orch: Tập hợp ứng viên tuyển dụng
+    Orch->>Filter: Chạy bộ lọc: Today only, Level, Role, Blacklist
+    Filter-->>Orch: Danh sách Job hợp lệ (passed_jobs)
+    Orch->>DB: Lưu vào bảng jobs (jobs.db) chống trùng link
+    Orch->>Discord: Bắn Embed Card thông báo (nếu cấu hình Webhook)
+    Orch-->>Web: Báo cáo kết quả: số job, thời gian thực thi
+```
+
+### 3. Phân Công Nhiệm Vụ Thư Mục (Code Mapping)
+
+| Thư mục | Vai trò trong hệ thống | Các Service / Module cốt lõi |
+| :--- | :--- | :--- |
+| **[core/](core/)** | Cấu hình toàn cục, logging, timezone Việt Nam | `config.py` (ScraperConfig, get_logger, VN_TIMEZONE) |
+| **[crawl/](crawl/)** | Động cơ thu thập dữ liệu & bot cào | `orchestrator.py`, `filters.py`, `ITviecJob.py`, `TopDevJob.py`, `TopCVJob.py`, `VietnamWorksJob.py`, `JobsGoJob.py`, `IndeedJob.py` |
+| **[services/](services/)** | Bộ não xử lý nghiệp vụ trung tâm | `ai/` (Gemini, OpenAI, Claude, Custom), `storage.py` (SQLite), `latex_engine.py`, `profile_service.py`, `notifier.py` |
+| **[web/](web/)** | Web Studio UI & API Gateway | `app.py` (FastAPI), `routers/` (`jobs`, `scraper`, `settings`, `profile`), `dependencies.py` |
+| **[templates/](templates/)** | Mẫu CV mã nguồn LaTeX chuẩn ATS | `cv_template.tex` (Classic), `cv_template_modern.tex`, `cv_template_compact.tex` |
+| **[scripts/](scripts/)** | Script điều hành & tự động hóa | `run-scraper.bat`, `schedule-task.ps1`, `run-docker.sh`, `run-scraper.sh` |
+| **[docker/](docker/)** | Đóng gói 3 microservices chuyên biệt | `web/Dockerfile`, `renderer/Dockerfile`, `scraper/Dockerfile` |
+| **[tests/](tests/)** | Bộ kiểm thử tự động toàn diện (27 test) | `test_models.py`, `test_notifier.py`, `test_sqlite_storage.py`, `test_latex_compiler.py`, `test_web_api.py`, `test_filters.py`, `test_storage_and_cv.py` |
 
 ---
 
-## 📂 Repository Structure
+## 🤖 Tự Động Hóa Cào Việc & CLI Orchestrator
 
-```text
-.
-├── config.py                 # Centralized configuration, logging & blacklists
-├── Dockerfile                # Multi-stage container with Chromium & standalone Tectonic
-├── docker-compose.yml        # Compose config with scraper and web services
-├── main.py                   # Global crawler orchestrator
-├── requirements.txt          # Full dependencies (local dev / testing)
-├── Makefile                 # 🎯 Project automation CLI (make up, make web, make test, ...)
-├── scripts/                 # 📜 Automation & runner shell scripts
-│   ├── run-docker.sh        # 🐳 Docker microservices management CLI
-│   ├── run-web.sh           # Web Studio local launcher
-│   └── run-scraper.sh       # Local scraper runner
-├── docker-compose.yml       # 🐳 3-service microservices stack definition
-│
-├── docker/                   # 🐳 Per-service Dockerfile & requirements
-│   ├── web/
-│   │   ├── Dockerfile        # python:3.12-slim + AI SDKs (~200MB)
-│   │   └── requirements.txt  # Web-only: FastAPI, google-genai, openai, anthropic
-│   ├── renderer/
-│   │   ├── Dockerfile        # Multi-stage: downloads Tectonic v0.15.0 (~130MB)
-│   │   └── requirements.txt  # Minimal: FastAPI + uvicorn only
-│   └── scraper/
-│       ├── Dockerfile        # python:3.12-slim + Playwright Chromium (~1GB)
-│       └── requirements.txt  # Playwright, BeautifulSoup, FastAPI
-│
-├── crawl/                    # Modular portal scraping subsystems
-│   ├── base_crawl.py         # Abstract base scraper with deep detail fallback
-│   ├── IndeedJob.py          # Indeed VN engine
-│   ├── ITviecJob.py          # ITviec scraper with authenticated session
-│   ├── JobsGoJob.py          # JobsGO scraper
-│   ├── TopCVJob.py           # TopCV scraper
-│   ├── TopDevJob.py          # TopDev scraper with unmasked real salary
-│   └── VietnamWorksJob.py    # VietnamWorks scraper
-│
-├── models/                   # Data architecture layer
-│   └── Job.py                # Job dataclass & Discord embed builder
-│
-├── services/                 # Core business services
-│   ├── gemini_service.py     # Multi-provider AI client (Gemini, OpenAI, Claude, DeepSeek)
-│   ├── latex_engine.py       # Tectonic compiler + hybrid microservice fallback
-│   ├── renderer_microservice.py  # 🐳 FastAPI server for renderer container (port 8001)
-│   ├── scraper_microservice.py   # 🐳 FastAPI server for scraper container (port 8003)
-│   ├── notifier.py           # Async Discord client with HTTP 429 rate-limit backoff
-│   ├── storage.py            # SQLite storage with WAL mode, deduplication & queries
-│   └── cv_tailor.py          # Legacy dataset adapter & LLM prompt builder
-│
-├── templates/                # Document templates
-│   └── cv_template.tex       # Industry-standard Jake's Resume ATS LaTeX template
-│
-├── web/                      # Web Studio application
-│   ├── app.py                # FastAPI REST endpoints & file streaming
-│   ├── static/               # Assets & styles
-│   │   ├── app.css           # Obsidian Dark CSS design system & scrollbar fixes
-│   │   └── app.js            # Client-side state, live search, dropzone & PDF iframe
-│   └── templates/            # HTML layouts
-│       └── index.html        # Single-page application with split view & modal tabs
-│
-├── data/                     # Persistent storage (mounted as Docker volume)
-│   ├── jobs.db               # Primary SQLite database
-│   ├── settings.json         # App settings (AI provider, model, theme, keys)
-│   ├── profile.json          # Candidate profile, ATS rules & CV rules
-│   ├── master_cv.pdf         # Uploaded master CV PDF file
-│   ├── master_cv_text.txt    # Extracted plain text from master CV
-│   └── cvs/                  # Generated tailored PDF resumes
-│
-├── assets/                   # README demonstration images & videos
-└── tests/                    # Automated unit test suite (24/24 Passing)
-    ├── test_models.py        # Model serialization tests
-    ├── test_notifier.py      # Discord notification tests
-    ├── test_sqlite_storage.py# SQLite queries, indexes & deduplication tests
-    ├── test_latex_compiler.py# LaTeX escaping & template compilation tests
-    └── test_web_api.py       # FastAPI REST endpoints & PDF upload tests
+FindMyBoss hỗ trợ cả chế độ cào tương tác qua Web UI lẫn cào tự động ngầm qua Command Line Interface (CLI) và Windows Task Scheduler:
+
+### 1. Tham số Dòng Lệnh CLI (`crawl/orchestrator.py`)
+
+Chạy trực tiếp từ terminal:
+```bash
+python -m crawl.orchestrator [OPTIONS]
+```
+
+| Tham số | Tên đầy đủ | Ý nghĩa | Ví dụ |
+| :--- | :--- | :--- | :--- |
+| `-t` | `--today` | Chỉ cào các tin đăng trong ngày hôm nay (24h) | `python -m crawl.orchestrator --today` |
+| | `--all` | Cào mọi tin tuyển dụng mới nhất (bỏ qua `today_only`) | `python -m crawl.orchestrator --all` |
+| `-p` | `--portals` | Danh sách cổng tuyển dụng (cách nhau bởi dấu phẩy) | `-p itviec,topcv,vietnamworks` |
+| `-r` | `--roles` | Danh sách chuyên môn mục tiêu | `-r backend,da,de,ai_ml,devops` |
+| `-m` | `--max-pages` | Số trang tối đa quét mỗi cổng | `-m 3` |
+| `-h` | `--help` | Hiển thị bảng trợ giúp hướng dẫn | `python -m crawl.orchestrator --help` |
+
+### 2. Tiện ích Batch Windows (`scripts/run-scraper.bat`)
+
+Tự động tìm kiếm Python (venv ➔ miniconda ➔ system), thiết lập bảng mã UTF-8 (`chcp 65001`) và chuyển tiếp mọi tham số:
+```cmd
+:: Cào chỉ tin trong ngày hôm nay
+.\scripts\run-scraper.bat --today
+
+:: Cào tất cả tin mới nhất của ITViec và TopCV
+.\scripts\run-scraper.bat --all -p itviec,topcv
+
+:: Xem hướng dẫn
+.\scripts\run-scraper.bat --help
+```
+
+### 3. Tự Động Hóa Lịch Chạy Hàng Ngày (`scripts/schedule-task.ps1`)
+
+Đăng ký hoặc kiểm tra tác vụ tự động với Windows Task Scheduler:
+```powershell
+# 1. Đăng ký chạy hàng ngày vào 22:00 (đọc thiết lập từ scraper_config.json)
+.\scripts\schedule-task.ps1 -Register -DailyTime "22:00"
+
+# 2. Đăng ký chạy hàng ngày và BẮT BUỘC chỉ cào tin hôm nay (--today)
+.\scripts\schedule-task.ps1 -Register -DailyTime "22:00" -TodayOnly
+
+# 3. Kiểm tra trạng thái tác vụ
+.\scripts\schedule-task.ps1 -Status
+
+# 4. Kích hoạt chạy thử ngay lập tức trong nền
+.\scripts\schedule-task.ps1 -RunNow
+
+# 5. Hủy đăng ký tác vụ
+.\scripts\schedule-task.ps1 -Unregister
 ```
 
 ---
 
-## 🕹️ Quickstart Guide
+## 📡 Tài Liệu REST API
 
-### Option A: 🐳 Docker Microservices (Khuyên dùng — Production Ready)
+FastAPI tự động cung cấp Swagger UI tương tác tại: **`http://localhost:8080/docs`**
+
+### Nhóm 1: Quản lý Công việc (`/api/jobs`)
+| Method | Endpoint | Mô tả |
+| :--- | :--- | :--- |
+| `GET` | `/api/jobs` | Lấy danh sách việc làm (hỗ trợ lọc theo `status`, `portal`, `search`) |
+| `GET` | `/api/jobs/{job_id}` | Xem chi tiết 1 tin tuyển dụng |
+| `PATCH` | `/api/jobs/{job_id}/status` | Cập nhật trạng thái ứng tuyển (`saved`, `applied`, `interviewing`, `offered`, `rejected`) |
+| `DELETE` | `/api/jobs/{job_id}` | Xóa việc làm và dọn dẹp các CV PDF liên quan |
+| `POST` | `/api/jobs/{job_id}/tailor-cv` | Yêu cầu AI phân tích ATS và viết CV LaTeX theo template |
+
+### Nhóm 2: Điều khiển Bộ Cào (`/api/scraper`)
+| Method | Endpoint | Mô tả |
+| :--- | :--- | :--- |
+| `GET` | `/api/scraper/config` | Lấy cấu hình cào việc động (portals, roles, levels, today_only, blacklist...) |
+| `PUT` | `/api/scraper/config` | Cập nhật cấu hình cào việc động lưu vào `data/scraper_config.json` |
+| `POST` | `/api/scraper/run` | Kích hoạt worker cào việc làm (Microservice hoặc local background task) |
+| `GET` | `/api/scraper/status` | Kiểm tra tiến độ cào hiện tại (cổng đang cào, số lượng job thu thập) |
+
+### Nhóm 3: Cấu hình Hệ thống & AI (`/api/settings`)
+| Method | Endpoint | Mô tả |
+| :--- | :--- | :--- |
+| `GET` | `/api/settings` | Lấy toàn bộ cài đặt (AI provider, model, theme, API keys ẩn) |
+| `PUT` | `/api/settings` | Lưu cấu hình hệ thống vào `data/settings.json` |
+| `POST` | `/api/settings/test-connection` | Kiểm tra kết nối API Key và đo độ trễ mạng thực tế (Latency in ms) |
+| `GET` | `/api/settings/models` | Lấy danh mục các model AI được hỗ trợ theo từng nhà cung cấp |
+
+### Nhóm 4: Ứng viên & Master CV (`/api/profile`)
+| Method | Endpoint | Mô tả |
+| :--- | :--- | :--- |
+| `GET` | `/api/profile` | Lấy thông tin ứng viên, bộ rules ATS và nội dung Master CV |
+| `PUT` | `/api/profile` | Cập nhật profile ứng viên và rules viết CV |
+| `POST` | `/api/profile/upload-pdf` | Tải lên Master CV PDF, tự động bóc tách text bằng `pypdf` |
+
+---
+
+## 🕹️ Hướng Dẫn Khởi Chạy (Quickstart)
+
+### Lựa chọn 1: 🐳 Docker Microservices (Production Ready)
 
 ```bash
-# Clone repository
+# 1. Clone repository
 git clone https://github.com/alloc110/FindMyBoss.git
 cd FindMyBoss
 
-# Sao chép file .env và điền API key (tùy chọn)
+# 2. Tạo file môi trường từ mẫu
 cp .env.example .env
-# Chỉnh sửa .env và điền GEMINI_API_KEY hoặc OPENAI_API_KEY...
 
-# Khởi chạy toàn bộ 3 microservices bằng 1 lệnh:
+# 3. Khởi chạy toàn bộ 3 microservices bằng 1 lệnh:
 make up
-# Hoặc: ./scripts/run-docker.sh up (hoặc docker compose up -d --build)
+# Hoặc: ./scripts/run-docker.sh up
 ```
 
-Hệ thống sẽ tự động:
-- Build 3 Docker images chuyên biệt (web ~200MB, renderer ~130MB, scraper ~1GB)
-- Khởi chạy web Studio tại **[http://localhost:8000](http://localhost:8000)**
-- Renderer API tại **[http://localhost:8001/health](http://localhost:8001/health)**
-- Scraper API tại **[http://localhost:8003/health](http://localhost:8003/health)**
+Cụm microservices sẽ khởi tạo:
+* **Web Studio**: [http://localhost:8080](http://localhost:8080)
+* **LaTeX Renderer API**: [http://localhost:8001/health](http://localhost:8001/health)
+* **Job Scraper Worker API**: [http://localhost:8003/health](http://localhost:8003/health)
 
 ```bash
 # Quản lý containers:
-make status          # Xem trạng thái + health check (hoặc ./scripts/run-docker.sh status)
-make logs s=web      # Xem logs Web Studio
-make logs s=renderer # Xem logs LaTeX Renderer
-make logs s=scraper  # Xem logs Job Scraper
-make scrape-docker   # Kích hoạt cào việc làm ngay trong Docker
-make down            # Dừng tất cả (data được giữ nguyên)
+make status          # Xem trạng thái & health check của cụm 3 services
+make logs s=web      # Xem log service Web Studio
+make logs s=scraper  # Xem log service Scraper Worker
+make down            # Dừng hệ thống (dữ liệu SQLite trong ./data được bảo toàn)
 ```
 
-### Option B: Local Development (Không cần Docker)
+### Lựa chọn 2: Local Development (Không cần Docker)
 
 ```bash
-# Khởi tạo Python virtual environment
-python3 -m venv venv
+# 1. Tạo và kích hoạt virtual environment
+python -m venv venv
+
+# Windows:
+.\venv\Scripts\activate
+# Linux/macOS:
 source venv/bin/activate
 
-# Cài đặt dependencies và Playwright browser
+# 2. Cài đặt thư viện & Playwright Chromium
 pip install -r requirements.txt
 playwright install chromium
+
+# 3. Khởi động Web Studio
+python -m uvicorn web.app:app --host 0.0.0.0 --port 8000 --reload
 ```
-
-Khởi động Web Studio:
-```bash
-make web
-# Hoặc: ./scripts/run-web.sh
-```
-Trình duyệt sẽ mở tại: **[http://localhost:8000](http://localhost:8000)**.
-
-### Option C: Chạy Crawler cục bộ
-
-```bash
-# Chạy trực tiếp bằng Python (cần venv activated)
-make scrape
-# Hoặc: ./scripts/run-scraper.sh
-
-# Hoặc kích hoạt qua API khi Docker đang chạy
-make scrape-docker
-```
+Truy cập giao diện tại: **[http://localhost:8000](http://localhost:8000)**.
 
 ---
 
-## ⚙️ Configuration & Environment Variables
+## ⚙️ Biến Môi Trường (Environment Variables)
 
-Tạo file `.env` từ mẫu `.env.example`:
-
-```bash
-cp .env.example .env
-```
+Hệ thống hỗ trợ cấu hình qua file `.env` hoặc trực tiếp từ **Settings Modal** trên Web UI (lưu tại `data/settings.json`):
 
 | Biến môi trường | Bắt buộc | Mô tả |
-|:---|:---:|:---|
+| :--- | :---: | :--- |
 | `GEMINI_API_KEY` | Không | Google Gemini API Key — lấy miễn phí tại [aistudio.google.com](https://aistudio.google.com) |
 | `OPENAI_API_KEY` | Không | OpenAI API Key — lấy tại [platform.openai.com](https://platform.openai.com/api-keys) |
 | `ANTHROPIC_API_KEY` | Không | Anthropic Claude API Key — lấy tại [console.anthropic.com](https://console.anthropic.com) |
-| `CUSTOM_AI_API_KEY` | Không | DeepSeek, Ollama, OpenRouter (OpenAI-compatible API) |
-| `DISCORD_WEBHOOK_URL` | Không | Discord Webhook URL để nhận thông báo job mới |
-| `SCRAPER_PORT` | Không | Cổng host cho Scraper Microservice (mặc định: `8003`, có thể tùy chỉnh nếu bị trùng cổng) |
-
-
-> [!NOTE]
-> Nếu không điền API Key nào, ứng dụng vẫn chạy bình thường ở **Chế độ Mô phỏng Thông minh (Heuristic Fallback)** — đối soát kỹ năng cơ bản và vẫn biên dịch PDF đầy đủ.
-
-### Cấu hình thông qua UI Settings
-
-Tất cả API keys, model và theme có thể được cấu hình trực tiếp qua **Settings Modal** trong Web Studio (không cần sửa file `.env`). Cấu hình được lưu vào `data/settings.json` và persist qua mọi lần restart.
+| `CUSTOM_AI_API_KEY` | Không | Khóa API cho DeepSeek, Ollama, OpenRouter |
+| `DISCORD_WEBHOOK_URL` | Không | Discord Webhook URL để nhận thông báo công việc mới |
+| `SCRAPER_PORT` | Không | Cổng dịch vụ Scraper Microservice (mặc định: `8003`) |
 
 ---
 
-## 🧪 Automated Testing
+## 🧪 Kiểm Thử Tự Động (Automated Testing)
 
-Toàn bộ **24/24 Unit Tests** kiểm thử toàn diện mọi tầng nghiệp vụ — đảm bảo tính tương thích ngược hoàn toàn với kiến trúc microservices:
+Toàn bộ **27/27 Unit Tests** kiểm thử toàn diện mọi tầng nghiệp vụ:
 
 ```bash
-./venv/bin/python -m unittest discover tests/ -v
+python -m unittest discover tests/ -v
 ```
 
 ```text
-test_escape_latex ... ok
-test_gemini_service_heuristic_fallback ... ok
-test_latex_engine_code_generation ... ok
-test_clean_bullet_points ... ok
-test_filter_unwanted_titles ... ok
-test_job_discord_embed_fallback ... ok
-test_job_discord_embed_rich_structure ... ok
-test_notifier_disabled_when_empty_webhook ... ok
-test_notifier_send_success ... ok
-test_job_status_and_deletion ... ok
-test_save_and_retrieve_jobs ... ok
-test_tailored_cv_workflow ... ok
-test_cv_tailor_prompt_builder ... ok
-test_save_and_deduplicate_jobs ... ok
-test_get_profile_and_update ... ok
-test_job_status_and_delete_endpoints ... ok
-test_list_jobs_endpoint ... ok
-test_model_catalog_and_connection ... ok
-test_scraper_config_endpoints ... ok
-test_serve_html_dashboard ... ok
-test_settings_endpoints ... ok
-test_stats_endpoint ... ok
-test_tailor_cv_with_template_option ... ok
-test_upload_master_cv_pdf ... ok
+test_filter_jobs_by_web_config (test_filters.TestFilters) ... ok
+test_is_location_matched (test_filters.TestFilters) ... ok
+test_is_title_blacklisted (test_filters.TestFilters) ... ok
+test_escape_latex (test_latex_compiler.TestLatexCompilerAndAI) ... ok
+test_gemini_service_heuristic_fallback (test_latex_compiler.TestLatexCompilerAndAI) ... ok
+test_latex_engine_code_generation (test_latex_compiler.TestLatexCompilerAndAI) ... ok
+test_clean_bullet_points (test_models.TestJobModelAndScraper) ... ok
+test_filter_unwanted_titles (test_models.TestJobModelAndScraper) ... ok
+test_job_discord_embed_fallback (test_models.TestJobModelAndScraper) ... ok
+test_job_discord_embed_rich_structure (test_models.TestJobModelAndScraper) ... ok
+test_notifier_disabled_when_empty_webhook (test_notifier.TestDiscordNotifier) ... ok
+test_notifier_send_success (test_notifier.TestDiscordNotifier) ... ok
+test_job_status_and_deletion (test_sqlite_storage.TestSQLiteStorage) ... ok
+test_save_and_retrieve_jobs (test_sqlite_storage.TestSQLiteStorage) ... ok
+test_tailored_cv_workflow (test_sqlite_storage.TestSQLiteStorage) ... ok
+test_cv_tailor_prompt_builder (test_storage_and_cv.TestStorageAndCVTailor) ... ok
+test_save_and_deduplicate_jobs (test_storage_and_cv.TestStorageAndCVTailor) ... ok
+test_get_profile_and_update (test_web_api.TestWebAPI) ... ok
+test_job_status_and_delete_endpoints (test_web_api.TestWebAPI) ... ok
+test_list_jobs_endpoint (test_web_api.TestWebAPI) ... ok
+test_model_catalog_and_connection (test_web_api.TestWebAPI) ... ok
+test_scraper_config_endpoints (test_web_api.TestWebAPI) ... ok
+test_serve_html_dashboard (test_web_api.TestWebAPI) ... ok
+test_settings_endpoints (test_web_api.TestWebAPI) ... ok
+test_stats_endpoint (test_web_api.TestWebAPI) ... ok
+test_tailor_cv_with_template_option (test_web_api.TestWebAPI) ... ok
+test_upload_master_cv_pdf (test_web_api.TestWebAPI) ... ok
 ----------------------------------------------------------------------
-Ran 24 tests in 4.127s
+Ran 27 tests in 2.6s
 
 OK
 ```
-
-- **`test_sqlite_storage.py`**: Xác thực tính năng chống trùng `UNIQUE(link)`, cơ chế WAL, truy vấn tìm kiếm và quan hệ bảng `tailored_cvs`.
-- **`test_latex_compiler.py`**: Kiểm tra việc escape các ký tự đặc biệt nguy hiểm trong LaTeX và format mẫu CV.
-- **`test_web_api.py`**: Kiểm thử endpoint upload Master CV PDF, trích xuất text, cập nhật profile, model catalog và connection test API.
-- **`test_models.py` & `test_notifier.py`**: Kiểm thử format Discord Embed và xử lý lỗi rate limit HTTP 429.
 
 ---
 

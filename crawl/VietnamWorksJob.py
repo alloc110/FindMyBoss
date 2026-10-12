@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 from playwright.async_api import Locator, Page
 
-from config import config
+from core.config import config
 from crawl.base_crawl import JobScraper
 from models.Job import Job
 
@@ -119,18 +119,45 @@ class VietnamWorksJob(JobScraper):
         """Scrapes records published within current business date sequence."""
         return await self._execute_extraction_pipeline(enforce_today=True)
 
-    async def crawl_all_pages(self, today: bool = False) -> List[Job]:
-        """Executes full search engine permutation matrices over VietnamWorks IT jobs."""
+    ROLE_MAP: Dict[str, str] = {
+        "backend": "Backend Developer",
+        "frontend": "Frontend Developer",
+        "fullstack": "Fullstack Developer",
+        "da": "Data Analyst",
+        "de": "Data Engineer",
+        "ai_ml": "AI Machine Learning",
+        "mobile": "Mobile Developer",
+        "tester": "Tester QA QC",
+        "devops": "DevOps",
+    }
+
+    async def crawl_all_pages(self, today: bool = False, roles: Optional[List[str]] = None, **kwargs) -> List[Job]:
+        """Executes full search engine permutation matrices over VietnamWorks IT jobs or selected roles."""
+        import urllib.parse
         all_jobs: List[Job] = []
 
-        try:
-            self.logger.info(f"📂 Navigating VietnamWorks to target index: {self.url}")
-            await self.page.goto(self.url, wait_until="load", timeout=config.navigation_timeout_ms)
-            await self.page.wait_for_timeout(3000)
+        target_queries: List[tuple[str, str]] = []
+        if roles and "all" not in [r.lower() for r in roles]:
+            for r in roles:
+                r_key = r.strip().lower()
+                if r_key in self.ROLE_MAP:
+                    q = self.ROLE_MAP[r_key]
+                    target_queries.append((q, f"https://www.vietnamworks.com/viec-lam?q={urllib.parse.quote_plus(q)}"))
 
-            all_jobs = await self.scrape_current_role_pages(today)
-        except Exception as ex:
-            self.logger.error(f"💥 Critical routing failure on VietnamWorks [{self.url}]: {str(ex)}")
+        if not target_queries:
+            target_queries = [("IT", self.url)]
+
+        for role_name, target_url in target_queries:
+            try:
+                self.logger.info(f"📂 Navigating VietnamWorks to target [{role_name}]: {target_url}")
+                await self.page.goto(target_url, wait_until="load", timeout=config.navigation_timeout_ms)
+                await self.page.wait_for_timeout(3000)
+
+                role_jobs = await self.scrape_current_role_pages(today)
+                all_jobs.extend(role_jobs)
+            except Exception as ex:
+                self.logger.error(f"💥 Critical routing failure on VietnamWorks [{target_url}]: {str(ex)}")
+                continue
 
         return all_jobs
 

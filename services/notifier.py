@@ -2,7 +2,7 @@ import asyncio
 from typing import List, Optional
 import httpx
 
-from config import config, get_logger
+from core.config import config, get_logger
 from models.Job import Job
 
 logger = get_logger("DiscordNotifier")

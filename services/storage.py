@@ -4,7 +4,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from config import get_logger
+from core.config import get_logger
 from models.Job import Job
 
 logger = get_logger("JobStorage")

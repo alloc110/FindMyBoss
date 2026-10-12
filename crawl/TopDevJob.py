@@ -1,8 +1,8 @@
 import re
-from typing import List, Optional
+from typing import Dict, List, Optional
 from playwright.async_api import Locator, Page
 
-from config import config
+from core.config import config
 from crawl.base_crawl import JobScraper
 from models.Job import Job
 
@@ -182,72 +182,74 @@ class TopDevJob(JobScraper):
 
         return job
 
-    async def crawl_all_pages(self, today: bool = False) -> List[Job]:
-        """Initializes complex functional search filters and supervises pagination."""
-        current_page: int = 1
+    ROLE_MAP: Dict[str, str] = {
+        "backend": "Backend Developer",
+        "frontend": "Frontend Developer",
+        "fullstack": "Fullstack Developer",
+        "da": "Data Analyst",
+        "de": "Data Engineer",
+        "ai_ml": "AI Machine Learning",
+        "mobile": "Mobile Developer",
+        "tester": "Tester QA QC",
+        "devops": "DevOps",
+    }
+
+    async def crawl_all_pages(self, today: bool = False, roles: Optional[List[str]] = None, **kwargs) -> List[Job]:
+        """Initializes complex functional search filters and supervises pagination for specified roles."""
+        import urllib.parse
         all_jobs: List[Job] = []
 
-        try:
-            self.logger.info(f"🚀 Navigating TopDev to target index: {self.url}")
-            await self.page.goto(self.url, wait_until="load", timeout=config.navigation_timeout_ms)
-            await self.page.wait_for_timeout(2000)
+        target_queries: List[tuple[str, str]] = []
+        if roles and "all" not in [r.lower() for r in roles]:
+            for r in roles:
+                r_key = r.strip().lower()
+                if r_key in self.ROLE_MAP:
+                    q = self.ROLE_MAP[r_key]
+                    target_queries.append((q, f"https://topdev.vn/jobs/search?keyword={urllib.parse.quote_plus(q)}"))
 
-            # Optional filter by IT domain (non-fatal if layout changed; search page already has IT jobs)
+        if not target_queries:
+            target_queries = [("Tech", self.url)]
+
+        for role_name, target_url in target_queries:
             try:
-                cat_btn = self.page.get_by_role("button", name="All Categories")
-                if await cat_btn.count() > 0 and await cat_btn.is_visible():
-                    await cat_btn.click(timeout=3000)
-                    await self.page.wait_for_timeout(800)
-                    it_span = self.page.locator(self.SELECTORS["it_category_span"]).filter(has_text="IT").first
-                    if await it_span.count() > 0:
-                        self.logger.info("🎯 Selecting IT domain on TopDev...")
-                        await it_span.dispatch_event("click")
+                self.logger.info(f"🚀 Navigating TopDev to target [{role_name}]: {target_url}")
+                await self.page.goto(target_url, wait_until="load", timeout=config.navigation_timeout_ms)
+                await self.page.wait_for_timeout(2000)
 
-                    for role in self.roles:
-                        role_button = self.page.locator(self.SELECTORS["role_button_wrapper"]).filter(has_text=role)
-                        if await role_button.count() > 0:
-                            await role_button.dispatch_event("click")
+                current_page = 1
+                max_pages = 2
+                while current_page <= max_pages:
+                    self.logger.info(f"Processing TopDev extraction [{role_name}] on page: {current_page}/{max_pages}")
 
-                    apply_btn = self.page.get_by_role("button", name="Apply", exact=True)
-                    if await apply_btn.count() > 0:
-                        await apply_btn.click(timeout=3000)
-                        await self.page.wait_for_load_state("networkidle", timeout=3000)
-            except Exception as filter_err:
-                self.logger.info(f"ℹ️ Proceeding with TopDev general tech search results ({filter_err})")
+                    if today:
+                        all_jobs.extend(await self.crawl_today())
+                    else:
+                        all_jobs.extend(await self.crawl())
 
-        except Exception as e:
-            self.logger.error(f"💥 TopDev navigation failure: {str(e)}")
-            return all_jobs
+                    next_button = self.page.get_by_label("Go to next page")
 
-        max_pages = 2
-        while current_page <= max_pages:
-            self.logger.info(f"Processing TopDev extraction on page: {current_page}/{max_pages}")
+                    if await next_button.count() > 0 and await next_button.is_visible():
+                        class_attr = await next_button.get_attribute("class") or ""
 
-            if today:
-                all_jobs.extend(await self.crawl_today())
-            else:
-                all_jobs.extend(await self.crawl())
+                        if "pointer-events-none opacity-0" in class_attr or "disabled" in class_attr:
+                            self.logger.info("🚫 TopDev next page button marked disabled.")
+                            break
 
-            next_button = self.page.get_by_label("Go to next page")
+                        await next_button.dispatch_event("click")
+                        current_page += 1
 
-            if await next_button.count() > 0 and await next_button.is_visible():
-                class_attr = await next_button.get_attribute("class") or ""
+                        try:
+                            await self.page.wait_for_load_state("networkidle", timeout=5000)
+                            await self.page.wait_for_timeout(2000)
+                        except Exception:
+                            pass
+                    else:
+                        self.logger.info(f"🏁 Finalized TopDev [{role_name}] at page {current_page}.")
+                        break
 
-                if "pointer-events-none opacity-0" in class_attr or "disabled" in class_attr:
-                    self.logger.info("🚫 TopDev next page button marked disabled.")
-                    break
-
-                await next_button.dispatch_event("click")
-                current_page += 1
-
-                try:
-                    await self.page.wait_for_load_state("networkidle", timeout=5000)
-                    await self.page.wait_for_timeout(3000)
-                except Exception:
-                    pass
-            else:
-                self.logger.info("🏁 No matching pagination elements remaining on TopDev. Loop closed.")
-                break
+            except Exception as e:
+                self.logger.error(f"💥 TopDev query failure [{target_url}]: {str(e)}")
+                continue
 
         return all_jobs
 

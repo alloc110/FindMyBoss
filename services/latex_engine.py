@@ -6,7 +6,7 @@ import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from config import get_logger
+from core.config import get_logger
 
 logger = get_logger("LatexEngine")
 

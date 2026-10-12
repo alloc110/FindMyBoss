@@ -1192,12 +1192,51 @@ body.theme-light .status-chip.status-rejected {
   gap: 8px;
 }
 
+.jd-content-card h3.requirements-header {
+  color: var(--accent-cyan);
+}
+
+.jd-content-card h3.benefits-header {
+  color: var(--accent-amber);
+}
+
 .jd-body-text {
   font-size: 13px;
   line-height: 1.7;
   color: #cbd5e1;
-  white-space: pre-wrap;
   word-break: break-word;
+}
+
+.jd-list {
+  margin: 8px 0 12px 0;
+  padding-left: 20px;
+}
+
+.jd-list li {
+  margin-bottom: 6px;
+  line-height: 1.6;
+}
+
+.jd-paragraph {
+  margin-bottom: 10px;
+  line-height: 1.65;
+}
+
+.jd-item-title {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+body.theme-light .jd-item-title {
+  color: #0f172a;
+}
+
+body.theme-light .jd-content-card h3.requirements-header {
+  color: #0284c7;
+}
+
+body.theme-light .jd-content-card h3.benefits-header {
+  color: #d97706;
 }
 
 /* AI CV STUDIO TAB */
@@ -2016,8 +2055,49 @@ body.theme-light .scraper-status-pill {
 
 /* Quick Scrape Modal Card */
 .scrape-modal-card {
-  max-width: 580px;
-  width: 92%;
+  width: 720px;
+  max-width: 95vw;
+  max-height: 90vh;
+}
+
+body.theme-light .modal-card,
+body.theme-light .scrape-modal-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
+}
+
+body.theme-light .modal-body {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+body.theme-light .scrape-status-box strong {
+  color: #0369a1;
+}
+
+body.theme-light .scrape-status-detail {
+  color: #0284c7;
+}
+
+body.theme-light .scrape-timer {
+  color: #0284c7;
+}
+
+.scrape-advanced-details summary {
+  user-select: none;
+  transition: color 0.15s ease;
+}
+
+.scrape-advanced-details summary:hover {
+  color: var(--accent-emerald);
+}
+
+.scrape-form .form-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
 }
 
 .portal-quick-actions {

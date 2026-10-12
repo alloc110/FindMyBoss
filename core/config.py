@@ -2,14 +2,19 @@ import logging
 import os
 import zoneinfo
 from dataclasses import dataclass, field
+from datetime import datetime, timezone, timedelta
+from pathlib import Path
 from typing import List, Optional
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
-# Timezone standard
-VN_TIMEZONE = zoneinfo.ZoneInfo("Asia/Ho_Chi_Minh")
+# Timezone standard (with Windows tzdata fallback)
+try:
+    VN_TIMEZONE = zoneinfo.ZoneInfo("Asia/Ho_Chi_Minh")
+except Exception:
+    VN_TIMEZONE = timezone(timedelta(hours=7))
 
 
 def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
@@ -18,13 +23,22 @@ def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
     logger.setLevel(level)
 
     if not logger.handlers:
-        handler = logging.StreamHandler()
         formatter = logging.Formatter(
             "[%(asctime)s] %(levelname)s [%(name)s]: %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(formatter)
+        logger.addHandler(stream_handler)
+
+        try:
+            log_dir = Path("logs")
+            log_dir.mkdir(parents=True, exist_ok=True)
+            file_handler = logging.FileHandler(log_dir / "crawl_log.txt", encoding="utf-8")
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
+        except Exception:
+            pass
 
     return logger
 
