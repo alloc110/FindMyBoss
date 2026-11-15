@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Body
 from pydantic import BaseModel
 
-from config import get_logger
+from core.config import get_logger
 from services.storage import JobStorage
 
 logger = get_logger("ScraperMicroservice")
@@ -28,10 +28,20 @@ crawler_state: Dict[str, Any] = {
 
 class ScrapePayload(BaseModel):
     portals: Optional[List[str]] = None
-    today_only: Optional[bool] = False
+    today_only: Optional[bool] = None
+    roles: Optional[List[str]] = None
+    levels: Optional[List[str]] = None
+    keywords: Optional[List[str]] = None
+    locations: Optional[List[str]] = None
+    blacklisted_keywords: Optional[List[str]] = None
+    max_pages: Optional[int] = None
 
 
-async def run_crawler_pipeline(portals: Optional[List[str]] = None, today_only: bool = False):
+async def run_crawler_pipeline(
+    portals: Optional[List[str]] = None,
+    today_only: Optional[bool] = None,
+    scraper_cfg_override: Optional[Dict[str, Any]] = None,
+):
     global crawler_state
     crawler_state["is_running"] = True
     crawler_state["current_stage"] = "Khởi tạo trình duyệt Playwright..."
@@ -46,13 +56,14 @@ async def run_crawler_pipeline(portals: Optional[List[str]] = None, today_only: 
         crawler_state["total_scraped_last_run"] = current_count
 
     try:
-        from main import main_orchestrator
+        from crawl.orchestrator import main_orchestrator
         crawler_state["current_stage"] = "Bắt đầu thu thập dữ liệu..."
-        logger.info(f"🚀 Launching Playwright crawler pipeline in worker container (portals={portals}, today_only={today_only})...")
+        logger.info(f"🚀 Launching Playwright crawler pipeline in worker container (portals={portals}, today_only={today_only}, levels={scraper_cfg_override.get('levels') if scraper_cfg_override else 'all'})...")
         jobs = await main_orchestrator(
             selected_portals=portals,
             today_only=today_only,
             progress_callback=_progress_callback,
+            scraper_cfg_override=scraper_cfg_override,
         )
         duration = round(time.time() - start_time, 2)
         crawler_state["last_run"] = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -108,8 +119,27 @@ async def trigger_scrape(
     portals = payload.portals if payload else None
     today_only = bool(payload.today_only) if (payload and payload.today_only is not None) else False
 
+    scraper_cfg_override: Dict[str, Any] = {}
+    if payload:
+        if payload.roles:
+            scraper_cfg_override["roles"] = payload.roles
+        if payload.levels:
+            scraper_cfg_override["levels"] = payload.levels
+        if payload.keywords:
+            scraper_cfg_override["keywords"] = payload.keywords
+        if payload.locations:
+            scraper_cfg_override["locations"] = payload.locations
+        if payload.blacklisted_keywords:
+            scraper_cfg_override["blacklisted_keywords"] = payload.blacklisted_keywords
+        if payload.max_pages:
+            scraper_cfg_override["max_pages_per_portal"] = payload.max_pages
+
     async def _task():
-        await run_crawler_pipeline(portals=portals, today_only=today_only)
+        await run_crawler_pipeline(
+            portals=portals,
+            today_only=today_only,
+            scraper_cfg_override=scraper_cfg_override or None,
+        )
 
     background_tasks.add_task(_task)
     return {

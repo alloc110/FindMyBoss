@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
 
-from config import get_logger
+from core.config import get_logger
 from models.schemas import JobStatusRequest, RecompileRequest, VALID_JOB_STATUSES
 from web.dependencies import CVS_DIR, gemini_service, latex_engine, profile_service, storage
 
@@ -101,7 +101,14 @@ async def tailor_cv_for_job(
     pdf_filename = f"cv_job_{job_id}.pdf"
     logger.info(f"🔨 Compiling PDF {pdf_filename} with Tectonic...")
     try:
-        pdf_path = latex_engine.compile_pdf(latex_code, output_filename=pdf_filename)
+        pdf_path = latex_engine.compile_pdf(
+            latex_code,
+            output_filename=pdf_filename,
+            profile=profile,
+            tailored_summary=tailor_result.tailored_summary,
+            tailored_bullets=tailor_result.tailored_bullets,
+            ats_keywords=tailor_result.missing_skills,
+        )
     except Exception as e:
         logger.error(f"Failed to compile PDF for job #{job_id}: {e}")
         raise HTTPException(status_code=500, detail=f"PDF Compilation error: {str(e)}")

@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, BackgroundTasks, Body
 import httpx
 
-from config import get_logger
+from core.config import get_logger
 from web.dependencies import SCRAPER_CONFIG_FILE, storage
 
 logger = get_logger("ScraperRouter")
@@ -26,7 +26,9 @@ async def get_scraper_config():
     if not cfg:
         cfg = {
             "portals": {"itviec": True, "topdev": True, "topcv": True, "vietnamworks": True, "jobsgo": True, "indeed": True},
+            "today_only": True,
             "keywords": ["python", "backend", "data engineer", "intern", "fresher", "junior"],
+            "roles": [],
             "levels": ["intern", "fresher", "junior"],
             "locations": ["Hồ Chí Minh", "Hà Nội", "Toàn quốc", "Remote"],
             "blacklisted_keywords": ["senior", "lead", "middle", "mid", "sr", "manager", "director"],
@@ -36,6 +38,10 @@ async def get_scraper_config():
         }
 
     # Ensure standard frontend keys and aliases are synchronized
+    if "today_only" not in cfg:
+        cfg["today_only"] = True
+    if "roles" not in cfg:
+        cfg["roles"] = []
     if "levels" not in cfg:
         cfg["levels"] = cfg.get("target_levels", ["intern", "fresher", "junior"])
     if "locations" not in cfg:
@@ -82,10 +88,14 @@ async def run_scraper(
     else:
         async def _local_scrape():
             try:
-                from main import main_orchestrator
+                from crawl.orchestrator import main_orchestrator
                 portals = (payload or {}).get("portals")
-                today_only = (payload or {}).get("today_only", False)
-                await main_orchestrator(selected_portals=portals, today_only=today_only)
+                today_only = (payload or {}).get("today_only", None)
+                await main_orchestrator(
+                    selected_portals=portals,
+                    today_only=today_only,
+                    scraper_cfg_override=payload,
+                )
             except Exception as e:
                 logger.error(f"Local scraper failed: {e}")
 

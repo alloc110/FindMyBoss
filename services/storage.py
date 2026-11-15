@@ -4,7 +4,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from config import get_logger
+from core.config import get_logger
 from models.Job import Job
 
 logger = get_logger("JobStorage")
@@ -326,6 +326,30 @@ class JobStorage:
         """
         with self._get_connection() as conn:
             row = conn.execute(sql, (job_id,)).fetchone()
+            if not row:
+                return None
+            return self._row_to_job_dict(row, parse_cv_details=True)
+
+    def get_job_by_link(self, link: str) -> Optional[Dict[str, Any]]:
+        """Retrieves a single job by its URL link, along with any tailored CV metadata."""
+        sql = """
+        SELECT
+            j.*,
+            t.id AS cv_id,
+            t.match_score,
+            t.missing_skills,
+            t.tailored_summary,
+            t.tailored_bullets,
+            t.latex_code,
+            t.pdf_path,
+            t.status AS cv_status,
+            t.created_at AS cv_created_at
+        FROM jobs j
+        LEFT JOIN tailored_cvs t ON j.id = t.job_id
+        WHERE j.link = ?
+        """
+        with self._get_connection() as conn:
+            row = conn.execute(sql, (link,)).fetchone()
             if not row:
                 return None
             return self._row_to_job_dict(row, parse_cv_details=True)

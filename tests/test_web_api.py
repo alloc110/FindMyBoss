@@ -1,10 +1,80 @@
+import os
+from pathlib import Path
+import shutil
+import tempfile
 import unittest
 from starlette.testclient import TestClient
 
 from web.app import app
+import web.dependencies as deps
+import web.routers.jobs as router_jobs
+import web.routers.profile as router_profile
+import web.routers.scraper as router_scraper
+import web.routers.settings as router_settings
+from models.Job import Job
+from services.profile_service import ProfileService
+from services.settings_service import SettingsService
+from services.storage import JobStorage
 
 
 class TestWebAPI(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls._temp_dir = tempfile.TemporaryDirectory()
+        cls.temp_path = Path(cls._temp_dir.name)
+
+        # Copy existing profile, scraper_config, settings if present or create minimal
+        for fname in ["profile.json", "scraper_config.json", "settings.json"]:
+            src = Path("data") / fname
+            dst = cls.temp_path / fname
+            if src.exists():
+                shutil.copy2(src, dst)
+
+        # Save originals
+        cls._orig_profile_service = deps.profile_service
+        cls._orig_settings_service = deps.settings_service
+        cls._orig_storage = deps.storage
+        cls._orig_scraper_cfg = deps.SCRAPER_CONFIG_FILE
+
+        # Temporary test instances
+        cls.mock_profile_service = ProfileService(data_dir=cls.temp_path)
+        cls.mock_settings_service = SettingsService(settings_file=cls.temp_path / "settings.json")
+        cls.mock_storage = JobStorage(db_path=str(cls.temp_path / "test_jobs.db"))
+
+        # Point singletons to temporary test instances
+        deps.profile_service = cls.mock_profile_service
+        router_profile.profile_service = cls.mock_profile_service
+        router_jobs.profile_service = cls.mock_profile_service
+
+        deps.settings_service = cls.mock_settings_service
+        router_settings.settings_service = cls.mock_settings_service
+
+        deps.storage = cls.mock_storage
+        router_jobs.storage = cls.mock_storage
+        router_scraper.storage = cls.mock_storage
+
+        deps.SCRAPER_CONFIG_FILE = cls.temp_path / "scraper_config.json"
+        router_scraper.SCRAPER_CONFIG_FILE = cls.temp_path / "scraper_config.json"
+
+    @classmethod
+    def tearDownClass(cls):
+        # Restore originals
+        deps.profile_service = cls._orig_profile_service
+        router_profile.profile_service = cls._orig_profile_service
+        router_jobs.profile_service = cls._orig_profile_service
+
+        deps.settings_service = cls._orig_settings_service
+        router_settings.settings_service = cls._orig_settings_service
+
+        deps.storage = cls._orig_storage
+        router_jobs.storage = cls._orig_storage
+        router_scraper.storage = cls._orig_storage
+
+        deps.SCRAPER_CONFIG_FILE = cls._orig_scraper_cfg
+        router_scraper.SCRAPER_CONFIG_FILE = cls._orig_scraper_cfg
+
+        cls._temp_dir.cleanup()
+
     def setUp(self):
         self.client = TestClient(app)
 
@@ -43,28 +113,56 @@ class TestWebAPI(unittest.TestCase):
         self.assertIn("FindMyBoss", res.text)
         self.assertIn("ATS Studio", res.text)
 
-
     def test_upload_master_cv_pdf(self):
-        # Use existing generated test PDF
-        with open("data/cvs/test_cv.pdf", "rb") as f:
-            pdf_bytes = f.read()
-
-        response = self.client.post(
-            "/api/profile/upload-pdf",
-            files={"file": ("master_cv.pdf", pdf_bytes, "application/pdf")},
+        pdf_path = self.temp_path / "test_cv.pdf"
+        import io, pypdf
+        raw_pdf = (
+            b"%PDF-1.4\n"
+            b"1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n"
+            b"2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n"
+            b"3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<</Font<</F1 4 0 R>>>>/Contents 5 0 R>>endobj\n"
+            b"4 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\n"
+            b"5 0 obj<</Length 44>>stream\n"
+            b"BT /F1 12 Tf 100 700 Td (Hello World Master CV) Tj ET\n"
+            b"endstream\n"
+            b"endobj\n"
+            b"xref\n0 6\n0000000000 65535 f\n0000000009 00000 n\n0000000052 00000 n\n0000000102 00000 n\n0000000213 00000 n\n0000000279 00000 n\n"
+            b"trailer<</Size 6/Root 1 0 R>>\nstartxref\n374\n%%EOF\n"
         )
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertTrue(data["success"])
-        self.assertEqual(data["filename"], "master_cv.pdf")
-        self.assertGreater(data["pages"], 0)
-        self.assertGreater(data["word_count"], 0)
+        r = pypdf.PdfReader(io.BytesIO(raw_pdf))
+        w = pypdf.PdfWriter()
+        w.append(r)
+        buf = io.BytesIO()
+        w.write(buf)
+        pdf_bytes = buf.getvalue()
+        pdf_path.write_bytes(pdf_bytes)
 
-        # Check profile has updated fields
-        profile = self.client.get("/api/profile").json()
-        self.assertEqual(profile["master_cv_filename"], "master_cv.pdf")
-        self.assertIn("Nguyễn Văn A", profile["master_cv_text"])
+        # Backup original profile
+        orig_profile = self.client.get("/api/profile").json()
+        try:
+            response = self.client.post(
+                "/api/profile/upload-pdf",
+                files={"file": ("master_cv.pdf", pdf_bytes, "application/pdf")},
+            )
+            self.assertEqual(response.status_code, 200)
+            data = response.json()
+            self.assertTrue(data["success"])
+            self.assertEqual(data["filename"], "master_cv.pdf")
+            self.assertGreater(data["pages"], 0)
+            self.assertGreater(data["word_count"], 0)
 
+            # Check profile has updated fields
+            profile = self.client.get("/api/profile").json()
+            self.assertEqual(profile["master_cv_filename"], "master_cv.pdf")
+            self.assertTrue(len(profile.get("master_cv_text", "")) > 0)
+        finally:
+            # Restore original profile and remove dummy test_cv.pdf
+            self.client.put("/api/profile", json=orig_profile)
+            if pdf_path.exists():
+                try:
+                    pdf_path.unlink()
+                except Exception:
+                    pass
 
     def test_scraper_config_endpoints(self):
         # GET config
@@ -87,11 +185,20 @@ class TestWebAPI(unittest.TestCase):
         self.assertIn("Golang", new_config["keywords"])
 
     def test_tailor_cv_with_template_option(self):
+        # Seed a test job into mock storage
+        test_job = Job(
+            title="Senior Backend Engineer",
+            company="Acme Corporation",
+            link="https://acme.example.com/job/senior-backend",
+            skills=["Python", "FastAPI", "PostgreSQL"],
+            description="We are looking for a Senior Backend Engineer proficient in Python and FastAPI.",
+        )
+        deps.storage.save_jobs([test_job])
+
         # Get first job
         jobs_res = self.client.get("/api/jobs?limit=1")
         jobs = jobs_res.json()["jobs"]
-        if not jobs:
-            return
+        self.assertTrue(len(jobs) > 0)
         job_id = jobs[0]["id"]
 
         # Tailor with template modern
@@ -104,16 +211,14 @@ class TestWebAPI(unittest.TestCase):
         self.assertIn("latex_code", data)
 
     def test_job_status_and_delete_endpoints(self):
-        # 1. Create a dummy job through storage directly or fetch first
-        from web.app import storage
-        from models.Job import Job
+        # 1. Create a dummy job through storage directly
         test_job = Job(
             title="Temporary Test Job For Deletion",
             company="Temporary Tech Corp",
             link="https://temptest.example.com/job/temp",
         )
-        storage.save_jobs([test_job])
-        jobs, _ = storage.get_jobs(query="Temporary Tech Corp")
+        deps.storage.save_jobs([test_job])
+        jobs, _ = deps.storage.get_jobs(query="Temporary Tech Corp")
         self.assertTrue(len(jobs) > 0)
         job_id = jobs[0]["id"]
         self.assertEqual(jobs[0]["status"], "saved")

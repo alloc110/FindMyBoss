@@ -1,8 +1,8 @@
 import re
-from typing import List, Optional
+from typing import Dict, List, Optional
 from playwright.async_api import Locator, Page
 
-from config import config
+from core.config import config
 from crawl.base_crawl import JobScraper
 from models.Job import Job
 
@@ -71,13 +71,42 @@ class TopDevJob(JobScraper):
         timeout = config.element_timeout_ms
 
         try:
-            anchor = card.locator(self.SELECTORS["title_anchor"]).first
+            # 1. Strictly require detail-jobs anchor to filter out non-job company banners/carousels
+            anchor_loc = card.locator('a[href*="/detail-jobs/"]')
+            if await anchor_loc.count() == 0:
+                return None
+
+            anchor = anchor_loc.first
             title = await anchor.inner_text(timeout=timeout)
             cleaned_title = title.rsplit(" (", 1)[0] if " (" in title else title
+            cleaned_title = cleaned_title.strip()
 
-            company = await card.locator(self.SELECTORS["company_name"]).first.inner_text(timeout=timeout)
             raw_href = await anchor.get_attribute("href", timeout=timeout) or ""
             link = f"https://topdev.vn{raw_href}" if raw_href.startswith("/") else raw_href
+
+            # 2. Extract company name from card (adjacent to title or in company span)
+            company = ""
+            company_loc = card.locator('a[href*="/detail-jobs/"] + span, a[href*="/detail-jobs/"] ~ span, span.line-clamp-1')
+            if await company_loc.count() > 0:
+                cand = (await company_loc.first.inner_text(timeout=timeout)).strip()
+                if cand and cand != cleaned_title and cand.lower() not in ["topdev", "saramin", "hot jobs"]:
+                    company = cand
+
+            # Fallback 1: Extract from company link in card if available
+            if not company or company == cleaned_title:
+                comp_anchor = card.locator('a[href*="/companies/"]:not([href*="/group/"])')
+                if await comp_anchor.count() > 0:
+                    cand = (await comp_anchor.first.inner_text(timeout=timeout)).strip()
+                    if cand and cand != cleaned_title:
+                        company = cand
+
+            # Fallback 2: Extract from TopDev URL slug: /detail-jobs/...-{company-slug}-{id}
+            if not company or company == cleaned_title or company.lower() in ["topdev", "saramin", "hot jobs"]:
+                slug_match = re.search(r"-([a-z0-9-]+)-(\d+)(?:\?|$)", link)
+                if slug_match:
+                    slug_name = slug_match.group(1).replace("-", " ").strip().title()
+                    if slug_name.lower() not in ["topdev", "saramin", "hot jobs"] and len(slug_name) > 2:
+                        company = slug_name
 
             details = await card.locator(self.SELECTORS["grid_details"]).all_inner_texts()
             address = details[0].strip() if len(details) > 0 else "N/A"
@@ -92,15 +121,25 @@ class TopDevJob(JobScraper):
                 else "N/A"
             )
 
-            image = await card.locator(self.SELECTORS["card_image"]).get_attribute("src", timeout=timeout) or ""
+            image = ""
+            try:
+                img_loc = card.locator(self.SELECTORS["card_image"]).first
+                if await img_loc.count() > 0:
+                    image = await img_loc.get_attribute("src", timeout=timeout) or ""
+                if not image or image.lower().endswith(".svg"):
+                    first_img = card.locator("img").first
+                    if await first_img.count() > 0:
+                        image = await first_img.get_attribute("src", timeout=timeout) or ""
+            except Exception:
+                pass
 
             # Extract card skill tags if present on the listing view
             card_skill_anchors = await card.locator('a[href*="/jobs/search?keyword="]').all_inner_texts()
             skills = [s.strip() for s in card_skill_anchors if s.strip()]
 
             return Job(
-                title=cleaned_title.strip(),
-                company=company.strip(),
+                title=cleaned_title,
+                company=company or "Doanh nghiệp tuyển dụng",
                 link=link,
                 address=address,
                 exp=level,
@@ -126,6 +165,34 @@ class TopDevJob(JobScraper):
             body_text = await self.page.locator("body").inner_text()
             # Save 100% of raw page text for downstream AI/LLM CV matching
             job.full_jd_raw = body_text.strip()
+
+            # 0. Refine Job Title and Company from Detail Page Title & DOM
+            try:
+                page_title = await self.page.title()
+                if page_title:
+                    m = re.match(
+                        r"^(?:Recruiting|Tuyển dụng)\s+(.*?)\s+(?:at|tại)\s+(.*?)(?:\s*\|\s*(?:Saramin|TopDev|Việc làm).*|$)",
+                        page_title.strip(),
+                        re.IGNORECASE,
+                    )
+                    if m:
+                        cand_title = m.group(1).strip()
+                        cand_comp = m.group(2).strip()
+                        if cand_title:
+                            job.title = cand_title
+                        if cand_comp and (not job.company or job.company == job.title or job.company.lower() in ["topdev", "saramin", "hot jobs", "doanh nghiệp tuyển dụng"]):
+                            job.company = cand_comp
+
+                # Also verify employer anchor on detail page
+                comp_anchor = self.page.locator('a[href*="/companies/"]:not([href*="/group/"])')
+                if await comp_anchor.count() > 0:
+                    c_text = (await comp_anchor.first.inner_text()).strip()
+                    if "Industry" in c_text:
+                        c_text = c_text.split("Industry")[0].strip()
+                    if "View company" not in c_text and 2 < len(c_text) < 100:
+                        job.company = c_text
+            except Exception as ref_err:
+                self.logger.debug(f"Could not refine TopDev title/company: {ref_err}")
 
             # 1. Real Salary
             salary_match = re.search(r"•\s*Salary:\s*(.*?)(?:\n|•|$)", body_text, re.IGNORECASE)
@@ -177,77 +244,90 @@ class TopDevJob(JobScraper):
             elif not job.description:
                 job.description = body_text.strip()
 
+            # 7. Extract company logo from detail page if missing
+            try:
+                if not job.image or job.image.lower().endswith(".svg"):
+                    logo_loc = self.page.locator("img[src*='company'], img[src*='logo'], img[alt*='logo'], .company-logo img").first
+                    if await logo_loc.count() > 0:
+                        detail_img_src = await logo_loc.get_attribute("src")
+                        if detail_img_src and detail_img_src.startswith("http") and not detail_img_src.lower().endswith(".svg"):
+                            job.image = detail_img_src
+            except Exception:
+                pass
+
         except Exception as e:
             self.logger.warning(f"⚠️ Failed to deep scrape TopDev job {job.link}: {str(e)}")
 
         return job
 
-    async def crawl_all_pages(self, today: bool = False) -> List[Job]:
-        """Initializes complex functional search filters and supervises pagination."""
-        current_page: int = 1
+    ROLE_MAP: Dict[str, str] = {
+        "backend": "Backend Developer",
+        "frontend": "Frontend Developer",
+        "fullstack": "Fullstack Developer",
+        "da": "Data Analyst",
+        "de": "Data Engineer",
+        "ai_ml": "AI Machine Learning",
+        "mobile": "Mobile Developer",
+        "tester": "Tester QA QC",
+        "devops": "DevOps",
+    }
+
+    async def crawl_all_pages(self, today: bool = False, roles: Optional[List[str]] = None, **kwargs) -> List[Job]:
+        """Initializes complex functional search filters and supervises pagination for specified roles."""
+        import urllib.parse
         all_jobs: List[Job] = []
 
-        try:
-            self.logger.info(f"🚀 Navigating TopDev to target index: {self.url}")
-            await self.page.goto(self.url, wait_until="load", timeout=config.navigation_timeout_ms)
-            await self.page.wait_for_timeout(2000)
+        target_queries: List[tuple[str, str]] = []
+        if roles and "all" not in [r.lower() for r in roles]:
+            for r in roles:
+                r_key = r.strip().lower()
+                if r_key in self.ROLE_MAP:
+                    q = self.ROLE_MAP[r_key]
+                    target_queries.append((q, f"https://topdev.vn/jobs/search?keyword={urllib.parse.quote_plus(q)}"))
 
-            # Optional filter by IT domain (non-fatal if layout changed; search page already has IT jobs)
+        if not target_queries:
+            target_queries = [("Tech", self.url)]
+
+        for role_name, target_url in target_queries:
             try:
-                cat_btn = self.page.get_by_role("button", name="All Categories")
-                if await cat_btn.count() > 0 and await cat_btn.is_visible():
-                    await cat_btn.click(timeout=3000)
-                    await self.page.wait_for_timeout(800)
-                    it_span = self.page.locator(self.SELECTORS["it_category_span"]).filter(has_text="IT").first
-                    if await it_span.count() > 0:
-                        self.logger.info("🎯 Selecting IT domain on TopDev...")
-                        await it_span.dispatch_event("click")
+                self.logger.info(f"🚀 Navigating TopDev to target [{role_name}]: {target_url}")
+                await self.page.goto(target_url, wait_until="load", timeout=config.navigation_timeout_ms)
+                await self.page.wait_for_timeout(2000)
 
-                    for role in self.roles:
-                        role_button = self.page.locator(self.SELECTORS["role_button_wrapper"]).filter(has_text=role)
-                        if await role_button.count() > 0:
-                            await role_button.dispatch_event("click")
+                current_page = 1
+                max_pages = 2
+                while current_page <= max_pages:
+                    self.logger.info(f"Processing TopDev extraction [{role_name}] on page: {current_page}/{max_pages}")
 
-                    apply_btn = self.page.get_by_role("button", name="Apply", exact=True)
-                    if await apply_btn.count() > 0:
-                        await apply_btn.click(timeout=3000)
-                        await self.page.wait_for_load_state("networkidle", timeout=3000)
-            except Exception as filter_err:
-                self.logger.info(f"ℹ️ Proceeding with TopDev general tech search results ({filter_err})")
+                    if today:
+                        all_jobs.extend(await self.crawl_today())
+                    else:
+                        all_jobs.extend(await self.crawl())
 
-        except Exception as e:
-            self.logger.error(f"💥 TopDev navigation failure: {str(e)}")
-            return all_jobs
+                    next_button = self.page.get_by_label("Go to next page")
 
-        max_pages = 2
-        while current_page <= max_pages:
-            self.logger.info(f"Processing TopDev extraction on page: {current_page}/{max_pages}")
+                    if await next_button.count() > 0 and await next_button.is_visible():
+                        class_attr = await next_button.get_attribute("class") or ""
 
-            if today:
-                all_jobs.extend(await self.crawl_today())
-            else:
-                all_jobs.extend(await self.crawl())
+                        if "pointer-events-none opacity-0" in class_attr or "disabled" in class_attr:
+                            self.logger.info("🚫 TopDev next page button marked disabled.")
+                            break
 
-            next_button = self.page.get_by_label("Go to next page")
+                        await next_button.dispatch_event("click")
+                        current_page += 1
 
-            if await next_button.count() > 0 and await next_button.is_visible():
-                class_attr = await next_button.get_attribute("class") or ""
+                        try:
+                            await self.page.wait_for_load_state("networkidle", timeout=5000)
+                            await self.page.wait_for_timeout(2000)
+                        except Exception:
+                            pass
+                    else:
+                        self.logger.info(f"🏁 Finalized TopDev [{role_name}] at page {current_page}.")
+                        break
 
-                if "pointer-events-none opacity-0" in class_attr or "disabled" in class_attr:
-                    self.logger.info("🚫 TopDev next page button marked disabled.")
-                    break
-
-                await next_button.dispatch_event("click")
-                current_page += 1
-
-                try:
-                    await self.page.wait_for_load_state("networkidle", timeout=5000)
-                    await self.page.wait_for_timeout(3000)
-                except Exception:
-                    pass
-            else:
-                self.logger.info("🏁 No matching pagination elements remaining on TopDev. Loop closed.")
-                break
+            except Exception as e:
+                self.logger.error(f"💥 TopDev query failure [{target_url}]: {str(e)}")
+                continue
 
         return all_jobs
 

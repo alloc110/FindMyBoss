@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 from playwright.async_api import Locator, Page
 
-from config import config
+from core.config import config
 from crawl.base_crawl import JobScraper
 from models.Job import Job
 
@@ -49,6 +49,20 @@ class VietnamWorksJob(JobScraper):
             href = await a.get_attribute("href") if await a.count() > 0 else ""
             link = f"https://www.vietnamworks.com{href}" if href and href.startswith("/") else (href or "N/A")
 
+            # Extract company logo from card (avoid SVGs which Discord cannot display)
+            image = None
+            try:
+                card_img = card.locator("img").first
+                if await card_img.count() > 0:
+                    src = await card_img.get_attribute("src")
+                    if src and src.startswith("http") and not src.lower().endswith(".svg"):
+                        image = src
+            except Exception:
+                pass
+
+            if not image:
+                image = "https://images.vietnamworks.com/logo/vnw_logo.png"
+
             return Job(
                 title=title,
                 company=company,
@@ -57,7 +71,7 @@ class VietnamWorksJob(JobScraper):
                 exp=None,
                 salary=salary,
                 posted_date=posted_date,
-                image="https://images.vietnamworks.com/img/company-default-logo.svg",
+                image=image,
                 time=self.now_iso(),
             )
         except Exception as e:
@@ -119,18 +133,45 @@ class VietnamWorksJob(JobScraper):
         """Scrapes records published within current business date sequence."""
         return await self._execute_extraction_pipeline(enforce_today=True)
 
-    async def crawl_all_pages(self, today: bool = False) -> List[Job]:
-        """Executes full search engine permutation matrices over VietnamWorks IT jobs."""
+    ROLE_MAP: Dict[str, str] = {
+        "backend": "Backend Developer",
+        "frontend": "Frontend Developer",
+        "fullstack": "Fullstack Developer",
+        "da": "Data Analyst",
+        "de": "Data Engineer",
+        "ai_ml": "AI Machine Learning",
+        "mobile": "Mobile Developer",
+        "tester": "Tester QA QC",
+        "devops": "DevOps",
+    }
+
+    async def crawl_all_pages(self, today: bool = False, roles: Optional[List[str]] = None, **kwargs) -> List[Job]:
+        """Executes full search engine permutation matrices over VietnamWorks IT jobs or selected roles."""
+        import urllib.parse
         all_jobs: List[Job] = []
 
-        try:
-            self.logger.info(f"📂 Navigating VietnamWorks to target index: {self.url}")
-            await self.page.goto(self.url, wait_until="load", timeout=config.navigation_timeout_ms)
-            await self.page.wait_for_timeout(3000)
+        target_queries: List[tuple[str, str]] = []
+        if roles and "all" not in [r.lower() for r in roles]:
+            for r in roles:
+                r_key = r.strip().lower()
+                if r_key in self.ROLE_MAP:
+                    q = self.ROLE_MAP[r_key]
+                    target_queries.append((q, f"https://www.vietnamworks.com/viec-lam?q={urllib.parse.quote_plus(q)}"))
 
-            all_jobs = await self.scrape_current_role_pages(today)
-        except Exception as ex:
-            self.logger.error(f"💥 Critical routing failure on VietnamWorks [{self.url}]: {str(ex)}")
+        if not target_queries:
+            target_queries = [("IT", self.url)]
+
+        for role_name, target_url in target_queries:
+            try:
+                self.logger.info(f"📂 Navigating VietnamWorks to target [{role_name}]: {target_url}")
+                await self.page.goto(target_url, wait_until="load", timeout=config.navigation_timeout_ms)
+                await self.page.wait_for_timeout(3000)
+
+                role_jobs = await self.scrape_current_role_pages(today)
+                all_jobs.extend(role_jobs)
+            except Exception as ex:
+                self.logger.error(f"💥 Critical routing failure on VietnamWorks [{target_url}]: {str(ex)}")
+                continue
 
         return all_jobs
 

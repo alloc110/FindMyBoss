@@ -59,7 +59,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY services/renderer_microservice.py /app/services/renderer_microservice.py
 COPY services/latex_engine.py /app/services/latex_engine.py
 COPY services/__init__.py /app/services/__init__.py
-COPY config.py /app/config.py
+COPY core/ /app/core/
 COPY templates/ /app/templates/
 
 # Create directories

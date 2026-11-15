@@ -3,7 +3,7 @@ import time
 from typing import Any, Dict, Optional
 import httpx
 
-from config import get_logger
+from core.config import get_logger
 from models.schemas import GeminiTailorResponse
 from services.ai.base import BaseAIProvider, build_tailor_prompt, extract_json_block
 

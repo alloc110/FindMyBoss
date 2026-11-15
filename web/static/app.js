@@ -182,6 +182,14 @@ const elements = {
   btnStartScrapeText: document.getElementById('btnStartScrapeText'),
   btnSelectAllPortals: document.getElementById('btnSelectAllPortals'),
   btnDeselectAllPortals: document.getElementById('btnDeselectAllPortals'),
+  btnPresetInternFresher: document.getElementById('btnPresetInternFresher'),
+  btnPresetJunior: document.getElementById('btnPresetJunior'),
+  btnPresetAllLevels: document.getElementById('btnPresetAllLevels'),
+  btnRoleAll: document.getElementById('btnRoleAll'),
+  btnRoleData: document.getElementById('btnRoleData'),
+  btnRoleDev: document.getElementById('btnRoleDev'),
+  quickScrapeKeywords: document.getElementById('quickScrapeKeywords'),
+  quickScrapeBlacklist: document.getElementById('quickScrapeBlacklist'),
   scrapeModalStatusBox: document.getElementById('scrapeModalStatusBox'),
   scrapeModalStatusTitle: document.getElementById('scrapeModalStatusTitle'),
   scrapeModalStatusDetail: document.getElementById('scrapeModalStatusDetail'),
@@ -190,6 +198,21 @@ const elements = {
   scraperStatusText: document.getElementById('scraperStatusText'),
   quickScrapeToday: document.getElementById('quickScrapeToday'),
   quickScrapeMaxPages: document.getElementById('quickScrapeMaxPages'),
+
+  // Career-Ops Fast Intake
+  btnOpenCareerOps: document.getElementById('btnOpenCareerOps'),
+  careerOpsModal: document.getElementById('careerOpsModal'),
+  btnCloseCareerOpsModal: document.getElementById('btnCloseCareerOpsModal'),
+  btnCancelCareerOpsModal: document.getElementById('btnCancelCareerOpsModal'),
+  btnSubmitCareerOps: document.getElementById('btnSubmitCareerOps'),
+  careerOpsUrl: document.getElementById('careerOpsUrl'),
+  careerOpsTemplate: document.getElementById('careerOpsTemplate'),
+  careerOpsSendDiscord: document.getElementById('careerOpsSendDiscord'),
+  careerOpsStatusBox: document.getElementById('careerOpsStatusBox'),
+  careerOpsStatusText: document.getElementById('careerOpsStatusText'),
+  careerOpsResultDetails: document.getElementById('careerOpsResultDetails'),
+  careerOpsSpinner: document.getElementById('careerOpsSpinner'),
+  careerOpsBtnText: document.getElementById('careerOpsBtnText'),
 
   // Settings Tab 1: AI Model & API Key
   settingAiProvider: document.getElementById('settingAiProvider'),
@@ -476,6 +499,25 @@ function setupEventListeners() {
       if (e.target === elements.scrapeModal) closeScrapeModal();
     });
   }
+
+  // Career-Ops Modal Handlers
+  if (elements.btnOpenCareerOps) {
+    elements.btnOpenCareerOps.addEventListener('click', openCareerOpsModal);
+  }
+  if (elements.btnCloseCareerOpsModal) {
+    elements.btnCloseCareerOpsModal.addEventListener('click', closeCareerOpsModal);
+  }
+  if (elements.btnCancelCareerOpsModal) {
+    elements.btnCancelCareerOpsModal.addEventListener('click', closeCareerOpsModal);
+  }
+  if (elements.careerOpsModal) {
+    elements.careerOpsModal.addEventListener('click', (e) => {
+      if (e.target === elements.careerOpsModal) closeCareerOpsModal();
+    });
+  }
+  if (elements.btnSubmitCareerOps) {
+    elements.btnSubmitCareerOps.addEventListener('click', submitCareerOps);
+  }
   if (elements.btnStartScrape) {
     elements.btnStartScrape.addEventListener('click', startQuickScrape);
   }
@@ -489,6 +531,78 @@ function setupEventListeners() {
       document.querySelectorAll('.portal-checkbox-grid input[type="checkbox"]').forEach((cb) => (cb.checked = false));
     });
   }
+
+  // Quick Level Presets
+  if (elements.btnPresetInternFresher) {
+    elements.btnPresetInternFresher.addEventListener('click', () => {
+      document.querySelectorAll('.quick-level-chk').forEach((cb) => {
+        cb.checked = ['intern', 'fresher'].includes(cb.value.toLowerCase());
+      });
+    });
+  }
+  if (elements.btnPresetJunior) {
+    elements.btnPresetJunior.addEventListener('click', () => {
+      document.querySelectorAll('.quick-level-chk').forEach((cb) => {
+        cb.checked = ['intern', 'fresher', 'junior'].includes(cb.value.toLowerCase());
+      });
+    });
+  }
+  if (elements.btnPresetAllLevels) {
+    elements.btnPresetAllLevels.addEventListener('click', () => {
+      document.querySelectorAll('.quick-level-chk').forEach((cb) => (cb.checked = true));
+    });
+  }
+
+  // Quick Role Presets
+  if (elements.btnRoleAll) {
+    elements.btnRoleAll.addEventListener('click', () => {
+      document.querySelectorAll('.quick-role-chk').forEach((cb) => (cb.checked = false));
+      if (elements.quickScrapeKeywords) elements.quickScrapeKeywords.value = '';
+    });
+  }
+  if (elements.btnRoleData) {
+    elements.btnRoleData.addEventListener('click', () => {
+      document.querySelectorAll('.quick-role-chk').forEach((cb) => {
+        cb.checked = ['da', 'de', 'ai_ml'].includes(cb.value);
+      });
+      if (elements.quickScrapeKeywords) {
+        elements.quickScrapeKeywords.value = 'Data Analyst, Data Engineer, SQL, Python, PowerBI';
+      }
+    });
+  }
+  if (elements.btnRoleDev) {
+    elements.btnRoleDev.addEventListener('click', () => {
+      document.querySelectorAll('.quick-role-chk').forEach((cb) => {
+        cb.checked = ['backend', 'frontend', 'fullstack'].includes(cb.value);
+      });
+      if (elements.quickScrapeKeywords) {
+        elements.quickScrapeKeywords.value = 'Backend, Frontend, Fullstack, Python, React, Java';
+      }
+    });
+  }
+
+  // Auto-fill suggested keywords on single role click
+  document.querySelectorAll('.quick-role-chk').forEach((chk) => {
+    chk.addEventListener('change', () => {
+      const activeRoles = Array.from(document.querySelectorAll('.quick-role-chk:checked')).map((c) => c.value);
+      if (activeRoles.length === 1 && elements.quickScrapeKeywords && (!elements.quickScrapeKeywords.value || elements.quickScrapeKeywords.value.includes('Python, React'))) {
+        const roleSuggestions = {
+          backend: 'Backend Developer, Python, Java, Golang, Node.js, C#',
+          frontend: 'Frontend Developer, React, Vue, Angular, TypeScript',
+          fullstack: 'Fullstack Developer, Node.js, React, Python',
+          da: 'Data Analyst, SQL, PowerBI, Tableau, Python',
+          de: 'Data Engineer, Spark, Airflow, ETL, Big Data, SQL',
+          ai_ml: 'AI Engineer, Machine Learning, Data Scientist, PyTorch',
+          mobile: 'Mobile Developer, Flutter, React Native, iOS, Android',
+          tester: 'QA, QC, Tester, Automation Test, Selenium',
+          devops: 'DevOps, Cloud, Docker, Kubernetes, AWS, CI/CD',
+        };
+        if (roleSuggestions[activeRoles[0]]) {
+          elements.quickScrapeKeywords.value = roleSuggestions[activeRoles[0]];
+        }
+      }
+    });
+  });
 
   // Settings Tab Switching
   elements.modalTabButtons.forEach((btn) => {
@@ -1124,6 +1238,67 @@ function renderEmptyState() {
   elements.detailPane.style.display = 'none';
 }
 
+function formatJdSectionHtml(text) {
+  if (!text) return '';
+  const lines = text.split(/\r?\n/);
+  const cleanLines = [];
+  for (let line of lines) {
+    const trimmed = line.trim();
+    // Drop standalone page/item numbers like "2", "3" that scrapers sometimes pick up
+    if (/^\d{1,2}$/.test(trimmed)) continue;
+    // Drop markdown section headers if repeated
+    if (/^#{1,4}\s*(yêu cầu|quyền lợi|mô tả)/i.test(trimmed)) continue;
+    cleanLines.push(line);
+  }
+
+  let html = '';
+  let inList = false;
+
+  for (let rawLine of cleanLines) {
+    const trimmed = rawLine.trim();
+    if (!trimmed) {
+      if (inList) {
+        html += '</ul>';
+        inList = false;
+      }
+      continue;
+    }
+
+    // Check if it's a bullet item (- , * , • , + , or number like 1. )
+    const isBullet = /^[-*•+]\s+/.test(trimmed) || /^\d+[\.)]\s+/.test(trimmed);
+    const content = trimmed.replace(/^[-*•+]\s+/, '').replace(/^\d+[\.)]\s+/, '');
+
+    // Format bold keys like "Test Case Design: Details..."
+    let formattedContent = escapeHtml(content);
+    formattedContent = formattedContent.replace(/^([A-Za-z0-9\s/&,–—\u00C0-\u1EF9]+:)\s*/, '<strong class="jd-item-title">$1</strong> ');
+
+    if (isBullet) {
+      if (!inList) {
+        html += '<ul class="jd-list">';
+        inList = true;
+      }
+      html += `<li>${formattedContent}</li>`;
+    } else {
+      if (inList) {
+        html += '</ul>';
+        inList = false;
+      }
+      // If line ends with a colon, treat as a subheading
+      if (trimmed.endsWith(':') && trimmed.length < 60) {
+        html += `<div style="font-weight: 700; color: var(--text-main); margin-top: 10px; margin-bottom: 4px;">${escapeHtml(trimmed)}</div>`;
+      } else {
+        html += `<p class="jd-paragraph">${formattedContent}</p>`;
+      }
+    }
+  }
+
+  if (inList) {
+    html += '</ul>';
+  }
+
+  return html || escapeHtml(text);
+}
+
 async function selectJob(jobId, shouldScroll = true) {
   state.selectedJobId = jobId;
   localStorage.setItem('findmyboss_selected_job_id', jobId);
@@ -1171,37 +1346,56 @@ async function selectJob(jobId, shouldScroll = true) {
       elements.detailJobStatusSelect.value = job.status || 'saved';
     }
 
-    // Populate Tab 1: JD (Toàn bộ nội dung cào được gom vào Mô tả công việc)
-    let fullDescription = [];
-    if (job.description && job.description.trim()) {
-      fullDescription.push(job.description.trim());
-    }
-    if (job.requirements && job.requirements.trim()) {
-      const reqSnippet = job.requirements.trim().slice(0, 50);
-      if (!job.description || !job.description.includes(reqSnippet)) {
-        fullDescription.push('### YÊU CẦU ỨNG VIÊN:\n' + job.requirements.trim());
-      }
-    }
-    if (job.benefits && job.benefits.trim()) {
-      const benSnippet = job.benefits.trim().slice(0, 50);
-      if (!job.description || !job.description.includes(benSnippet)) {
-        fullDescription.push('### QUYỀN LỢI ĐƯỢC HƯỞNG:\n' + job.benefits.trim());
+    // Populate Tab 1: JD - Tách rõ từng phần: Mô tả, Yêu cầu, Quyền lợi
+    let rawDesc = (job.description || '').trim();
+    let rawReq = (job.requirements || '').trim();
+    let rawBen = (job.benefits || '').trim();
+
+    // Smart splitting if job.description already contains embedded ### markdown headers
+    if (rawDesc.includes('### YÊU CẦU ỨNG VIÊN:') || rawDesc.includes('### QUYỀN LỢI ĐƯỢC HƯỞNG:')) {
+      const reqIdx = rawDesc.indexOf('### YÊU CẦU ỨNG VIÊN:');
+      const benIdx = rawDesc.indexOf('### QUYỀN LỢI ĐƯỢC HƯỞNG:');
+
+      if (reqIdx !== -1 && benIdx !== -1) {
+        if (!rawReq) rawReq = rawDesc.slice(reqIdx + '### YÊU CẦU ỨNG VIÊN:'.length, benIdx).trim();
+        if (!rawBen) rawBen = rawDesc.slice(benIdx + '### QUYỀN LỢI ĐƯỢC HƯỞNG:'.length).trim();
+        rawDesc = rawDesc.slice(0, reqIdx).trim();
+      } else if (reqIdx !== -1) {
+        if (!rawReq) rawReq = rawDesc.slice(reqIdx + '### YÊU CẦU ỨNG VIÊN:'.length).trim();
+        rawDesc = rawDesc.slice(0, reqIdx).trim();
+      } else if (benIdx !== -1) {
+        if (!rawBen) rawBen = rawDesc.slice(benIdx + '### QUYỀN LỢI ĐƯỢC HƯỞNG:'.length).trim();
+        rawDesc = rawDesc.slice(0, benIdx).trim();
       }
     }
 
-    const finalDesc = fullDescription.length > 0
-      ? fullDescription.join('\n\n')
-      : (job.full_jd_raw || 'Chưa có thông tin mô tả chi tiết công việc.');
-
+    // Card 1: Mô tả công việc
     if (elements.jdDescription) {
-      elements.jdDescription.textContent = finalDesc;
+      elements.jdDescription.innerHTML = formatJdSectionHtml(
+        rawDesc || job.full_jd_raw || 'Chưa có thông tin mô tả chi tiết công việc.'
+      );
     }
-    if (elements.jdRequirements) {
-      elements.jdRequirements.textContent = job.requirements || '';
+
+    // Card 2: Yêu cầu ứng viên
+    if (elements.jdRequirementsCard && elements.jdRequirements) {
+      if (rawReq) {
+        elements.jdRequirementsCard.style.display = 'block';
+        elements.jdRequirements.innerHTML = formatJdSectionHtml(rawReq);
+      } else {
+        elements.jdRequirementsCard.style.display = 'none';
+      }
     }
-    if (elements.jdBenefits) {
-      elements.jdBenefits.textContent = job.benefits || '';
+
+    // Card 3: Quyền lợi được hưởng
+    if (elements.jdBenefitsCard && elements.jdBenefits) {
+      if (rawBen) {
+        elements.jdBenefitsCard.style.display = 'block';
+        elements.jdBenefits.innerHTML = formatJdSectionHtml(rawBen);
+      } else {
+        elements.jdBenefitsCard.style.display = 'none';
+      }
     }
+
     if (elements.jdFullRaw) {
       elements.jdFullRaw.textContent = job.full_jd_raw || job.description || 'N/A';
     }
@@ -1528,13 +1722,73 @@ let scraperTimerInterval = null;
 function openScrapeModal() {
   if (elements.scrapeModal) {
     elements.scrapeModal.style.display = 'flex';
+    elements.scrapeModal.classList.add('open');
     checkScraperStatus();
+    loadQuickScrapeOptions();
+  }
+}
+
+async function loadQuickScrapeOptions() {
+  try {
+    const res = await fetch('/api/scraper/config');
+    if (!res.ok) return;
+    const config = await res.json();
+
+    // 1. Portals
+    if (config.portals) {
+      document.querySelectorAll('.portal-checkbox-grid input[type="checkbox"]').forEach((chk) => {
+        if (config.portals[chk.value] !== undefined) {
+          chk.checked = !!config.portals[chk.value];
+        }
+      });
+    }
+
+    // 2. Roles (backend, frontend, fullstack, da, de, ai_ml, mobile, tester, devops)
+    const roles = (config.roles || []).map((r) => r.toLowerCase());
+    document.querySelectorAll('.quick-role-chk').forEach((chk) => {
+      chk.checked = roles.includes(chk.value.toLowerCase());
+    });
+
+    // 3. Levels (intern, fresher, junior, middle, senior)
+    const levels = (config.levels || ['intern', 'fresher', 'junior']).map((l) => l.toLowerCase());
+    document.querySelectorAll('.quick-level-chk').forEach((chk) => {
+      chk.checked = levels.includes(chk.value.toLowerCase());
+    });
+
+    // 4. Locations
+    const locations = (config.locations || ['Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng', 'Remote']).map((loc) => loc.toLowerCase());
+    document.querySelectorAll('.quick-city-chk').forEach((chk) => {
+      chk.checked = locations.some((loc) => loc.includes(chk.value.toLowerCase()) || chk.value.toLowerCase().includes(loc));
+    });
+
+    // 5. Keywords
+    if (elements.quickScrapeKeywords && config.keywords) {
+      elements.quickScrapeKeywords.value = config.keywords.join(', ');
+    }
+
+    // 6. Blacklist
+    if (elements.quickScrapeBlacklist && config.blacklisted_keywords) {
+      elements.quickScrapeBlacklist.value = config.blacklisted_keywords.join(', ');
+    }
+
+    // 7. Max pages
+    if (elements.quickScrapeMaxPages && config.max_pages_per_portal) {
+      elements.quickScrapeMaxPages.value = config.max_pages_per_portal;
+    }
+
+    // 8. Phạm vi thời gian (Today only)
+    if (elements.quickScrapeToday && config.today_only !== undefined) {
+      elements.quickScrapeToday.value = config.today_only ? 'true' : 'false';
+    }
+  } catch (err) {
+    console.warn('Failed to load quick scrape options:', err);
   }
 }
 
 function closeScrapeModal() {
   if (elements.scrapeModal) {
     elements.scrapeModal.style.display = 'none';
+    elements.scrapeModal.classList.remove('open');
   }
 }
 
@@ -1645,13 +1899,66 @@ async function startQuickScrape() {
     return;
   }
 
+  const selectedRoles = Array.from(document.querySelectorAll('.quick-role-chk:checked')).map((cb) => cb.value);
+
+  const selectedLevels = Array.from(document.querySelectorAll('.quick-level-chk:checked')).map((cb) => cb.value);
+  if (selectedLevels.length === 0) {
+    alert('Vui lòng chọn ít nhất một cấp bậc tuyển dụng (ví dụ: Intern, Fresher, Junior) để cào.');
+    return;
+  }
+
+  const selectedLocations = Array.from(document.querySelectorAll('.quick-city-chk:checked')).map((cb) => cb.value);
+
+  const keywords = (elements.quickScrapeKeywords ? elements.quickScrapeKeywords.value : '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const blacklist = (elements.quickScrapeBlacklist ? elements.quickScrapeBlacklist.value : '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
   const todayOnly = elements.quickScrapeToday ? elements.quickScrapeToday.value === 'true' : false;
   const maxPages = elements.quickScrapeMaxPages ? parseInt(elements.quickScrapeMaxPages.value, 10) || 2 : 2;
 
-  const payload = {
+  // Persist updated preferences to data/scraper_config.json
+  const portalsMap = {};
+  document.querySelectorAll('.portal-checkbox-grid input[type="checkbox"]').forEach((cb) => {
+    portalsMap[cb.value] = cb.checked;
+  });
+
+  const configPayload = {
+    portals: portalsMap,
+    roles: selectedRoles,
+    keywords,
+    levels: selectedLevels,
+    locations: selectedLocations,
+    blacklisted_keywords: blacklist,
+    max_pages_per_portal: maxPages,
+    today_only: todayOnly,
+    delay_seconds: 2.0,
+  };
+
+  try {
+    await fetch('/api/scraper/config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(configPayload),
+    });
+  } catch (cfgErr) {
+    console.warn('Failed to persist scraper options:', cfgErr);
+  }
+
+  const runPayload = {
     portals: selectedPortals,
+    roles: selectedRoles,
     today_only: todayOnly,
     max_pages: maxPages,
+    levels: selectedLevels,
+    keywords,
+    locations: selectedLocations,
+    blacklisted_keywords: blacklist,
   };
 
   if (elements.btnStartScrape) elements.btnStartScrape.disabled = true;
@@ -1659,13 +1966,18 @@ async function startQuickScrape() {
   if (elements.btnStartScrapeText) elements.btnStartScrapeText.textContent = 'Đang khởi động...';
   if (elements.scrapeModalStatusBox) elements.scrapeModalStatusBox.style.display = 'block';
   if (elements.scrapeModalStatusTitle) elements.scrapeModalStatusTitle.textContent = 'Đang kết nối worker scraper...';
-  if (elements.scrapeModalStatusDetail) elements.scrapeModalStatusDetail.textContent = 'Khởi tạo container Chromium Playwright...';
+  
+  const roleNames = selectedRoles.map((r) => r.toUpperCase()).join(', ');
+  const statusRoleMsg = roleNames ? `Role: ${roleNames}` : 'Tất cả IT';
+  if (elements.scrapeModalStatusDetail) {
+    elements.scrapeModalStatusDetail.textContent = `Lọc [${statusRoleMsg}] • Cấp bậc [${selectedLevels.join(', ')}]...`;
+  }
 
   try {
     const res = await fetch('/api/scraper/run', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(runPayload),
     });
 
     const data = await res.json();
@@ -1682,6 +1994,103 @@ async function startQuickScrape() {
     if (elements.btnStartScrape) elements.btnStartScrape.disabled = false;
     if (elements.btnStartScrapeSpinner) elements.btnStartScrapeSpinner.style.display = 'none';
     if (elements.btnStartScrapeText) elements.btnStartScrapeText.textContent = '🚀 Bắt Đầu Cào Ngay';
+  }
+}
+
+// -------------------------------------------------------------
+// Career-Ops Fast Intake UI Controller
+// -------------------------------------------------------------
+function openCareerOpsModal() {
+  if (elements.careerOpsModal) {
+    elements.careerOpsModal.style.display = 'flex';
+    if (elements.careerOpsUrl) {
+      elements.careerOpsUrl.focus();
+    }
+  }
+}
+
+function closeCareerOpsModal() {
+  if (elements.careerOpsModal) {
+    elements.careerOpsModal.style.display = 'none';
+  }
+}
+
+async function submitCareerOps() {
+  const url = elements.careerOpsUrl ? elements.careerOpsUrl.value.trim() : '';
+  if (!url) {
+    alert('Vui lòng nhập link bài đăng tuyển dụng (http:// hoặc https://)!');
+    if (elements.careerOpsUrl) elements.careerOpsUrl.focus();
+    return;
+  }
+
+  const template = elements.careerOpsTemplate ? elements.careerOpsTemplate.value : 'classic';
+  const sendDiscord = elements.careerOpsSendDiscord ? elements.careerOpsSendDiscord.checked : true;
+
+  if (elements.btnSubmitCareerOps) elements.btnSubmitCareerOps.disabled = true;
+  if (elements.careerOpsSpinner) elements.careerOpsSpinner.style.display = 'inline-block';
+  if (elements.careerOpsBtnText) elements.careerOpsBtnText.textContent = 'Đang xử lý qua Career-Ops...';
+  if (elements.careerOpsStatusBox) elements.careerOpsStatusBox.style.display = 'block';
+  if (elements.careerOpsStatusText) elements.careerOpsStatusText.textContent = '🔍 Đang cào JD qua Career-Ops & đối chiếu CV...';
+  if (elements.careerOpsResultDetails) elements.careerOpsResultDetails.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/career-ops/process', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: url,
+        template: template,
+        send_to_discord: sendDiscord,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok || data.success === false) {
+      throw new Error(data.detail || data.message || 'Xử lý thất bại');
+    }
+
+    if (elements.careerOpsStatusText) {
+      elements.careerOpsStatusText.textContent = '🎉 Hoàn tất thành công!';
+    }
+
+    if (elements.careerOpsResultDetails) {
+      const discordBadge = data.discord_sent
+        ? '<span style="color: #10b981; font-weight: 600;">✅ Đã bắn thông báo & đính kèm file CV PDF vào Discord!</span>'
+        : '<span style="color: #f59e0b;">ℹ️ Không gửi Discord hoặc webhook chưa thiết lập.</span>';
+
+      elements.careerOpsResultDetails.innerHTML = `
+        <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 6px; margin-top: 8px;">
+          <div>🏢 <strong>${escapeHtml(data.job.company)}</strong> — <strong>${escapeHtml(data.job.title)}</strong></div>
+          <div style="margin-top: 4px;">🎯 <strong>ATS Match Score:</strong> <span style="color: #10b981; font-weight: 700; font-size: 15px;">${data.match_score}%</span></div>
+          <div style="margin-top: 6px;">${discordBadge}</div>
+          <div style="margin-top: 12px; display: flex; gap: 8px;">
+            <a href="${data.pdf_url}" target="_blank" class="btn btn-sm btn-primary" style="text-decoration: none; padding: 6px 12px;">📄 Mở CV PDF</a>
+            <button type="button" class="btn btn-sm btn-secondary" id="btnCareerOpsViewInList">Xem trong danh sách</button>
+          </div>
+        </div>
+      `;
+      elements.careerOpsResultDetails.style.display = 'block';
+
+      const btnViewInList = document.getElementById('btnCareerOpsViewInList');
+      if (btnViewInList) {
+        btnViewInList.addEventListener('click', () => {
+          closeCareerOpsModal();
+          loadJobs();
+          selectJob(data.job_id);
+        });
+      }
+    }
+
+    // Refresh jobs list in the background
+    loadJobs();
+  } catch (err) {
+    if (elements.careerOpsStatusText) {
+      elements.careerOpsStatusText.textContent = '❌ Lỗi: ' + err.message;
+    }
+  } finally {
+    if (elements.btnSubmitCareerOps) elements.btnSubmitCareerOps.disabled = false;
+    if (elements.careerOpsSpinner) elements.careerOpsSpinner.style.display = 'none';
+    if (elements.careerOpsBtnText) elements.careerOpsBtnText.textContent = '🚀 Xử Lý & Bắn Discord';
   }
 }
 

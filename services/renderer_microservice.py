@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException, Body
 from pydantic import BaseModel
 
 from services.latex_engine import LatexEngine
-from config import get_logger
+from core.config import get_logger
 
 logger = get_logger("RendererMicroservice")
 

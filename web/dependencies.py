@@ -38,3 +38,16 @@ gemini_service = GeminiService(
     provider=init_provider,
     base_url=initial_settings.get("custom_base_url"),
 )
+
+from services.career_ops_service import CareerOpsService
+from services.notifier import DiscordNotifier
+
+discord_notifier = DiscordNotifier()
+career_ops_service = CareerOpsService(
+    workspace_dir=BASE_DIR / "career_ops_workspace",
+    storage=storage,
+    profile_service=profile_service,
+    latex_engine=latex_engine,
+    notifier=discord_notifier,
+    ai_service=gemini_service,
+)

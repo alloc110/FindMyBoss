@@ -2,7 +2,7 @@ import re
 from typing import Dict, List, Optional
 from playwright.async_api import Locator, Page
 
-from config import config
+from core.config import config
 from crawl.base_crawl import JobScraper
 from models.Job import Job
 
@@ -234,18 +234,43 @@ KỸ NĂNG: {', '.join(job.skills) if job.skills else 'Xem chi tiết'}
 
         return job
 
-    async def crawl_all_pages(self, today: bool = False) -> List[Job]:
-        """Executes full search matrix over TopCV IT listings."""
+    ROLE_MAP: Dict[str, List[tuple[str, str]]] = {
+        "backend": [("Backend Developer", "https://www.topcv.vn/tim-viec-lam-backend-developer")],
+        "frontend": [("Frontend Developer", "https://www.topcv.vn/tim-viec-lam-frontend-developer")],
+        "fullstack": [("Fullstack Developer", "https://www.topcv.vn/tim-viec-lam-fullstack-developer")],
+        "da": [("Data Analyst", "https://www.topcv.vn/tim-viec-lam-data-analyst")],
+        "de": [("Data Engineer", "https://www.topcv.vn/tim-viec-lam-data-engineer")],
+        "ai_ml": [("AI / Machine Learning", "https://www.topcv.vn/tim-viec-lam-ai-engineer")],
+        "mobile": [("Mobile Developer", "https://www.topcv.vn/tim-viec-lam-mobile-developer")],
+        "tester": [("Tester / QA QC", "https://www.topcv.vn/tim-viec-lam-tester")],
+        "devops": [("DevOps", "https://www.topcv.vn/tim-viec-lam-devops")],
+    }
+
+    async def crawl_all_pages(self, today: bool = False, roles: Optional[List[str]] = None, **kwargs) -> List[Job]:
+        """Executes full search matrix over TopCV IT listings or specific selected roles."""
         all_jobs: List[Job] = []
 
-        try:
-            self.logger.info(f"📂 Navigating TopCV to target index: {self.url}")
-            await self.page.goto(self.url, wait_until="load", timeout=config.navigation_timeout_ms)
-            await self.page.wait_for_timeout(3000)
+        target_targets: List[tuple[str, str]] = []
+        if roles and "all" not in [r.lower() for r in roles]:
+            for r in roles:
+                r_key = r.strip().lower()
+                if r_key in self.ROLE_MAP:
+                    target_targets.extend(self.ROLE_MAP[r_key])
 
-            all_jobs = await self.scrape_current_role_pages(today)
-        except Exception as ex:
-            self.logger.error(f"💥 Critical routing failure requesting TopCV [{self.url}]: {str(ex)}")
+        if not target_targets:
+            target_targets = [("IT Chung", self.url)]
+
+        for role_name, target_url in target_targets:
+            try:
+                self.logger.info(f"📂 Navigating TopCV to target [{role_name}]: {target_url}")
+                await self.page.goto(target_url, wait_until="load", timeout=config.navigation_timeout_ms)
+                await self.page.wait_for_timeout(2500)
+
+                role_jobs = await self.scrape_current_role_pages(today)
+                all_jobs.extend(role_jobs)
+            except Exception as ex:
+                self.logger.error(f"💥 Routing failure on TopCV [{target_url}]: {str(ex)}")
+                continue
 
         return all_jobs
 

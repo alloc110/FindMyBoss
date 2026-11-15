@@ -20,7 +20,7 @@ services:
     container_name: findmyboss_web
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "${WEB_PORT:-8080}:8000"
     env_file:
       - .env
     environment:
@@ -31,6 +31,12 @@ services:
     volumes:
       - ./data:/app/data          # SQLite DB, PDFs, settings, rules
       - ./logs:/app/logs          # Application logs
+      - ./web:/app/web            # Hot reload templates & static assets
+      - ./core:/app/core          # Core config
+      - ./crawl:/app/crawl        # Hot reload filters and models
+      - ./services:/app/services  # Hot reload microservices & storage
+      - ./templates:/app/templates # LaTeX templates for CV generation
+      - ./career_ops_workspace:/app/career_ops_workspace # Career-ops extraction scripts
     depends_on:
       renderer:
         condition: service_healthy
@@ -98,12 +104,46 @@ services:
     volumes:
       - ./data:/app/data          # SQLite DB (jobs.db) and scraper config
       - ./logs:/app/logs          # Scrape logs
+      - ./crawl:/app/crawl        # Crawler scripts & filters hot-reload
+      - ./services:/app/services  # Scraper service worker
+      - ./core:/app/core
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
       interval: 20s
       timeout: 10s
       retries: 3
       start_period: 30s
+    networks:
+      - findmyboss_net
+
+  # ----------------------------------------------------------
+  # Microservice 4: Career-Ops Discord Bot (Optional Runner)
+  # Responsibilities: Listen to Discord channel commands & job URLs
+  # ----------------------------------------------------------
+  bot:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    image: findmyboss-bot:latest
+    container_name: findmyboss_bot
+    restart: unless-stopped
+    command: ["python", "-m", "services.discord_bot"]
+    env_file:
+      - .env
+    environment:
+      - RENDERER_SERVICE_URL=http://renderer:8001
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Ho_Chi_Minh
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./templates:/app/templates
+      - ./career_ops_workspace:/app/career_ops_workspace
+      - ./services:/app/services
+      - ./core:/app/core
+    depends_on:
+      renderer:
+        condition: service_healthy
     networks:
       - findmyboss_net
 

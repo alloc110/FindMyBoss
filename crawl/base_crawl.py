@@ -8,7 +8,7 @@ try:
 except ImportError:
     Page = Any  # type: ignore
 
-from config import VN_TIMEZONE, config, get_logger
+from core.config import VN_TIMEZONE, config, get_logger
 from models.Job import Job
 
 
@@ -23,7 +23,7 @@ class JobScraper(abc.ABC):
         self.logger = get_logger(self.__class__.__name__)
 
     @abc.abstractmethod
-    async def crawl_all_pages(self, today: bool = False) -> List[Job]:
+    async def crawl_all_pages(self, today: bool = False, roles: Optional[List[str]] = None, **kwargs) -> List[Job]:
         """Main entry point to execute scraping across all designated roles and pagination."""
         pass
 

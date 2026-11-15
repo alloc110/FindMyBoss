@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional
 
 import httpx
 
-from config import get_logger
+from core.config import get_logger
 from models.schemas import GeminiTailorResponse
 
 logger = get_logger("BaseAIProvider")
@@ -24,20 +24,28 @@ def build_tailor_prompt(job: Dict[str, Any], profile: Dict[str, Any]) -> str:
     ats_rules = profile.get("ats_rules", "").strip() or "Standard ATS scoring: prioritize core skills and quantify experience."
     cv_rules = profile.get("cv_rules", "").strip() or "Follow Google XYZ / STAR format, truthful experience selection, action verbs."
 
-    candidate_context = ""
-    if master_cv_text:
-        candidate_context = f"""
-### 2. CANDIDATE MASTER PORTFOLIO / RAW CV TEXT (EXTRACTED FROM UPLOADED PDF):
-```text
-{master_cv_text[:8000]}
-```
-"""
-    else:
-        profile_json = json.dumps(profile, ensure_ascii=False, indent=2)
-        candidate_context = f"""
-### 2. CANDIDATE BASE PROFILE:
+    structured_summary = {
+        "name": profile.get("name", "Candidate"),
+        "title": profile.get("title", "Software Engineer"),
+        "summary": profile.get("summary", ""),
+        "skills": profile.get("skills", {}),
+        "experiences": profile.get("experiences", []),
+        "projects": profile.get("projects", []),
+        "education": profile.get("education", []),
+    }
+    profile_json = json.dumps(structured_summary, ensure_ascii=False, indent=2)
+
+    candidate_context = f"""
+### 2. CANDIDATE BASE PROFILE & STRUCTURED HISTORY:
 ```json
 {profile_json}
+```
+"""
+    if master_cv_text:
+        candidate_context += f"""
+### 2.1 CANDIDATE MASTER PORTFOLIO / RAW CV TEXT (EXTRACTED FROM UPLOADED PDF):
+```text
+{master_cv_text[:10000]}
 ```
 """
 
