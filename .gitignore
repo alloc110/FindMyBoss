@@ -16,5 +16,5 @@ data/master_cv.pdf
 data/master_cv_text.txt
 !assets/*
 data/*
-*.log 
-crawl_log.txt
+career_ops_workspace/
+crawl_log.txt

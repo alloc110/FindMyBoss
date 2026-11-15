@@ -8,25 +8,50 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
-from core.config import get_logger
+import asyncio
+from core.config import config, get_logger
 from web.dependencies import (
     STATIC_DIR,
     TEMPLATES_DIR,
+    career_ops_service,
+    discord_notifier,
     gemini_service,
     latex_engine,
     profile_service,
     settings_service,
     storage,
 )
-from web.routers import jobs_router, profile_router, scraper_router, settings_router
+from web.routers import (
+    career_ops_router,
+    jobs_router,
+    profile_router,
+    scraper_router,
+    settings_router,
+)
 
 logger = get_logger("WebApp")
 
 app = FastAPI(
     title="FindMyBoss - Job Dashboard & ATS CV Studio",
-    description="Smart Job Board with Multi-Provider AI CV Tailoring and Tectonic LaTeX PDF Generator",
-    version="2.0.0",
+    description="Smart Job Board with Multi-Provider AI CV Tailoring, Career-Ops Integration, and Discord Delivery",
+    version="2.1.0",
 )
+
+@app.on_event("startup")
+async def startup_event():
+    # 1. Start Discord Bot listener if configured
+    bot_token = config.discord_bot_token
+    if bot_token:
+        logger.info("🤖 DISCORD_BOT_TOKEN detected. Launching background Discord Bot listener...")
+        from services.discord_bot import run_bot_async
+        asyncio.create_task(run_bot_async(bot_token))
+    else:
+        logger.info("ℹ️ DISCORD_BOT_TOKEN not set. Discord alerts will run via DISCORD_WEBHOOK_URL.")
+
+    # 2. Start Automated Daily Crawler & Career-Ops Scheduler
+    from services.daily_scheduler import daily_scheduler
+    daily_scheduler.start()
+    logger.info("⏰ Automated Daily Harvester & Career-Ops Scheduler is ACTIVE.")
 
 # Enable CORS
 app.add_middleware(
@@ -41,6 +66,7 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 # Include Modular API Routers
+app.include_router(career_ops_router)
 app.include_router(jobs_router)
 app.include_router(settings_router)
 app.include_router(profile_router)

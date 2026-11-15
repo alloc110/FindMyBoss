@@ -49,6 +49,20 @@ class VietnamWorksJob(JobScraper):
             href = await a.get_attribute("href") if await a.count() > 0 else ""
             link = f"https://www.vietnamworks.com{href}" if href and href.startswith("/") else (href or "N/A")
 
+            # Extract company logo from card (avoid SVGs which Discord cannot display)
+            image = None
+            try:
+                card_img = card.locator("img").first
+                if await card_img.count() > 0:
+                    src = await card_img.get_attribute("src")
+                    if src and src.startswith("http") and not src.lower().endswith(".svg"):
+                        image = src
+            except Exception:
+                pass
+
+            if not image:
+                image = "https://images.vietnamworks.com/logo/vnw_logo.png"
+
             return Job(
                 title=title,
                 company=company,
@@ -57,7 +71,7 @@ class VietnamWorksJob(JobScraper):
                 exp=None,
                 salary=salary,
                 posted_date=posted_date,
-                image="https://images.vietnamworks.com/img/company-default-logo.svg",
+                image=image,
                 time=self.now_iso(),
             )
         except Exception as e:

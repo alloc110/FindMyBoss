@@ -110,11 +110,52 @@ class ITviecJob(JobScraper):
         timeout = config.element_timeout_ms
 
         try:
-            title_element = card.locator(self.SELECTORS["job_title"])
-            title = await title_element.inner_text(timeout=timeout)
+            # Multi-selector fallback for job title
+            title = None
+            title_element = None
+            for sel in [self.SELECTORS["job_title"], "h3 a", ".job-card__title a", ".job-card__title", "h3"]:
+                t_elem = card.locator(sel).first
+                if await t_elem.count() > 0:
+                    title = await t_elem.inner_text(timeout=timeout)
+                    if title and title.strip():
+                        title = title.strip()
+                        title_element = t_elem
+                        break
 
-            company = await card.locator(self.SELECTORS["company_name"]).inner_text(timeout=timeout)
-            data_url = await title_element.get_attribute("data-url", timeout=timeout) or "N/A"
+            # Multi-selector fallback for company name (Avoid missing classes or returning "Itviec")
+            company = None
+            company_selectors = [
+                self.SELECTORS["company_name"],
+                ".employer-name a",
+                ".employer-name",
+                "a.text-rich-grey",
+                "[data-search--job-selection-target='companyName']",
+                ".job-card__company a",
+                ".job-card__company",
+                "a[href*='/companies/']",
+            ]
+            for sel in company_selectors:
+                try:
+                    c_elem = card.locator(sel).first
+                    if await c_elem.count() > 0:
+                        c_text = await c_elem.inner_text(timeout=timeout)
+                        if c_text and c_text.strip() and c_text.strip().lower() != "itviec":
+                            company = c_text.strip()
+                            break
+                except Exception:
+                    continue
+
+            # Multi-selector fallback for URL
+            data_url = "N/A"
+            if title_element:
+                data_url = await title_element.get_attribute("data-url", timeout=timeout) or await title_element.get_attribute("href", timeout=timeout) or "N/A"
+            if data_url == "N/A":
+                anchor = card.locator("a[href*='/it-jobs/']").first
+                if await anchor.count() > 0:
+                    data_url = await anchor.get_attribute("href", timeout=timeout) or "N/A"
+
+            if data_url.startswith("/"):
+                data_url = f"https://itviec.com{data_url}"
 
             location_attr = await card.locator(self.SELECTORS["location_div"]).last.get_attribute("title", timeout=timeout) or ""
             location = "Hồ Chí Minh" if "Ho Chi Minh" in location_attr else location_attr
@@ -130,8 +171,8 @@ class ITviecJob(JobScraper):
             skills = [t.strip() for t in card_tags if t.strip()]
 
             return Job(
-                title=title.strip(),
-                company=company.strip(),
+                title=title if title else "N/A",
+                company=company if company else "N/A",
                 link=data_url,
                 address=location,
                 exp=None,
@@ -158,7 +199,24 @@ class ITviecJob(JobScraper):
             # Save 100% full raw text for AI prompt & dataset
             job.full_jd_raw = body_text.strip()
 
-            # 1. Extract skills from text section
+            # 1. Ensure company name is valid and not placeholder
+            if not job.company or job.company.lower() in ["n/a", "itviec", "công ty tuyển dụng"]:
+                for c_sel in [".employer-name a", ".employer-name", "h2.employer-name", "a[href*='/companies/']", ".employer-long-overview"]:
+                    try:
+                        c_elem = self.page.locator(c_sel).first
+                        if await c_elem.count() > 0:
+                            c_text = await c_elem.inner_text()
+                            if c_text and c_text.strip() and c_text.strip().lower() != "itviec":
+                                job.company = c_text.strip()
+                                break
+                    except Exception:
+                        pass
+                if not job.company or job.company.lower() in ["n/a", "itviec", "công ty tuyển dụng"]:
+                    comp_match = re.search(r"\n([^\n]+)\n+(?:Company type|Loại công ty|Company size)", body_text, re.IGNORECASE)
+                    if comp_match and comp_match.group(1).strip() and comp_match.group(1).strip().lower() != "itviec":
+                        job.company = comp_match.group(1).strip()
+
+            # 2. Extract skills from text section
             skills_match = re.search(r"Skills:[\s\n]+(.*?)(?=\nJob Expertise:|\nJob Domain:|$)", body_text, re.DOTALL)
             if skills_match:
                 skill_lines = [s.strip() for s in skills_match.group(1).splitlines() if s.strip()]

@@ -126,9 +126,31 @@ async def execute_crawler(
                     scraper.print_job_detail(j, i)
                 print("=" * 70 + "\n")
 
-                # Dispatch clean alert (WITHOUT long bulky JD) to Discord for qualified jobs ONLY
-                logger.info(f"📬 Dispatching {len(passed_jobs)} qualified alert(s) to Discord...")
-                await notifier.send_jobs(passed_jobs)
+                # Dispatch to Career-Ops pipeline and Discord
+                auto_career_ops = scraper_cfg.get("auto_career_ops", True)
+                if auto_career_ops:
+                    from services.career_ops_service import CareerOpsService
+
+                    career_service = CareerOpsService(storage=storage, notifier=notifier)
+                    logger.info(
+                        f"⚡ Auto-processing {len(passed_jobs)} qualified job(s) through Career-Ops & ATS CV tailoring..."
+                    )
+                    for q_job in passed_jobs:
+                        try:
+                            await career_service.process_job_url(
+                                q_job.link,
+                                send_to_discord=True,
+                                job_override=q_job,
+                            )
+                            await asyncio.sleep(1.0)
+                        except Exception as cop_err:
+                            logger.warning(f"Failed auto-career-ops for '{q_job.title}': {cop_err}")
+                            await notifier.send_job(q_job)
+                else:
+                    logger.info(f"📬 Dispatching {len(passed_jobs)} qualified alert(s) to Discord...")
+                    await notifier.send_jobs(passed_jobs)
+
+
                 return passed_jobs
             else:
                 logger.info(f"ℹ️ Không có job nào từ {crawler_class.__name__} thỏa mãn bộ lọc Web.")

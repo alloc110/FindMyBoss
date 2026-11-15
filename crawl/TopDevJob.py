@@ -71,13 +71,42 @@ class TopDevJob(JobScraper):
         timeout = config.element_timeout_ms
 
         try:
-            anchor = card.locator(self.SELECTORS["title_anchor"]).first
+            # 1. Strictly require detail-jobs anchor to filter out non-job company banners/carousels
+            anchor_loc = card.locator('a[href*="/detail-jobs/"]')
+            if await anchor_loc.count() == 0:
+                return None
+
+            anchor = anchor_loc.first
             title = await anchor.inner_text(timeout=timeout)
             cleaned_title = title.rsplit(" (", 1)[0] if " (" in title else title
+            cleaned_title = cleaned_title.strip()
 
-            company = await card.locator(self.SELECTORS["company_name"]).first.inner_text(timeout=timeout)
             raw_href = await anchor.get_attribute("href", timeout=timeout) or ""
             link = f"https://topdev.vn{raw_href}" if raw_href.startswith("/") else raw_href
+
+            # 2. Extract company name from card (adjacent to title or in company span)
+            company = ""
+            company_loc = card.locator('a[href*="/detail-jobs/"] + span, a[href*="/detail-jobs/"] ~ span, span.line-clamp-1')
+            if await company_loc.count() > 0:
+                cand = (await company_loc.first.inner_text(timeout=timeout)).strip()
+                if cand and cand != cleaned_title and cand.lower() not in ["topdev", "saramin", "hot jobs"]:
+                    company = cand
+
+            # Fallback 1: Extract from company link in card if available
+            if not company or company == cleaned_title:
+                comp_anchor = card.locator('a[href*="/companies/"]:not([href*="/group/"])')
+                if await comp_anchor.count() > 0:
+                    cand = (await comp_anchor.first.inner_text(timeout=timeout)).strip()
+                    if cand and cand != cleaned_title:
+                        company = cand
+
+            # Fallback 2: Extract from TopDev URL slug: /detail-jobs/...-{company-slug}-{id}
+            if not company or company == cleaned_title or company.lower() in ["topdev", "saramin", "hot jobs"]:
+                slug_match = re.search(r"-([a-z0-9-]+)-(\d+)(?:\?|$)", link)
+                if slug_match:
+                    slug_name = slug_match.group(1).replace("-", " ").strip().title()
+                    if slug_name.lower() not in ["topdev", "saramin", "hot jobs"] and len(slug_name) > 2:
+                        company = slug_name
 
             details = await card.locator(self.SELECTORS["grid_details"]).all_inner_texts()
             address = details[0].strip() if len(details) > 0 else "N/A"
@@ -92,15 +121,25 @@ class TopDevJob(JobScraper):
                 else "N/A"
             )
 
-            image = await card.locator(self.SELECTORS["card_image"]).get_attribute("src", timeout=timeout) or ""
+            image = ""
+            try:
+                img_loc = card.locator(self.SELECTORS["card_image"]).first
+                if await img_loc.count() > 0:
+                    image = await img_loc.get_attribute("src", timeout=timeout) or ""
+                if not image or image.lower().endswith(".svg"):
+                    first_img = card.locator("img").first
+                    if await first_img.count() > 0:
+                        image = await first_img.get_attribute("src", timeout=timeout) or ""
+            except Exception:
+                pass
 
             # Extract card skill tags if present on the listing view
             card_skill_anchors = await card.locator('a[href*="/jobs/search?keyword="]').all_inner_texts()
             skills = [s.strip() for s in card_skill_anchors if s.strip()]
 
             return Job(
-                title=cleaned_title.strip(),
-                company=company.strip(),
+                title=cleaned_title,
+                company=company or "Doanh nghiệp tuyển dụng",
                 link=link,
                 address=address,
                 exp=level,
@@ -126,6 +165,34 @@ class TopDevJob(JobScraper):
             body_text = await self.page.locator("body").inner_text()
             # Save 100% of raw page text for downstream AI/LLM CV matching
             job.full_jd_raw = body_text.strip()
+
+            # 0. Refine Job Title and Company from Detail Page Title & DOM
+            try:
+                page_title = await self.page.title()
+                if page_title:
+                    m = re.match(
+                        r"^(?:Recruiting|Tuyển dụng)\s+(.*?)\s+(?:at|tại)\s+(.*?)(?:\s*\|\s*(?:Saramin|TopDev|Việc làm).*|$)",
+                        page_title.strip(),
+                        re.IGNORECASE,
+                    )
+                    if m:
+                        cand_title = m.group(1).strip()
+                        cand_comp = m.group(2).strip()
+                        if cand_title:
+                            job.title = cand_title
+                        if cand_comp and (not job.company or job.company == job.title or job.company.lower() in ["topdev", "saramin", "hot jobs", "doanh nghiệp tuyển dụng"]):
+                            job.company = cand_comp
+
+                # Also verify employer anchor on detail page
+                comp_anchor = self.page.locator('a[href*="/companies/"]:not([href*="/group/"])')
+                if await comp_anchor.count() > 0:
+                    c_text = (await comp_anchor.first.inner_text()).strip()
+                    if "Industry" in c_text:
+                        c_text = c_text.split("Industry")[0].strip()
+                    if "View company" not in c_text and 2 < len(c_text) < 100:
+                        job.company = c_text
+            except Exception as ref_err:
+                self.logger.debug(f"Could not refine TopDev title/company: {ref_err}")
 
             # 1. Real Salary
             salary_match = re.search(r"•\s*Salary:\s*(.*?)(?:\n|•|$)", body_text, re.IGNORECASE)
@@ -176,6 +243,17 @@ class TopDevJob(JobScraper):
                 job.description = "\n\n".join(full_parts)
             elif not job.description:
                 job.description = body_text.strip()
+
+            # 7. Extract company logo from detail page if missing
+            try:
+                if not job.image or job.image.lower().endswith(".svg"):
+                    logo_loc = self.page.locator("img[src*='company'], img[src*='logo'], img[alt*='logo'], .company-logo img").first
+                    if await logo_loc.count() > 0:
+                        detail_img_src = await logo_loc.get_attribute("src")
+                        if detail_img_src and detail_img_src.startswith("http") and not detail_img_src.lower().endswith(".svg"):
+                            job.image = detail_img_src
+            except Exception:
+                pass
 
         except Exception as e:
             self.logger.warning(f"⚠️ Failed to deep scrape TopDev job {job.link}: {str(e)}")

@@ -35,6 +35,11 @@ try:
 except ImportError:
     ProfileService = None  # type: ignore
 
+try:
+    from services.career_ops_service import CareerOpsService
+except ImportError:
+    CareerOpsService = None  # type: ignore
+
 __all__ = [
     "JobStorage",
     "GeminiService",
@@ -44,4 +49,5 @@ __all__ = [
     "DiscordNotifier",
     "SettingsService",
     "ProfileService",
+    "CareerOpsService",
 ]

@@ -48,6 +48,7 @@ class ScraperConfig:
     """Central configuration for scraper orchestrator and crawlers."""
 
     discord_webhook_url: Optional[str] = os.getenv("DISCORD_WEBHOOK_URL")
+    discord_bot_token: Optional[str] = os.getenv("DISCORD_BOT_TOKEN")
     user_agent: str = (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"

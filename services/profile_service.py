@@ -3,7 +3,10 @@ import os
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, Optional
-import pypdf
+try:
+    import pypdf
+except ImportError:
+    pypdf = None
 
 from core.config import get_logger
 
@@ -70,6 +73,8 @@ class ProfileService:
         """
         if not content:
             raise ValueError("File PDF rỗng.")
+        if pypdf is None:
+            raise RuntimeError("Thư viện pypdf chưa được cài đặt. Vui lòng cài 'pip install pypdf'.")
 
         self.master_pdf_path.write_bytes(content)
 

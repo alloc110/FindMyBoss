@@ -1,5 +1,6 @@
 import os
 import random
+import re
 from typing import Dict, List, Optional
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from playwright.async_api import Locator, Page
@@ -71,15 +72,63 @@ class IndeedJob(JobScraper):
         timeout = config.element_timeout_ms
 
         try:
-            title_element = card.locator(self.SELECTORS["title_span"])
-            title = await title_element.get_attribute("title", timeout=timeout)
+            # 1. Extract job title with multi-selector fallback
+            title = None
+            title_span = card.locator("a.jcs-JobTitle span[id^='jobTitle-'], a.jcs-JobTitle span").first
+            try:
+                title = await title_span.get_attribute("title", timeout=timeout)
+            except Exception:
+                pass
+
             if not title:
-                title = await title_element.inner_text(timeout=timeout)
+                try:
+                    title = await title_span.inner_text(timeout=timeout)
+                except Exception:
+                    pass
 
-            company = await card.locator(self.SELECTORS["company"]).inner_text(timeout=timeout)
-            location = await card.locator(self.SELECTORS["location"]).inner_text(timeout=timeout)
+            if not title:
+                try:
+                    title = await card.locator(self.SELECTORS["title_anchor"]).first.inner_text(timeout=timeout)
+                except Exception:
+                    pass
 
-            raw_href = await card.locator(self.SELECTORS["title_anchor"]).get_attribute("href", timeout=timeout)
+            if not title:
+                try:
+                    title = await card.locator("h2.jobTitle").first.inner_text(timeout=timeout)
+                except Exception:
+                    pass
+
+            # Clean and sanitize title
+            if title:
+                title = re.sub(r"\s*-\s*job post.*$", "", title, flags=re.IGNORECASE).strip()
+                title = re.sub(r"^full details of\s*", "", title, flags=re.IGNORECASE).strip()
+                title = re.sub(r"\s*\n+\s*", " ", title).strip()
+
+            # 2. Extract company name
+            company = None
+            try:
+                company = await card.locator(self.SELECTORS["company"]).first.inner_text(timeout=timeout)
+            except Exception:
+                pass
+            if not company:
+                try:
+                    company = await card.locator(".companyName, [data-testid='company-name']").first.inner_text(timeout=timeout)
+                except Exception:
+                    pass
+
+            # 3. Extract location
+            location = None
+            try:
+                location = await card.locator(self.SELECTORS["location"]).first.inner_text(timeout=timeout)
+            except Exception:
+                pass
+
+            # 4. Extract link
+            raw_href = None
+            try:
+                raw_href = await card.locator(self.SELECTORS["title_anchor"]).first.get_attribute("href", timeout=timeout)
+            except Exception:
+                pass
             job_link = f"https://vn.indeed.com{raw_href}" if raw_href else "N/A"
 
             return Job(

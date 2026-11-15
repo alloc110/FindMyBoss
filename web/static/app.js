@@ -199,6 +199,21 @@ const elements = {
   quickScrapeToday: document.getElementById('quickScrapeToday'),
   quickScrapeMaxPages: document.getElementById('quickScrapeMaxPages'),
 
+  // Career-Ops Fast Intake
+  btnOpenCareerOps: document.getElementById('btnOpenCareerOps'),
+  careerOpsModal: document.getElementById('careerOpsModal'),
+  btnCloseCareerOpsModal: document.getElementById('btnCloseCareerOpsModal'),
+  btnCancelCareerOpsModal: document.getElementById('btnCancelCareerOpsModal'),
+  btnSubmitCareerOps: document.getElementById('btnSubmitCareerOps'),
+  careerOpsUrl: document.getElementById('careerOpsUrl'),
+  careerOpsTemplate: document.getElementById('careerOpsTemplate'),
+  careerOpsSendDiscord: document.getElementById('careerOpsSendDiscord'),
+  careerOpsStatusBox: document.getElementById('careerOpsStatusBox'),
+  careerOpsStatusText: document.getElementById('careerOpsStatusText'),
+  careerOpsResultDetails: document.getElementById('careerOpsResultDetails'),
+  careerOpsSpinner: document.getElementById('careerOpsSpinner'),
+  careerOpsBtnText: document.getElementById('careerOpsBtnText'),
+
   // Settings Tab 1: AI Model & API Key
   settingAiProvider: document.getElementById('settingAiProvider'),
   settingAiModel: document.getElementById('settingAiModel'),
@@ -483,6 +498,25 @@ function setupEventListeners() {
     elements.scrapeModal.addEventListener('click', (e) => {
       if (e.target === elements.scrapeModal) closeScrapeModal();
     });
+  }
+
+  // Career-Ops Modal Handlers
+  if (elements.btnOpenCareerOps) {
+    elements.btnOpenCareerOps.addEventListener('click', openCareerOpsModal);
+  }
+  if (elements.btnCloseCareerOpsModal) {
+    elements.btnCloseCareerOpsModal.addEventListener('click', closeCareerOpsModal);
+  }
+  if (elements.btnCancelCareerOpsModal) {
+    elements.btnCancelCareerOpsModal.addEventListener('click', closeCareerOpsModal);
+  }
+  if (elements.careerOpsModal) {
+    elements.careerOpsModal.addEventListener('click', (e) => {
+      if (e.target === elements.careerOpsModal) closeCareerOpsModal();
+    });
+  }
+  if (elements.btnSubmitCareerOps) {
+    elements.btnSubmitCareerOps.addEventListener('click', submitCareerOps);
   }
   if (elements.btnStartScrape) {
     elements.btnStartScrape.addEventListener('click', startQuickScrape);
@@ -1960,6 +1994,103 @@ async function startQuickScrape() {
     if (elements.btnStartScrape) elements.btnStartScrape.disabled = false;
     if (elements.btnStartScrapeSpinner) elements.btnStartScrapeSpinner.style.display = 'none';
     if (elements.btnStartScrapeText) elements.btnStartScrapeText.textContent = '🚀 Bắt Đầu Cào Ngay';
+  }
+}
+
+// -------------------------------------------------------------
+// Career-Ops Fast Intake UI Controller
+// -------------------------------------------------------------
+function openCareerOpsModal() {
+  if (elements.careerOpsModal) {
+    elements.careerOpsModal.style.display = 'flex';
+    if (elements.careerOpsUrl) {
+      elements.careerOpsUrl.focus();
+    }
+  }
+}
+
+function closeCareerOpsModal() {
+  if (elements.careerOpsModal) {
+    elements.careerOpsModal.style.display = 'none';
+  }
+}
+
+async function submitCareerOps() {
+  const url = elements.careerOpsUrl ? elements.careerOpsUrl.value.trim() : '';
+  if (!url) {
+    alert('Vui lòng nhập link bài đăng tuyển dụng (http:// hoặc https://)!');
+    if (elements.careerOpsUrl) elements.careerOpsUrl.focus();
+    return;
+  }
+
+  const template = elements.careerOpsTemplate ? elements.careerOpsTemplate.value : 'classic';
+  const sendDiscord = elements.careerOpsSendDiscord ? elements.careerOpsSendDiscord.checked : true;
+
+  if (elements.btnSubmitCareerOps) elements.btnSubmitCareerOps.disabled = true;
+  if (elements.careerOpsSpinner) elements.careerOpsSpinner.style.display = 'inline-block';
+  if (elements.careerOpsBtnText) elements.careerOpsBtnText.textContent = 'Đang xử lý qua Career-Ops...';
+  if (elements.careerOpsStatusBox) elements.careerOpsStatusBox.style.display = 'block';
+  if (elements.careerOpsStatusText) elements.careerOpsStatusText.textContent = '🔍 Đang cào JD qua Career-Ops & đối chiếu CV...';
+  if (elements.careerOpsResultDetails) elements.careerOpsResultDetails.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/career-ops/process', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: url,
+        template: template,
+        send_to_discord: sendDiscord,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok || data.success === false) {
+      throw new Error(data.detail || data.message || 'Xử lý thất bại');
+    }
+
+    if (elements.careerOpsStatusText) {
+      elements.careerOpsStatusText.textContent = '🎉 Hoàn tất thành công!';
+    }
+
+    if (elements.careerOpsResultDetails) {
+      const discordBadge = data.discord_sent
+        ? '<span style="color: #10b981; font-weight: 600;">✅ Đã bắn thông báo & đính kèm file CV PDF vào Discord!</span>'
+        : '<span style="color: #f59e0b;">ℹ️ Không gửi Discord hoặc webhook chưa thiết lập.</span>';
+
+      elements.careerOpsResultDetails.innerHTML = `
+        <div style="background: rgba(0,0,0,0.25); padding: 12px; border-radius: 6px; margin-top: 8px;">
+          <div>🏢 <strong>${escapeHtml(data.job.company)}</strong> — <strong>${escapeHtml(data.job.title)}</strong></div>
+          <div style="margin-top: 4px;">🎯 <strong>ATS Match Score:</strong> <span style="color: #10b981; font-weight: 700; font-size: 15px;">${data.match_score}%</span></div>
+          <div style="margin-top: 6px;">${discordBadge}</div>
+          <div style="margin-top: 12px; display: flex; gap: 8px;">
+            <a href="${data.pdf_url}" target="_blank" class="btn btn-sm btn-primary" style="text-decoration: none; padding: 6px 12px;">📄 Mở CV PDF</a>
+            <button type="button" class="btn btn-sm btn-secondary" id="btnCareerOpsViewInList">Xem trong danh sách</button>
+          </div>
+        </div>
+      `;
+      elements.careerOpsResultDetails.style.display = 'block';
+
+      const btnViewInList = document.getElementById('btnCareerOpsViewInList');
+      if (btnViewInList) {
+        btnViewInList.addEventListener('click', () => {
+          closeCareerOpsModal();
+          loadJobs();
+          selectJob(data.job_id);
+        });
+      }
+    }
+
+    // Refresh jobs list in the background
+    loadJobs();
+  } catch (err) {
+    if (elements.careerOpsStatusText) {
+      elements.careerOpsStatusText.textContent = '❌ Lỗi: ' + err.message;
+    }
+  } finally {
+    if (elements.btnSubmitCareerOps) elements.btnSubmitCareerOps.disabled = false;
+    if (elements.careerOpsSpinner) elements.careerOpsSpinner.style.display = 'none';
+    if (elements.careerOpsBtnText) elements.careerOpsBtnText.textContent = '🚀 Xử Lý & Bắn Discord';
   }
 }
 

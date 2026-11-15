@@ -41,6 +41,9 @@
       <button class="btn btn-accent btn-sm" id="btnQuickScrape" title="Kích hoạt cào tuyển dụng từ các cổng IT">
         🕷️ Cào Việc Mới
       </button>
+      <button class="btn btn-emerald btn-sm" id="btnOpenCareerOps" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #059669; color: #fff; font-weight: 600;" title="Gửi link tuyển dụng qua Career-Ops để tự động cào JD, tạo CV ATS & bắn Discord">
+        ⚡ Career-Ops (URL)
+      </button>
       <button class="btn btn-primary btn-sm" id="btnOpenSettings" title="Cài đặt hệ thống, Mô hình AI, Giao diện & Hồ sơ">
         Cài đặt
       </button>
@@ -868,6 +871,72 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=1.1.0"></script>
+  <!-- Career-Ops Fast Intake Modal -->
+  <div class="modal-overlay" id="careerOpsModal" style="display: none;">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3 class="modal-title">⚡ Career-Ops Fast Intake & Discord Delivery</h3>
+          <span class="modal-subtitle">Gửi link tuyển dụng: Tự động cào JD, tạo CV tối ưu ATS & bắn về Discord</span>
+        </div>
+        <button class="modal-close" id="btnCloseCareerOpsModal" aria-label="Đóng">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="careerOpsUrl">🔗 Link tuyển dụng bất kỳ (Job URL):</label>
+          <input
+            type="url"
+            id="careerOpsUrl"
+            class="form-input"
+            placeholder="https://topcv.vn/viec-lam/... hoặc link ITViec, VietnamWorks, LinkedIn, Greenhouse, Ashby..."
+            required
+          >
+          <span class="form-hint">Career-ops sẽ sử dụng browser headless Playwright hoặc HTTP parser để bóc tách full JD.</span>
+        </div>
+
+        <div class="form-row-2" style="margin-top: 14px;">
+          <div class="form-group">
+            <label for="careerOpsTemplate">🎨 Mẫu CV (LaTeX Template):</label>
+            <select id="careerOpsTemplate" class="form-select">
+              <option value="classic">Classic (Truyền thống, tối ưu ATS)</option>
+              <option value="modern">Modern (Hiện đại, nổi bật kỹ năng)</option>
+              <option value="compact">Compact (Cô đọng 1 trang)</option>
+            </select>
+          </div>
+          <div class="form-group" style="display: flex; flex-direction: column; justify-content: center;">
+            <label class="chip-checkbox-label" style="margin-top: 18px; cursor: pointer;">
+              <input type="checkbox" id="careerOpsSendDiscord" checked>
+              🔔 Bắn về Discord (Embed + PDF)
+            </label>
+          </div>
+        </div>
+
+        <!-- Live Process Status -->
+        <div id="careerOpsStatusBox" style="display: none; margin-top: 16px; padding: 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px; font-weight: 600; color: #10b981;">
+            <span class="status-pulse" id="careerOpsStatusPulse"></span>
+            <span id="careerOpsStatusText">Đang cào dữ liệu qua Career-Ops...</span>
+          </div>
+          <div id="careerOpsResultDetails" style="display: none; margin-top: 12px; font-size: 13px; line-height: 1.6; color: var(--text-main);">
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; padding: 12px; background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(255, 255, 255, 0.15); border-radius: 8px; font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+          🤖 <strong>Discord Bot:</strong> Bạn cũng có thể gửi link trực tiếp trong kênh Discord bằng lệnh <code style="color: #10b981;">!career &lt;url&gt;</code> hoặc paste thẳng link công việc vào Discord!
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="btnCancelCareerOpsModal">Đóng</button>
+        <button class="btn btn-primary btn-sm" id="btnSubmitCareerOps" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #059669;">
+          <span class="spinner" id="careerOpsSpinner" style="display: none;"></span>
+          <span id="careerOpsBtnText">🚀 Xử Lý & Bắn Discord</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js?v=1.2.0"></script>
 </body>
 </html>
